@@ -1,34 +1,32 @@
 import React from "react";
-import { View, Text } from "react-native";
-import { createStyles } from "../styles/utils";
+import { View, Text, StyleSheet } from "react-native";
+import { theme } from "../styles/theme";
 
-// A very basic component
 export function SimpleTest() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>New Theme System</Text>
-      <Text style={styles.text}>This component is using the centralized theme system</Text>
+      <Text style={styles.title}>Novo Sistema de Temas</Text>
+      <Text style={styles.text}>Este componente está usando o sistema de temas simplificado</Text>
     </View>
   );
 }
 
-// Using the theme system instead of hardcoded values
-const styles = createStyles((theme) => ({
+// Estilos sem usar o sistema de temas dinâmico por enquanto
+const styles = StyleSheet.create({
   container: {
-    padding: theme.spacing[4],
-    margin: theme.spacing[4],
-    backgroundColor: theme.colors.muted.DEFAULT,
-    borderRadius: theme.borderRadius.lg,
-    ...theme.shadows.DEFAULT,
+    padding: theme.spacing[3],
+    margin: theme.spacing[3],
+    backgroundColor: theme.colors.background,
+    borderRadius: theme.borderRadius,
   },
   title: {
-    fontSize: theme.typography.fontSizes.xl,
-    fontWeight: theme.typography.fontWeights.bold,
-    marginBottom: theme.spacing[2],
-    color: theme.colors.foreground,
+    fontSize: theme.fontSize.large,
+    fontWeight: "bold",
+    color: theme.colors.primary,
+    marginBottom: theme.spacing[1],
   },
   text: {
-    fontSize: theme.typography.fontSizes.base,
-    color: theme.colors.muted.foreground,
+    fontSize: theme.fontSize.medium,
+    color: theme.colors.text,
   },
-}));
+});

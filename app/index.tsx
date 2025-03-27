@@ -1,90 +1,58 @@
 import React from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
-import { useRouter } from "expo-router";
-import { SimpleTest } from "../components/simple-test";
-import { createStyles } from "../styles/utils";
+import { Text, View, Button } from "react-native";
+import { createStyles } from "@/styles/utils";
+import { useTheme } from "@/styles/theme-context";
+import { SimpleTest } from "@/components/simple-test";
 
-export default function HomeScreen() {
-  const router = useRouter();
+export default function Index() {
+  const { theme, toggleTheme, isDarkMode } = useTheme();
+  const styles = stylesWithTheme(theme);
 
   return (
-    <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContainer}>
-      <View style={styles.container}>
-        <Text style={styles.title}>NutriMacros</Text>
-        <Text style={styles.subtitle}>Calculadora de Macronutrientes</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Calculadora de Macros</Text>
+      <Text style={styles.subtitle}>Bem-vindo ao NutriMacros</Text>
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Bem-vindo ao NutriMacros</Text>
-          <Text style={styles.cardText}>
-            Calcule suas necessidades diárias de calorias e macronutrientes baseado em seus objetivos.
-          </Text>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={() => router.push("/calculator")}>
-              <Text style={styles.buttonText}>Começar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <SimpleTest />
+      <View style={styles.card}>
+        <Text style={styles.text}>Seu assistente para calcular macronutrientes e acompanhar sua dieta.</Text>
       </View>
-    </ScrollView>
+
+      <Button title={isDarkMode ? "Mudar para Tema Claro" : "Mudar para Tema Escuro"} onPress={toggleTheme} />
+
+      <SimpleTest />
+    </View>
   );
 }
 
-// Using the theme system for consistent styling
-const styles = createStyles((theme) => ({
-  scrollView: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  scrollContainer: {
-    flexGrow: 1,
-  },
+const stylesWithTheme = createStyles((theme) => ({
   container: {
     flex: 1,
-    padding: theme.spacing[5],
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: theme.colors.background,
+    padding: theme.spacing[4],
   },
   title: {
-    fontSize: theme.typography.fontSizes["3xl"],
-    fontWeight: theme.typography.fontWeights.bold,
-    textAlign: "center",
-    marginTop: theme.spacing[12],
+    fontSize: theme.typography.fontSize.xxl,
+    fontWeight: theme.typography.fontWeight.bold,
+    color: theme.colors.primary,
     marginBottom: theme.spacing[2],
-    color: theme.colors.primary[600],
   },
   subtitle: {
-    fontSize: theme.typography.fontSizes.lg,
-    textAlign: "center",
-    marginBottom: theme.spacing[8],
-    color: theme.colors.muted.foreground,
+    fontSize: theme.typography.fontSize.lg,
+    color: theme.colors.secondary,
+    marginBottom: theme.spacing[4],
   },
   card: {
-    ...theme.presets.card,
-    marginBottom: theme.spacing[5],
-  },
-  cardTitle: {
-    fontSize: theme.typography.fontSizes.xl,
-    fontWeight: theme.typography.fontWeights.bold,
-    marginBottom: theme.spacing[3],
-    color: theme.colors.foreground,
-  },
-  cardText: {
-    fontSize: theme.typography.fontSizes.base,
-    lineHeight: theme.typography.lineHeights.relaxed * theme.typography.fontSizes.base,
-    marginBottom: theme.spacing[5],
-    color: theme.colors.foreground,
-  },
-  buttonContainer: {
-    alignItems: "center",
-  },
-  button: {
-    ...theme.presets.button.primary,
+    backgroundColor: theme.colors.muted.DEFAULT,
+    padding: theme.spacing[4],
+    borderRadius: theme.borderRadius.md,
     width: "100%",
+    marginBottom: theme.spacing[4],
   },
-  buttonText: {
-    color: "white",
-    fontWeight: theme.typography.fontWeights.bold,
+  text: {
+    fontSize: theme.typography.fontSize.md,
+    color: theme.colors.text,
     textAlign: "center",
-    fontSize: theme.typography.fontSizes.base,
   },
 }));
