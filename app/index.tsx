@@ -1,13 +1,9 @@
 import React from "react";
-import { Text, View, Button } from "react-native";
-import { createStyles } from "@/styles/utils";
-import { useTheme } from "@/styles/theme-context";
-import { SimpleTest } from "@/components/simple-test";
+import { Text, View, StyleSheet } from "react-native";
+import { SimpleTest } from "../components/simple-test";
+import { theme } from "../styles/theme";
 
 export default function Index() {
-  const { theme, toggleTheme, isDarkMode } = useTheme();
-  const styles = stylesWithTheme(theme);
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Calculadora de Macros</Text>
@@ -17,42 +13,42 @@ export default function Index() {
         <Text style={styles.text}>Seu assistente para calcular macronutrientes e acompanhar sua dieta.</Text>
       </View>
 
-      <Button title={isDarkMode ? "Mudar para Tema Claro" : "Mudar para Tema Escuro"} onPress={toggleTheme} />
-
       <SimpleTest />
     </View>
   );
 }
 
-const stylesWithTheme = createStyles((theme) => ({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: theme.colors.background,
-    padding: theme.spacing[4],
+    padding: theme.spacing[3],
   },
   title: {
-    fontSize: theme.typography.fontSize.xxl,
-    fontWeight: theme.typography.fontWeight.bold,
+    fontSize: theme.fontSize.large,
+    fontWeight: "bold",
     color: theme.colors.primary,
-    marginBottom: theme.spacing[2],
+    marginBottom: theme.spacing[1],
   },
   subtitle: {
-    fontSize: theme.typography.fontSize.lg,
+    fontSize: theme.fontSize.medium,
     color: theme.colors.secondary,
-    marginBottom: theme.spacing[4],
+    marginBottom: theme.spacing[3],
   },
   card: {
-    backgroundColor: theme.colors.muted.DEFAULT,
-    padding: theme.spacing[4],
-    borderRadius: theme.borderRadius.md,
+    backgroundColor: theme.colors.background,
+    padding: theme.spacing[3],
+    borderRadius: theme.borderRadius,
     width: "100%",
-    marginBottom: theme.spacing[4],
+    marginBottom: theme.spacing[3],
+    borderWidth: 1,
+    borderColor: theme.colors.secondary,
   },
   text: {
-    fontSize: theme.typography.fontSize.md,
+    fontSize: theme.fontSize.medium,
     color: theme.colors.text,
     textAlign: "center",
   },
-}));
+});
