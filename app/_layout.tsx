@@ -1,11 +1,12 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { View } from "react-native";
+import { View, StyleSheet } from "react-native";
+import ErrorBoundary from "../components/error-boundary";
 
 // Prevent splash screen from auto-hiding
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().catch((error) => console.error("Error preventing splash screen auto-hide:", error));
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
@@ -15,7 +16,9 @@ export default function RootLayout() {
   useEffect(() => {
     if (fontsLoaded || fontError) {
       // Hide the splash screen once fonts are loaded or if there's an error
-      SplashScreen.hideAsync();
+      SplashScreen.hideAsync().catch((err) => {
+        console.error("Error hiding splash screen:", err);
+      });
     }
   }, [fontsLoaded, fontError]);
 
@@ -24,14 +27,23 @@ export default function RootLayout() {
   }
 
   return (
-    <View className="flex-1 bg-background">
-      <StatusBar style="dark" />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          animation: "fade",
-        }}
-      />
-    </View>
+    <ErrorBoundary>
+      <View style={styles.container}>
+        <StatusBar style="dark" />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            animation: "fade",
+          }}
+        />
+      </View>
+    </ErrorBoundary>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#ffffff",
+  },
+});
