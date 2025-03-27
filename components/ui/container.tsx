@@ -1,10 +1,5 @@
 import React from "react";
-import { View, ViewProps, SafeAreaView, ScrollView } from "react-native";
-import { styled } from "nativewind";
-
-const StyledView = styled(View);
-const StyledSafeAreaView = styled(SafeAreaView);
-const StyledScrollView = styled(ScrollView);
+import { View, SafeAreaView, ScrollView, ViewProps } from "react-native";
 
 interface ContainerProps extends ViewProps {
   children: React.ReactNode;
@@ -12,6 +7,7 @@ interface ContainerProps extends ViewProps {
   scroll?: boolean;
   centered?: boolean;
   padding?: boolean;
+  className?: string;
 }
 
 export function Container({
@@ -29,17 +25,17 @@ export function Container({
 
   // If scrollable container
   if (scroll) {
-    const Wrapper = useSafeArea ? StyledSafeAreaView : StyledView;
+    const Wrapper = useSafeArea ? SafeAreaView : View;
 
     return (
       <Wrapper className="flex-1" {...props}>
-        <StyledScrollView
+        <ScrollView
           className={containerClass}
           contentContainerStyle={centered ? { flexGrow: 1, justifyContent: "center" } : undefined}
           showsVerticalScrollIndicator={false}
         >
           {children}
-        </StyledScrollView>
+        </ScrollView>
       </Wrapper>
     );
   }
@@ -47,15 +43,15 @@ export function Container({
   // Non-scrollable container
   if (useSafeArea) {
     return (
-      <StyledSafeAreaView className={`${containerClass}`} {...props}>
+      <SafeAreaView className={`${containerClass}`} {...props}>
         {children}
-      </StyledSafeAreaView>
+      </SafeAreaView>
     );
   }
 
   return (
-    <StyledView className={`${containerClass}`} {...props}>
+    <View className={`${containerClass}`} {...props}>
       {children}
-    </StyledView>
+    </View>
   );
 }

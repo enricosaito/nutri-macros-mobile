@@ -1,33 +1,32 @@
 import React from "react";
 import { View, ViewProps } from "react-native";
-import { styled } from "nativewind";
 import { Text } from "./text";
-
-const StyledView = styled(View);
 
 // Card container
 interface CardProps extends ViewProps {
   children: React.ReactNode;
+  className?: string;
 }
 
 export function Card({ children, className = "", ...props }: CardProps) {
   return (
-    <StyledView className={`bg-card rounded-lg border border-muted p-4 shadow ${className}`} {...props}>
+    <View className={`bg-card rounded-lg border border-muted p-4 shadow ${className}`} {...props}>
       {children}
-    </StyledView>
+    </View>
   );
 }
 
 // Card header
 interface CardHeaderProps extends ViewProps {
   children: React.ReactNode;
+  className?: string;
 }
 
 export function CardHeader({ children, className = "", ...props }: CardHeaderProps) {
   return (
-    <StyledView className={`space-y-1.5 pb-3 ${className}`} {...props}>
+    <View className={`space-y-1.5 pb-3 ${className}`} {...props}>
       {children}
-    </StyledView>
+    </View>
   );
 }
 
@@ -62,25 +61,27 @@ export function CardDescription({ children, className = "", ...props }: CardDesc
 // Card content
 interface CardContentProps extends ViewProps {
   children: React.ReactNode;
+  className?: string;
 }
 
 export function CardContent({ children, className = "", ...props }: CardContentProps) {
   return (
-    <StyledView className={`pt-0 ${className}`} {...props}>
+    <View className={`pt-0 ${className}`} {...props}>
       {children}
-    </StyledView>
+    </View>
   );
 }
 
 // Card footer
 interface CardFooterProps extends ViewProps {
   children: React.ReactNode;
+  className?: string;
 }
 
 export function CardFooter({ children, className = "", ...props }: CardFooterProps) {
   return (
-    <StyledView className={`flex flex-row items-center pt-4 ${className}`} {...props}>
+    <View className={`flex flex-row items-center pt-4 ${className}`} {...props}>
       {children}
-    </StyledView>
+    </View>
   );
 }

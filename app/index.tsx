@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { View } from "react-native";
-import { styled } from "nativewind";
 import {
   Screen,
   Text,
@@ -12,10 +11,10 @@ import {
   CardFooter,
   MacroDisplay,
 } from "../components";
-
-const StyledView = styled(View);
+import { useRouter } from "expo-router";
 
 export default function HomeScreen() {
+  const router = useRouter();
   const [calculatedMacros, setCalculatedMacros] = useState({
     protein: 150,
     carbs: 200,
@@ -25,7 +24,7 @@ export default function HomeScreen() {
 
   return (
     <Screen title="NutriMacros" scroll={true} showHeader={true}>
-      <StyledView className="py-4 space-y-6">
+      <View className="py-4 space-y-6">
         <Text variant="h3" className="text-center">
           Calculadora de Macronutrientes
         </Text>
@@ -39,23 +38,17 @@ export default function HomeScreen() {
             <CardTitle>Resumo</CardTitle>
           </CardHeader>
           <CardContent className="items-center justify-center py-6">
-            <StyledView className="mb-4 items-center">
+            <View className="mb-4 items-center">
               <Text variant="h2" className="text-primary-600">
                 {calculatedMacros.calories}
               </Text>
               <Text variant="caption" color="muted">
                 Calorias diárias
               </Text>
-            </StyledView>
+            </View>
           </CardContent>
           <CardFooter>
-            <Button
-              onPress={() => {
-                /* Navigate to calculator */
-              }}
-              variant="primary"
-              fullWidth
-            >
+            <Button onPress={() => router.push("/calculator")} variant="primary" fullWidth>
               Calcular Novamente
             </Button>
           </CardFooter>
@@ -86,7 +79,7 @@ export default function HomeScreen() {
             </Text>
           </CardContent>
         </Card>
-      </StyledView>
+      </View>
     </Screen>
   );
 }

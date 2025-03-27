@@ -1,12 +1,9 @@
 import React from "react";
 import { View, Pressable } from "react-native";
-import { styled } from "nativewind";
 import { Text } from "./ui/text";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
-const StyledView = styled(View);
-const StyledPressable = styled(Pressable);
-const AnimatedPressable = Animated.createAnimatedComponent(StyledPressable);
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export interface Goal {
   id: string;
@@ -23,7 +20,7 @@ interface GoalSelectorProps {
 
 export function GoalSelector({ goals, selectedGoalId, onSelectGoal, className = "" }: GoalSelectorProps) {
   return (
-    <StyledView className={`space-y-3 ${className}`}>
+    <View className={`space-y-3 ${className}`}>
       {goals.map((goal) => (
         <GoalOption
           key={goal.id}
@@ -32,7 +29,7 @@ export function GoalSelector({ goals, selectedGoalId, onSelectGoal, className = 
           onPress={() => onSelectGoal(goal.id)}
         />
       ))}
-    </StyledView>
+    </View>
   );
 }
 
@@ -61,30 +58,30 @@ function GoalOption({ goal, isSelected, onPress }: GoalOptionProps) {
 
   return (
     <AnimatedPressable
-      style={animatedStyle}
+      style={[animatedStyle]}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       onPress={onPress}
       className={`border rounded-lg p-4 ${isSelected ? "border-primary-500 bg-primary-50" : "border-muted bg-white"}`}
     >
-      <StyledView className="flex-row items-center justify-between">
-        <StyledView className="flex-1">
+      <View className="flex-row items-center justify-between">
+        <View className="flex-1">
           <Text variant="subtitle" color={isSelected ? "primary" : "foreground"}>
             {goal.name}
           </Text>
           <Text variant="caption" color="muted" className="mt-1">
             {goal.description}
           </Text>
-        </StyledView>
+        </View>
 
-        <StyledView
+        <View
           className={`w-6 h-6 rounded-full border items-center justify-center ${
             isSelected ? "border-primary-500 bg-primary-500" : "border-muted"
           }`}
         >
-          {isSelected && <StyledView className="w-3 h-3 rounded-full bg-white" />}
-        </StyledView>
-      </StyledView>
+          {isSelected && <View className="w-3 h-3 rounded-full bg-white" />}
+        </View>
+      </View>
     </AnimatedPressable>
   );
 }

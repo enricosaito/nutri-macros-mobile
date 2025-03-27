@@ -1,10 +1,7 @@
 import React from "react";
-import { View, ViewProps, StatusBar } from "react-native";
-import { styled } from "nativewind";
+import { View, StatusBar, ViewProps } from "react-native";
 import { Text } from "./text";
 import { Container } from "./container";
-
-const StyledView = styled(View);
 
 interface ScreenProps extends ViewProps {
   children: React.ReactNode;
@@ -13,6 +10,7 @@ interface ScreenProps extends ViewProps {
   showHeader?: boolean;
   scroll?: boolean;
   padding?: boolean;
+  className?: string;
 }
 
 export function Screen({
@@ -30,14 +28,14 @@ export function Screen({
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
 
       {showHeader && (
-        <StyledView className="flex-row items-center justify-between px-4 py-3 border-b border-muted">
-          {title ? <Text variant="h3">{title}</Text> : <StyledView />}
+        <View className="flex-row items-center justify-between px-4 py-3 border-b border-muted">
+          {title ? <Text variant="h3">{title}</Text> : <View />}
 
-          {headerRight ? <StyledView>{headerRight}</StyledView> : null}
-        </StyledView>
+          {headerRight ? <View>{headerRight}</View> : null}
+        </View>
       )}
 
-      <StyledView className={`flex-1 ${padding ? "px-4" : ""}`}>{children}</StyledView>
+      <View className={`flex-1 ${padding ? "px-4" : ""}`}>{children}</View>
     </Container>
   );
 }

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { View, TextInput, Pressable } from "react-native";
-import { styled } from "nativewind";
 import { Text } from "./text";
 import Animated, {
   useAnimatedStyle,
@@ -10,10 +9,8 @@ import Animated, {
   withSequence,
 } from "react-native-reanimated";
 
-const StyledView = styled(View);
-const StyledTextInput = styled(TextInput);
-const StyledPressable = styled(Pressable);
-const AnimatedPressable = Animated.createAnimatedComponent(StyledPressable);
+const AnimatedView = Animated.createAnimatedComponent(View);
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 interface NumericInputProps {
   label?: string;
@@ -125,14 +122,14 @@ export function NumericInput({
   });
 
   return (
-    <Animated.View style={containerAnimStyle} className={`w-full mb-4 ${containerClassName}`}>
+    <AnimatedView style={containerAnimStyle} className={`w-full mb-4 ${containerClassName}`}>
       {label && (
         <Text variant="caption" className="mb-1 ml-1">
           {label}
         </Text>
       )}
 
-      <StyledView className="flex-row items-center">
+      <View className="flex-row items-center">
         <AnimatedPressable
           style={buttonAnimStyle}
           onPressIn={handleButtonPressIn}
@@ -145,8 +142,8 @@ export function NumericInput({
           </Text>
         </AnimatedPressable>
 
-        <StyledView className="flex-1 flex-row">
-          <StyledTextInput
+        <View className="flex-1 flex-row">
+          <TextInput
             className="flex-1 h-12 border-t border-b border-muted bg-white px-2 text-center"
             value={inputValue}
             onChangeText={handleInputChange}
@@ -156,13 +153,13 @@ export function NumericInput({
           />
 
           {unit && (
-            <StyledView className="h-12 min-w-[40px] border-t border-b border-r border-muted bg-muted justify-center items-center px-2">
+            <View className="h-12 min-w-[40px] border-t border-b border-r border-muted bg-muted justify-center items-center px-2">
               <Text variant="caption" color="muted">
                 {unit}
               </Text>
-            </StyledView>
+            </View>
           )}
-        </StyledView>
+        </View>
 
         <AnimatedPressable
           style={buttonAnimStyle}
@@ -175,13 +172,13 @@ export function NumericInput({
             +
           </Text>
         </AnimatedPressable>
-      </StyledView>
+      </View>
 
       {error && (
         <Text variant="caption" color="danger" className="mt-1 ml-1">
           {error}
         </Text>
       )}
-    </Animated.View>
+    </AnimatedView>
   );
 }

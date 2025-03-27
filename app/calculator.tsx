@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { View, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
-import { styled } from "nativewind";
 import {
   Screen,
   Text,
@@ -15,9 +14,6 @@ import {
   GoalSelector,
   Goal,
 } from "../components";
-
-const StyledView = styled(View);
-const StyledScrollView = styled(ScrollView);
 
 // Define activity levels
 const activityLevels = [
@@ -130,76 +126,74 @@ export default function CalculatorScreen() {
 
   return (
     <Screen title="Calculadora" showHeader={true} scroll={true}>
-      <StyledView className="space-y-6 py-4">
-        {/* Gender Selection */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Sexo Biológico</CardTitle>
-          </CardHeader>
-          <CardContent className="flex-row space-x-4">
-            <Button
-              variant={gender === "male" ? "primary" : "outline"}
-              onPress={() => setGender("male")}
-              className="flex-1"
-            >
-              Masculino
-            </Button>
-            <Button
-              variant={gender === "female" ? "primary" : "outline"}
-              onPress={() => setGender("female")}
-              className="flex-1"
-            >
-              Feminino
-            </Button>
-          </CardContent>
-        </Card>
+      {/* Gender Selection */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Sexo Biológico</CardTitle>
+        </CardHeader>
+        <CardContent className="flex-row space-x-4">
+          <Button
+            variant={gender === "male" ? "primary" : "outline"}
+            onPress={() => setGender("male")}
+            className="flex-1"
+          >
+            Masculino
+          </Button>
+          <Button
+            variant={gender === "female" ? "primary" : "outline"}
+            onPress={() => setGender("female")}
+            className="flex-1"
+          >
+            Feminino
+          </Button>
+        </CardContent>
+      </Card>
 
-        {/* Basic Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Informações Básicas</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <NumericInput label="Idade" value={age} onChange={setAge} min={15} max={100} unit="anos" />
-            <NumericInput
-              label="Peso"
-              value={weight}
-              onChange={setWeight}
-              min={30}
-              max={250}
-              unit="kg"
-              allowDecimal={true}
-              step={0.5}
-            />
-            <NumericInput label="Altura" value={height} onChange={setHeight} min={100} max={250} unit="cm" />
-          </CardContent>
-        </Card>
+      {/* Basic Info */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Informações Básicas</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <NumericInput label="Idade" value={age} onChange={setAge} min={15} max={100} unit="anos" />
+          <NumericInput
+            label="Peso"
+            value={weight}
+            onChange={setWeight}
+            min={30}
+            max={250}
+            unit="kg"
+            allowDecimal={true}
+            step={0.5}
+          />
+          <NumericInput label="Altura" value={height} onChange={setHeight} min={100} max={250} unit="cm" />
+        </CardContent>
+      </Card>
 
-        {/* Activity Level */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Nível de Atividade</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <GoalSelector goals={activityLevels} selectedGoalId={activityLevel} onSelectGoal={setActivityLevel} />
-          </CardContent>
-        </Card>
+      {/* Activity Level */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Nível de Atividade</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <GoalSelector goals={activityLevels} selectedGoalId={activityLevel} onSelectGoal={setActivityLevel} />
+        </CardContent>
+      </Card>
 
-        {/* Goal */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Objetivo</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <GoalSelector goals={goals} selectedGoalId={goal} onSelectGoal={setGoal} />
-          </CardContent>
-        </Card>
+      {/* Goal */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Objetivo</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <GoalSelector goals={goals} selectedGoalId={goal} onSelectGoal={setGoal} />
+        </CardContent>
+      </Card>
 
-        {/* Calculate Button */}
-        <Button size="lg" onPress={handleCalculate} className="my-4">
-          Calcular Macros
-        </Button>
-      </StyledView>
+      {/* Calculate Button */}
+      <Button size="lg" onPress={handleCalculate} className="my-4">
+        Calcular Macros
+      </Button>
     </Screen>
   );
 }

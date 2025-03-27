@@ -1,18 +1,10 @@
 import React, { useEffect } from "react";
 import { View } from "react-native";
-import { styled } from "nativewind";
 import { Text } from "./ui/text";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-  useAnimatedReaction,
-  SharedValue,
-} from "react-native-reanimated";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
-const StyledView = styled(View);
-const AnimatedView = Animated.createAnimatedComponent(StyledView);
+const AnimatedView = Animated.createAnimatedComponent(View);
 
 interface MacroData {
   protein: number;
@@ -81,14 +73,14 @@ export function MacroDisplay({ macros, calories, showPercentages = true, classNa
         </Text>
 
         {/* Progress bar */}
-        <StyledView className="h-8 flex-row rounded-md overflow-hidden mb-4">
+        <View className="h-8 flex-row rounded-md overflow-hidden mb-4">
           <AnimatedView style={proteinAnimStyle} className="bg-blue-500 h-full" />
           <AnimatedView style={carbsAnimStyle} className="bg-green-500 h-full" />
           <AnimatedView style={fatAnimStyle} className="bg-yellow-500 h-full" />
-        </StyledView>
+        </View>
 
         {/* Macros detail */}
-        <StyledView className="space-y-4">
+        <View className="space-y-4">
           <MacroRow
             label="Proteína"
             grams={macros.protein}
@@ -115,7 +107,7 @@ export function MacroDisplay({ macros, calories, showPercentages = true, classNa
             showPercent={showPercentages}
             color="bg-yellow-500"
           />
-        </StyledView>
+        </View>
       </CardContent>
     </Card>
   );
@@ -132,12 +124,12 @@ interface MacroRowProps {
 
 function MacroRow({ label, grams, calories, percent, showPercent, color }: MacroRowProps) {
   return (
-    <StyledView className="flex-row items-center">
-      <StyledView className={`w-4 h-4 rounded-full ${color} mr-2`} />
+    <View className="flex-row items-center">
+      <View className={`w-4 h-4 rounded-full ${color} mr-2`} />
       <Text variant="subtitle" className="flex-1">
         {label}
       </Text>
-      <StyledView className="flex-row space-x-2">
+      <View className="flex-row space-x-2">
         <Text variant="body">{grams}g</Text>
         <Text variant="body" color="muted">
           {calories} kcal
@@ -147,7 +139,7 @@ function MacroRow({ label, grams, calories, percent, showPercent, color }: Macro
             {Math.round(percent)}%
           </Text>
         )}
-      </StyledView>
-    </StyledView>
+      </View>
+    </View>
   );
 }

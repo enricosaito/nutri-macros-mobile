@@ -1,65 +1,113 @@
 import React from "react";
-impoimport React from "react";
-import { Text as RNText, TextProps as RNTextProps } from "react-native";
-import { styled } from "nativewind";
+import { View, Share } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { Feather } from "@expo/vector-icons";
+import {
+  Screen,
+  Text,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+  MacroDisplay,
+} from "../components";
 
-interface TextProps extends RNTextProps {
-  variant?: "h1" | "h2" | "h3" | "h4" | "subtitle" | "body" | "caption" | "small";
-  bold?: boolean;
-  italic?: boolean;
-  color?: 
-    | "primary" 
-    | "secondary" 
-    | "foreground" 
-    | "muted" 
-    | "success" 
-    | "warning" 
-    | "danger";
-}
+export default function ResultsScreen() {
+  const router = useRouter();
+  const params = useLocalSearchParams<{
+    protein: string;
+    carbs: string;
+    fat: string;
+    calories: string;
+  }>();
 
-const StyledText = styled(RNText);
+  const macros = {
+    protein: parseInt(params.protein || "0", 10),
+    carbs: parseInt(params.carbs || "0", 10),
+    fat: parseInt(params.fat || "0", 10),
+  };
 
-const variantStyles = {
-  h1: "text-3xl font-bold",
-  h2: "text-2xl font-bold",
-  h3: "text-xl font-bold",
-  h4: "text-lg font-bold",
-  subtitle: "text-base font-medium",
-  body: "text-base",
-  caption: "text-sm",
-  small: "text-xs",
-};
+  const calories = parseInt(params.calories || "0", 10);
 
-const colorStyles = {
-  primary: "text-primary-600",
-  secondary: "text-secondary-600",
-  foreground: "text-foreground",
-  muted: "text-muted-foreground",
-  success: "text-green-600",
-  warning: "text-yellow-600",
-  danger: "text-red-600",
-};
-
-export function Text({
-  variant = "body",
-  bold = false,
-  italic = false,
-  color = "foreground",
-  className = "",
-  children,
-  ...props
-}: TextProps) {
-  const variantStyle = variantStyles[variant] || variantStyles.body;
-  const colorStyle = colorStyles[color] || colorStyles.foreground;
-  const fontWeight = bold ? "font-bold" : "";
-  const fontStyle = italic ? "italic" : "";
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: `Meus macros diários calculados pelo NutriMacros:\n\n🔥 Calorias: ${calories} kcal\n💪 Proteína: ${macros.protein}g\n🍚 Carboidratos: ${macros.carbs}g\n🥑 Gorduras: ${macros.fat}g`,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
-    <StyledText
-      className={`${variantStyle} ${colorStyle} ${fontWeight} ${fontStyle} ${className}`}
-      {...props}
+    <Screen
+      title="Resultados"
+      showHeader={true}
+      headerRight={
+        <Button variant="ghost" onPress={handleShare} leftIcon={<Feather name="share-2" size={18} color="#0891b2" />}>
+          Compartilhar
+        </Button>
+      }
+      scroll={true}
     >
-      {children}
-    </StyledText>
+      <View className="space-y-6 py-4">
+        <Text variant="h2" className="text-center">
+          Seus Macros Diários
+        </Text>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Necessidade Calórica</CardTitle>
+          </CardHeader>
+          <CardContent className="items-center justify-center py-6">
+            <View className="mb-2 items-center">
+              <Text variant="h1" className="text-primary-600">
+                {calories}
+              </Text>
+              <Text variant="subtitle" color="muted">
+                Calorias diárias
+              </Text>
+            </View>
+          </CardContent>
+        </Card>
+
+        <MacroDisplay macros={macros} calories={calories} showPercentages={true} />
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Dicas de Uso</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Text className="mb-3">
+              Use esses valores como referência para montar seu plano alimentar diário. Lembre-se que é importante:
+            </Text>
+            <View className="space-y-2">
+              <View className="flex-row">
+                <View className="w-2 h-2 rounded-full bg-primary-600 mt-2 mr-2" />
+                <Text className="flex-1">Distribuir suas refeições ao longo do dia</Text>
+              </View>
+              <View className="flex-row">
+                <View className="w-2 h-2 rounded-full bg-primary-600 mt-2 mr-2" />
+                <Text className="flex-1">Priorizar alimentos integrais e não processados</Text>
+              </View>
+              <View className="flex-row">
+                <View className="w-2 h-2 rounded-full bg-primary-600 mt-2 mr-2" />
+                <Text className="flex-1">Manter-se hidratado(a) bebendo água suficiente</Text>
+              </View>
+            </View>
+          </CardContent>
+          <CardFooter className="flex-row space-x-3">
+            <Button variant="outline" onPress={() => router.back()} className="flex-1">
+              Recalcular
+            </Button>
+            <Button variant="primary" onPress={() => router.push("/")} className="flex-1">
+              Salvar
+            </Button>
+          </CardFooter>
+        </Card>
+      </View>
+    </Screen>
   );
 }

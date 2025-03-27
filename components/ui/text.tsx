@@ -1,6 +1,6 @@
+// components/ui/text.tsx
 import React from "react";
 import { Text as RNText, TextProps as RNTextProps } from "react-native";
-import { styled } from "nativewind";
 
 interface TextProps extends RNTextProps {
   variant?: "h1" | "h2" | "h3" | "h4" | "subtitle" | "body" | "caption" | "small";
@@ -8,8 +8,6 @@ interface TextProps extends RNTextProps {
   italic?: boolean;
   color?: "primary" | "secondary" | "foreground" | "muted" | "success" | "warning" | "danger";
 }
-
-const StyledText = styled(RNText);
 
 const variantStyles = {
   h1: "text-3xl font-bold",
@@ -47,8 +45,8 @@ export function Text({
   const fontStyle = italic ? "italic" : "";
 
   return (
-    <StyledText className={`${variantStyle} ${colorStyle} ${fontWeight} ${fontStyle} ${className}`} {...props}>
+    <RNText className={`${variantStyle} ${colorStyle} ${fontWeight} ${fontStyle} ${className}`} {...props}>
       {children}
-    </StyledText>
+    </RNText>
   );
 }

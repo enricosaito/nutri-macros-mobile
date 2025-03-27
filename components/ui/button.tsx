@@ -1,21 +1,43 @@
 import React from "react";
-import { Pressable, PressableProps, ActivityIndicator, ViewStyle } from "react-native";
-import { styled } from "nativewind";
-import { Text } from "./text";
+import { Pressable, ActivityIndicator, ViewStyle, PressableProps } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { Text } from "./text";
 
-const StyledPressable = styled(Pressable);
-const AnimatedPressable = Animated.createAnimatedComponent(StyledPressable);
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+// Button variants
+const variantStyles = {
+  primary: "bg-primary-600 border border-primary-600",
+  secondary: "bg-secondary-600 border border-secondary-600",
+  outline: "bg-transparent border border-foreground",
+  ghost: "bg-transparent",
+};
+
+// Button sizes
+const sizeStyles = {
+  sm: "py-1 px-3",
+  md: "py-2 px-4",
+  lg: "py-3 px-6",
+};
+
+// Text colors based on button variant
+const textColors = {
+  primary: "white",
+  secondary: "white",
+  outline: "foreground",
+  ghost: "foreground",
+};
 
 interface ButtonProps extends PressableProps {
-  variant?: "primary" | "secondary" | "outline" | "ghost";
-  size?: "sm" | "md" | "lg";
+  variant?: keyof typeof variantStyles;
+  size?: keyof typeof sizeStyles;
   loading?: boolean;
   disabled?: boolean;
   fullWidth?: boolean;
   style?: ViewStyle;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
+  className?: string;
   children: React.ReactNode;
 }
 
@@ -30,6 +52,7 @@ export function Button({
   leftIcon,
   rightIcon,
   className = "",
+  onPress,
   ...props
 }: ButtonProps) {
   const scale = useSharedValue(1);
@@ -48,40 +71,21 @@ export function Button({
     scale.value = withTiming(1, { duration: 100 });
   };
 
-  const variantStyles = {
-    primary: "bg-primary-600 border border-primary-600",
-    secondary: "bg-secondary-600 border border-secondary-600",
-    outline: "bg-transparent border border-foreground",
-    ghost: "bg-transparent",
-  };
-
-  const sizeStyles = {
-    sm: "py-1 px-3",
-    md: "py-2 px-4",
-    lg: "py-3 px-6",
-  };
-
-  const textColors = {
-    primary: "white",
-    secondary: "white",
-    outline: "foreground",
-    ghost: "foreground",
-  };
-
   const disabledStyle = disabled || loading ? "opacity-50" : "";
   const widthStyle = fullWidth ? "w-full" : "";
-  const defaultButtonClasses = "rounded-lg flex-row items-center justify-center";
+  const baseStyle = "rounded-lg flex-row items-center justify-center";
   const variantStyle = variantStyles[variant];
   const sizeStyle = sizeStyles[size];
   const textColor = textColors[variant] as any;
 
   return (
     <AnimatedPressable
-      className={`${defaultButtonClasses} ${variantStyle} ${sizeStyle} ${disabledStyle} ${widthStyle} ${className}`}
+      className={`${baseStyle} ${variantStyle} ${sizeStyle} ${disabledStyle} ${widthStyle} ${className}`}
       disabled={disabled || loading}
       style={[animatedStyle, style]}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
+      onPress={onPress}
       {...props}
     >
       {loading && (
@@ -92,7 +96,7 @@ export function Button({
         />
       )}
 
-      {!loading && leftIcon && <React.Fragment>{leftIcon}</React.Fragment>}
+      {!loading && leftIcon && <>{leftIcon}</>}
 
       <Text
         color={textColor}
@@ -102,7 +106,7 @@ export function Button({
         {children}
       </Text>
 
-      {!loading && rightIcon && <React.Fragment>{rightIcon}</React.Fragment>}
+      {!loading && rightIcon && <>{rightIcon}</>}
     </AnimatedPressable>
   );
 }
