@@ -38,7 +38,7 @@ export default function ProfileScreen() {
             <Button
               title="Continuar com Google"
               variant="outline"
-              leftIcon={<Feather name="google" size={18} color={theme.colors.primary} />}
+              leftIcon={<Feather name="anchor" size={18} color={theme.colors.primary} />}
               onPress={() => {}}
             />
           </CardContent>
