@@ -1,3 +1,4 @@
+// styles/theme.ts
 export interface Theme {
   colors: {
     primary: string;
@@ -15,7 +16,14 @@ export interface Theme {
     error: string;
     success: string;
   };
-  spacing: number[];
+  spacing: {
+    xs: number;
+    sm: number;
+    md: number;
+    lg: number;
+    xl: number;
+    xxl: number;
+  };
   fontSize: {
     xs: number;
     sm: number;
@@ -24,7 +32,12 @@ export interface Theme {
     xl: number;
     xxl: number;
   };
-  borderRadius: number;
+  borderRadius: {
+    sm: number;
+    md: number;
+    lg: number;
+    full: number;
+  };
 }
 
 // Light theme according to your web app colors
@@ -45,7 +58,14 @@ export const theme: Theme = {
     error: "#e11d48",
     success: "#10b981",
   },
-  spacing: [4, 8, 12, 16, 20, 24, 32, 48, 64],
+  spacing: {
+    xs: 4,
+    sm: 8,
+    md: 16,
+    lg: 24,
+    xl: 32,
+    xxl: 48,
+  },
   fontSize: {
     xs: 12,
     sm: 14,
@@ -54,7 +74,12 @@ export const theme: Theme = {
     xl: 24,
     xxl: 32,
   },
-  borderRadius: 8,
+  borderRadius: {
+    sm: 4,
+    md: 8,
+    lg: 12,
+    full: 9999,
+  },
 };
 
 // Dark theme according to your web app colors
@@ -75,7 +100,14 @@ export const darkTheme: Theme = {
     error: "#f43f5e",
     success: "#34d399",
   },
-  spacing: [4, 8, 12, 16, 20, 24, 32, 48, 64],
+  spacing: {
+    xs: 4,
+    sm: 8,
+    md: 16,
+    lg: 24,
+    xl: 32,
+    xxl: 48,
+  },
   fontSize: {
     xs: 12,
     sm: 14,
@@ -84,5 +116,10 @@ export const darkTheme: Theme = {
     xl: 24,
     xxl: 32,
   },
-  borderRadius: 8,
+  borderRadius: {
+    sm: 4,
+    md: 8,
+    lg: 12,
+    full: 9999,
+  },
 };
