@@ -1,7 +1,7 @@
 // components/ui/text.tsx
 import React from "react";
 import { Text as RNText, StyleSheet, StyleProp, TextStyle, TextProps as RNTextProps } from "react-native";
-import { theme } from "../../styles/theme";
+import { theme } from "../../src/styles/theme";
 
 type TextVariant = "h1" | "h2" | "h3" | "h4" | "subtitle" | "body" | "caption" | "small";
 type TextColor = "primary" | "secondary" | "foreground" | "muted" | "success" | "warning" | "danger" | "white";
@@ -82,7 +82,7 @@ export function Text({
         baseStyle.color = theme.colors.success;
         break;
       case "warning":
-        baseStyle.color = theme.colors.warning || "#f59e0b";
+        baseStyle.color = "#f59e0b";
         break;
       case "danger":
         baseStyle.color = theme.colors.error;
