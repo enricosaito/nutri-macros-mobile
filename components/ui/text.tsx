@@ -1,6 +1,6 @@
 import React from "react";
 import { Text as RNText, StyleSheet, TextStyle, TextProps as RNTextProps } from "react-native";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../src/context/ThemeContext";
 
 type TextVariant = "h1" | "h2" | "h3" | "h4" | "subtitle" | "body" | "caption" | "small";
 type TextColor = "primary" | "secondary" | "foreground" | "muted" | "success" | "warning" | "danger" | "white";
