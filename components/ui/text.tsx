@@ -1,3 +1,4 @@
+// components/ui/text.tsx
 import React from "react";
 import { Text as RNText, StyleSheet, TextStyle, TextProps as RNTextProps } from "react-native";
 import { theme } from "../../styles/theme";
@@ -10,7 +11,8 @@ interface TextProps extends RNTextProps {
   color?: TextColor;
   bold?: boolean;
   italic?: boolean;
-  style?: TextStyle;
+  // Fix the style type definition:
+  style?: TextStyle | TextStyle[] | undefined;
 }
 
 export function Text({
@@ -22,77 +24,81 @@ export function Text({
   children,
   ...props
 }: TextProps) {
-  const getTextStyle = (): TextStyle[] => {
-    const textStyles: TextStyle[] = [styles.base];
+  const getTextStyle = (): Array<TextStyle> => {
+    const textStyles: Array<TextStyle> = [{ ...styles.base }];
 
     // Add variant styles
     switch (variant) {
       case "h1":
-        textStyles.push(styles.h1);
+        textStyles.push({ ...styles.h1 });
         break;
       case "h2":
-        textStyles.push(styles.h2);
+        textStyles.push({ ...styles.h2 });
         break;
       case "h3":
-        textStyles.push(styles.h3);
+        textStyles.push({ ...styles.h3 });
         break;
       case "h4":
-        textStyles.push(styles.h4);
+        textStyles.push({ ...styles.h4 });
         break;
       case "subtitle":
-        textStyles.push(styles.subtitle);
+        textStyles.push({ ...styles.subtitle });
         break;
       case "body":
-        textStyles.push(styles.body);
+        textStyles.push({ ...styles.body });
         break;
       case "caption":
-        textStyles.push(styles.caption);
+        textStyles.push({ ...styles.caption });
         break;
       case "small":
-        textStyles.push(styles.small);
+        textStyles.push({ ...styles.small });
         break;
     }
 
     // Add color styles
     switch (color) {
       case "primary":
-        textStyles.push(styles.primaryText);
+        textStyles.push({ ...styles.primaryText });
         break;
       case "secondary":
-        textStyles.push(styles.secondaryText);
+        textStyles.push({ ...styles.secondaryText });
         break;
       case "foreground":
-        textStyles.push(styles.foregroundText);
+        textStyles.push({ ...styles.foregroundText });
         break;
       case "muted":
-        textStyles.push(styles.mutedText);
+        textStyles.push({ ...styles.mutedText });
         break;
       case "success":
-        textStyles.push(styles.successText);
+        textStyles.push({ ...styles.successText });
         break;
       case "warning":
-        textStyles.push(styles.warningText);
+        textStyles.push({ ...styles.warningText });
         break;
       case "danger":
-        textStyles.push(styles.dangerText);
+        textStyles.push({ ...styles.dangerText });
         break;
       case "white":
-        textStyles.push(styles.whiteText);
+        textStyles.push({ ...styles.whiteText });
         break;
     }
 
     // Add weight and style
     if (bold) {
-      textStyles.push(styles.bold);
+      textStyles.push({ ...styles.bold });
     }
 
     if (italic) {
-      textStyles.push(styles.italic);
+      textStyles.push({ ...styles.italic });
     }
 
-    // Add custom style
+    // Add custom style as the last item to override defaults if needed
     if (style) {
-      textStyles.push(style);
+      if (Array.isArray(style)) {
+        textStyles.push(...style);
+      } else {
+        textStyles.push(style);
+      }
     }
 
     return textStyles;
