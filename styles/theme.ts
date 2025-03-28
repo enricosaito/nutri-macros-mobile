@@ -1,53 +1,88 @@
-/**
- * Tema básico para o aplicativo NutriMacros
- */
-
 export interface Theme {
   colors: {
     primary: string;
+    primaryDark: string;
+    primaryLight: string;
     secondary: string;
+    secondaryDark: string;
+    secondaryLight: string;
     background: string;
+    foreground: string;
+    card: string;
     text: string;
+    textMuted: string;
+    border: string;
+    error: string;
+    success: string;
   };
   spacing: number[];
   fontSize: {
-    small: number;
-    medium: number;
-    large: number;
+    xs: number;
+    sm: number;
+    md: number;
+    lg: number;
+    xl: number;
+    xxl: number;
   };
   borderRadius: number;
 }
 
-// Tema padrão do aplicativo
+// Light theme according to your web app colors
 export const theme: Theme = {
   colors: {
-    primary: "#4CAF50",
-    secondary: "#2196F3",
-    background: "#FFFFFF",
-    text: "#333333",
+    primary: "hsl(142, 70%, 45%)",
+    primaryDark: "hsl(142, 70%, 35%)",
+    primaryLight: "hsl(142, 70%, 55%)",
+    secondary: "hsl(140, 15%, 94%)",
+    secondaryDark: "hsl(140, 15%, 84%)",
+    secondaryLight: "hsl(140, 15%, 98%)",
+    background: "hsl(140, 50%, 98%)",
+    foreground: "hsl(140, 10%, 10%)",
+    card: "white",
+    text: "hsl(140, 10%, 10%)",
+    textMuted: "hsl(140, 10%, 40%)",
+    border: "hsl(140, 10%, 90%)",
+    error: "#e11d48",
+    success: "#10b981",
   },
-  spacing: [4, 8, 12, 16, 20, 24, 32],
+  spacing: [4, 8, 12, 16, 20, 24, 32, 48, 64],
   fontSize: {
-    small: 14,
-    medium: 16,
-    large: 20,
+    xs: 12,
+    sm: 14,
+    md: 16,
+    lg: 18,
+    xl: 24,
+    xxl: 32,
   },
   borderRadius: 8,
 };
 
-// Tema escuro do aplicativo
+// Dark theme according to your web app colors
 export const darkTheme: Theme = {
   colors: {
-    primary: "#4CAF50",
-    secondary: "#2196F3",
-    background: "#121212",
-    text: "#FFFFFF",
+    primary: "hsl(142, 60%, 50%)",
+    primaryDark: "hsl(142, 60%, 40%)",
+    primaryLight: "hsl(142, 60%, 60%)",
+    secondary: "hsl(140, 10%, 20%)",
+    secondaryDark: "hsl(140, 10%, 15%)",
+    secondaryLight: "hsl(140, 10%, 25%)",
+    background: "hsl(140, 15%, 10%)",
+    foreground: "hsl(0, 0%, 98%)",
+    card: "hsl(140, 15%, 13%)",
+    text: "hsl(0, 0%, 98%)",
+    textMuted: "hsl(0, 0%, 70%)",
+    border: "hsl(140, 15%, 18%)",
+    error: "#f43f5e",
+    success: "#34d399",
   },
-  spacing: [4, 8, 12, 16, 20, 24, 32],
+  spacing: [4, 8, 12, 16, 20, 24, 32, 48, 64],
   fontSize: {
-    small: 14,
-    medium: 16,
-    large: 20,
+    xs: 12,
+    sm: 14,
+    md: 16,
+    lg: 18,
+    xl: 24,
+    xxl: 32,
   },
   borderRadius: 8,
 };
