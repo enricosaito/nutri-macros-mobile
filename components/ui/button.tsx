@@ -1,112 +1,237 @@
 import React from "react";
-import { Pressable, ActivityIndicator, ViewStyle, PressableProps } from "react-native";
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
-import { Text } from "./text";
+import { TouchableOpacity, Text, ActivityIndicator, StyleSheet, ViewStyle, TextStyle, View } from "react-native";
+import { theme } from "../../styles/theme";
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+type ButtonVariant = "primary" | "secondary" | "outline" | "ghost";
+type ButtonSize = "sm" | "md" | "lg";
 
-// Button variants
-const variantStyles = {
-  primary: "bg-primary-600 border border-primary-600",
-  secondary: "bg-secondary-600 border border-secondary-600",
-  outline: "bg-transparent border border-foreground",
-  ghost: "bg-transparent",
-};
-
-// Button sizes
-const sizeStyles = {
-  sm: "py-1 px-3",
-  md: "py-2 px-4",
-  lg: "py-3 px-6",
-};
-
-// Text colors based on button variant
-const textColors = {
-  primary: "white",
-  secondary: "white",
-  outline: "foreground",
-  ghost: "foreground",
-};
-
-interface ButtonProps extends PressableProps {
-  variant?: keyof typeof variantStyles;
-  size?: keyof typeof sizeStyles;
+interface ButtonProps {
+  title: string;
+  onPress: () => void;
+  variant?: ButtonVariant;
+  size?: ButtonSize;
   loading?: boolean;
   disabled?: boolean;
   fullWidth?: boolean;
   style?: ViewStyle;
+  textStyle?: TextStyle;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
-  className?: string;
-  children: React.ReactNode;
 }
 
 export function Button({
+  title,
+  onPress,
   variant = "primary",
   size = "md",
   loading = false,
   disabled = false,
   fullWidth = false,
-  children,
   style,
+  textStyle,
   leftIcon,
   rightIcon,
-  className = "",
-  onPress,
-  ...props
 }: ButtonProps) {
-  const scale = useSharedValue(1);
+  const getButtonStyles = (): ViewStyle[] => {
+    const buttonStyles: ViewStyle[] = [styles.button];
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: scale.value }],
-    };
-  });
+    // Add variant styles
+    switch (variant) {
+      case "primary":
+        buttonStyles.push(styles.primaryButton);
+        break;
+      case "secondary":
+        buttonStyles.push(styles.secondaryButton);
+        break;
+      case "outline":
+        buttonStyles.push(styles.outlineButton);
+        break;
+      case "ghost":
+        buttonStyles.push(styles.ghostButton);
+        break;
+    }
 
-  const handlePressIn = () => {
-    scale.value = withTiming(0.97, { duration: 100 });
+    // Add size styles
+    switch (size) {
+      case "sm":
+        buttonStyles.push(styles.smallButton);
+        break;
+      case "md":
+        buttonStyles.push(styles.mediumButton);
+        break;
+      case "lg":
+        buttonStyles.push(styles.largeButton);
+        break;
+    }
+
+    // Add disabled styles
+    if (disabled || loading) {
+      buttonStyles.push(styles.disabledButton);
+    }
+
+    // Add full width styles
+    if (fullWidth) {
+      buttonStyles.push(styles.fullWidthButton);
+    }
+
+    // Add custom styles
+    if (style) {
+      buttonStyles.push(style);
+    }
+
+    return buttonStyles;
   };
 
-  const handlePressOut = () => {
-    scale.value = withTiming(1, { duration: 100 });
+  const getTextStyles = (): TextStyle[] => {
+    const textStyles: TextStyle[] = [styles.buttonText];
+
+    // Add variant text styles
+    switch (variant) {
+      case "primary":
+        textStyles.push(styles.primaryButtonText);
+        break;
+      case "secondary":
+        textStyles.push(styles.secondaryButtonText);
+        break;
+      case "outline":
+        textStyles.push(styles.outlineButtonText);
+        break;
+      case "ghost":
+        textStyles.push(styles.ghostButtonText);
+        break;
+    }
+
+    // Add size text styles
+    switch (size) {
+      case "sm":
+        textStyles.push(styles.smallButtonText);
+        break;
+      case "md":
+        textStyles.push(styles.mediumButtonText);
+        break;
+      case "lg":
+        textStyles.push(styles.largeButtonText);
+        break;
+    }
+
+    // Add disabled text styles
+    if (disabled || loading) {
+      textStyles.push(styles.disabledButtonText);
+    }
+
+    // Add custom text styles
+    if (textStyle) {
+      textStyles.push(textStyle);
+    }
+
+    return textStyles;
   };
 
-  const disabledStyle = disabled || loading ? "opacity-50" : "";
-  const widthStyle = fullWidth ? "w-full" : "";
-  const baseStyle = "rounded-lg flex-row items-center justify-center";
-  const variantStyle = variantStyles[variant];
-  const sizeStyle = sizeStyles[size];
-  const textColor = textColors[variant] as any;
+  const getLoaderColor = () => {
+    if (variant === "outline" || variant === "ghost") {
+      return theme.colors.primary;
+    }
+    return "white";
+  };
 
   return (
-    <AnimatedPressable
-      className={`${baseStyle} ${variantStyle} ${sizeStyle} ${disabledStyle} ${widthStyle} ${className}`}
-      disabled={disabled || loading}
-      style={[animatedStyle, style]}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      onPress={onPress}
-      {...props}
-    >
-      {loading && (
-        <ActivityIndicator
-          size="small"
-          color={variant === "outline" || variant === "ghost" ? "#0891b2" : "white"}
-          className="mr-2"
-        />
-      )}
+    <TouchableOpacity style={getButtonStyles()} onPress={onPress} disabled={disabled || loading} activeOpacity={0.7}>
+      <View style={styles.buttonContent}>
+        {loading && <ActivityIndicator size="small" color={getLoaderColor()} style={styles.loader} />}
 
-      {!loading && leftIcon && <>{leftIcon}</>}
+        {!loading && leftIcon && <View style={styles.leftIcon}>{leftIcon}</View>}
 
-      <Text
-        color={textColor}
-        variant={size === "lg" ? "subtitle" : size === "sm" ? "small" : "body"}
-        className={`${leftIcon ? "ml-2" : ""} ${rightIcon ? "mr-2" : ""}`}
-      >
-        {children}
-      </Text>
+        <Text style={getTextStyles()}>{title}</Text>
 
-      {!loading && rightIcon && <>{rightIcon}</>}
-    </AnimatedPressable>
+        {!loading && rightIcon && <View style={styles.rightIcon}>{rightIcon}</View>}
+      </View>
+    </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  button: {
+    borderRadius: theme.borderRadius.md,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  buttonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  primaryButton: {
+    backgroundColor: theme.colors.primary,
+    borderWidth: 1,
+    borderColor: theme.colors.primary,
+  },
+  secondaryButton: {
+    backgroundColor: theme.colors.secondary,
+    borderWidth: 1,
+    borderColor: theme.colors.secondary,
+  },
+  outlineButton: {
+    backgroundColor: "transparent",
+    borderWidth: 1,
+    borderColor: theme.colors.text,
+  },
+  ghostButton: {
+    backgroundColor: "transparent",
+    borderWidth: 0,
+  },
+  smallButton: {
+    paddingVertical: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.sm,
+  },
+  mediumButton: {
+    paddingVertical: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.md,
+  },
+  largeButton: {
+    paddingVertical: theme.spacing.md,
+    paddingHorizontal: theme.spacing.lg,
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
+  fullWidthButton: {
+    width: "100%",
+  },
+  buttonText: {
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  primaryButtonText: {
+    color: "white",
+  },
+  secondaryButtonText: {
+    color: theme.colors.text,
+  },
+  outlineButtonText: {
+    color: theme.colors.text,
+  },
+  ghostButtonText: {
+    color: theme.colors.primary,
+  },
+  smallButtonText: {
+    fontSize: theme.fontSize.sm,
+  },
+  mediumButtonText: {
+    fontSize: theme.fontSize.md,
+  },
+  largeButtonText: {
+    fontSize: theme.fontSize.lg,
+  },
+  disabledButtonText: {
+    // No specific styles needed, the button opacity handles this
+  },
+  loader: {
+    marginRight: theme.spacing.sm,
+  },
+  leftIcon: {
+    marginRight: theme.spacing.sm,
+  },
+  rightIcon: {
+    marginLeft: theme.spacing.sm,
+  },
+});
