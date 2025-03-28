@@ -1,4 +1,4 @@
-// src/components/ui/numeric-input.tsx
+// components/ui/numeric-input.tsx
 import React, { useState, useEffect } from "react";
 import { View, TextInput, Pressable, StyleSheet } from "react-native";
 import { Text } from "./text";
@@ -9,7 +9,7 @@ import Animated, {
   withRepeat,
   withSequence,
 } from "react-native-reanimated";
-import { useTheme } from "../../src/context/ThemeContext";
+import { theme } from "../../src/styles/theme";
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -39,7 +39,6 @@ export function NumericInput({
   allowDecimal = false,
   containerClassName = "",
 }: NumericInputProps) {
-  const { theme } = useTheme();
   const [inputValue, setInputValue] = useState(value.toString());
   const buttonScale = useSharedValue(1);
   const errorAnim = useSharedValue(0);
@@ -125,65 +124,22 @@ export function NumericInput({
   });
 
   return (
-    <AnimatedView style={[containerAnimStyle, { marginBottom: theme.spacing[4] }]}>
-      {label && (
-        <Text
-          style={{
-            marginBottom: theme.spacing[1],
-            marginLeft: theme.spacing[1],
-            fontSize: theme.typography.fontSize.sm,
-          }}
-        >
-          {label}
-        </Text>
-      )}
+    <AnimatedView style={[containerAnimStyle, styles.container]}>
+      {label && <Text style={styles.label}>{label}</Text>}
 
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <View style={styles.inputRow}>
         <AnimatedPressable
-          style={[
-            buttonAnimStyle,
-            styles.button,
-            {
-              width: 48,
-              height: 48,
-              backgroundColor: theme.colors.muted,
-              borderTopLeftRadius: theme.radius.md,
-              borderBottomLeftRadius: theme.radius.md,
-              borderWidth: 1,
-              borderColor: theme.colors.border,
-            },
-          ]}
+          style={[buttonAnimStyle, styles.button, styles.decrementButton]}
           onPressIn={handleButtonPressIn}
           onPressOut={handleButtonPressOut}
           onPress={decrement}
         >
-          <Text
-            style={{
-              fontSize: theme.typography.fontSize.xl,
-              fontWeight: theme.typography.fontWeight.medium,
-              color: theme.colors.primary,
-            }}
-          >
-            -
-          </Text>
+          <Text style={styles.buttonText}>-</Text>
         </AnimatedPressable>
 
-        <View style={{ flex: 1, flexDirection: "row" }}>
+        <View style={styles.inputContainer}>
           <TextInput
-            style={[
-              styles.input,
-              {
-                flex: 1,
-                height: 48,
-                borderTopWidth: 1,
-                borderBottomWidth: 1,
-                borderColor: theme.colors.border,
-                backgroundColor: theme.colors.card,
-                paddingHorizontal: theme.spacing[2],
-                textAlign: "center",
-                color: theme.colors.foreground,
-              },
-            ]}
+            style={styles.input}
             value={inputValue}
             onChangeText={handleInputChange}
             keyboardType={allowDecimal ? "decimal-pad" : "number-pad"}
@@ -192,89 +148,97 @@ export function NumericInput({
           />
 
           {unit && (
-            <View
-              style={[
-                styles.unitContainer,
-                {
-                  height: 48,
-                  minWidth: 40,
-                  borderTopWidth: 1,
-                  borderBottomWidth: 1,
-                  borderRightWidth: 1,
-                  borderColor: theme.colors.border,
-                  backgroundColor: theme.colors.muted,
-                  paddingHorizontal: theme.spacing[2],
-                },
-              ]}
-            >
-              <Text
-                style={{
-                  fontSize: theme.typography.fontSize.sm,
-                  color: theme.colors.mutedForeground,
-                }}
-              >
-                {unit}
-              </Text>
+            <View style={styles.unitContainer}>
+              <Text style={styles.unitText}>{unit}</Text>
             </View>
           )}
         </View>
 
         <AnimatedPressable
-          style={[
-            buttonAnimStyle,
-            styles.button,
-            {
-              width: 48,
-              height: 48,
-              backgroundColor: theme.colors.muted,
-              borderTopRightRadius: theme.radius.md,
-              borderBottomRightRadius: theme.radius.md,
-              borderWidth: 1,
-              borderColor: theme.colors.border,
-            },
-          ]}
+          style={[buttonAnimStyle, styles.button, styles.incrementButton]}
           onPressIn={handleButtonPressIn}
           onPressOut={handleButtonPressOut}
           onPress={increment}
         >
-          <Text
-            style={{
-              fontSize: theme.typography.fontSize.xl,
-              fontWeight: theme.typography.fontWeight.medium,
-              color: theme.colors.primary,
-            }}
-          >
-            +
-          </Text>
+          <Text style={styles.buttonText}>+</Text>
         </AnimatedPressable>
       </View>
 
-      {error && (
-        <Text
-          style={{
-            marginTop: theme.spacing[1],
-            marginLeft: theme.spacing[1],
-            color: theme.colors.destructive,
-            fontSize: theme.typography.fontSize.sm,
-          }}
-        >
-          {error}
-        </Text>
-      )}
+      {error && <Text style={styles.errorText}>{error}</Text>}
     </AnimatedView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    width: "100%",
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: theme.fontSize.sm,
+    color: theme.colors.text,
+    marginBottom: 4,
+    marginLeft: 4,
+  },
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   button: {
+    width: 48,
+    height: 48,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: theme.colors.secondary,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  decrementButton: {
+    borderTopLeftRadius: theme.borderRadius.md,
+    borderBottomLeftRadius: theme.borderRadius.md,
+  },
+  incrementButton: {
+    borderTopRightRadius: theme.borderRadius.md,
+    borderBottomRightRadius: theme.borderRadius.md,
+  },
+  buttonText: {
+    fontSize: theme.fontSize.xl,
+    color: theme.colors.primary,
+    fontWeight: "500",
+  },
+  inputContainer: {
+    flex: 1,
+    flexDirection: "row",
+    height: 48,
   },
   input: {
-    fontSize: 16,
+    flex: 1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: theme.colors.border,
+    backgroundColor: "white",
+    textAlign: "center",
+    color: theme.colors.text,
   },
   unitContainer: {
+    paddingHorizontal: 8,
     justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: theme.colors.secondary,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderRightWidth: 1,
+    borderColor: theme.colors.border,
+    minWidth: 40,
+  },
+  unitText: {
+    fontSize: theme.fontSize.sm,
+    color: theme.colors.textMuted,
+    textAlign: "center",
+  },
+  errorText: {
+    color: theme.colors.error,
+    fontSize: theme.fontSize.sm,
+    marginTop: 4,
+    marginLeft: 4,
   },
 });
