@@ -3,7 +3,6 @@ import { Platform } from "react-native";
 
 // Define types for our theme
 export interface ThemeColors {
-  // Light mode - Green theme
   background: string;
   foreground: string;
   card: string;
@@ -38,6 +37,11 @@ export interface ThemeColors {
   chart3: string;
   chart4: string;
   chart5: string;
+
+  // Legacy support (for backward compatibility)
+  text: string;
+  textMuted: string;
+  error: string;
 }
 
 export interface ThemeTypography {
@@ -90,6 +94,14 @@ export interface ThemeSpacing {
   32: number;
   40: number;
   64: number;
+
+  // Legacy support
+  xs: number;
+  sm: number;
+  md: number;
+  lg: number;
+  xl: number;
+  xxl: number;
 }
 
 export interface ThemeRadius {
@@ -148,6 +160,11 @@ export const lightColors: ThemeColors = {
   chart3: "#14a9b8", // hsl(180 80% 45%)
   chart4: "#149bd8", // hsl(200 75% 55%)
   chart5: "#1a66ff", // hsl(220 70% 60%)
+
+  // Legacy support
+  text: "#151915", // Same as foreground
+  textMuted: "#6a706b", // Same as mutedForeground
+  error: "#e92c2c", // Same as destructive
 };
 
 // Dark theme
@@ -187,6 +204,11 @@ export const darkColors: ThemeColors = {
   chart3: "#1fb7c1", // hsl(180 65% 50%)
   chart4: "#1da1d7", // hsl(200 60% 55%)
   chart5: "#4d8df6", // hsl(220 55% 60%)
+
+  // Legacy support
+  text: "#f8faf8", // Same as foreground
+  textMuted: "#9ca29d", // Same as mutedForeground
+  error: "#9b1f1f", // Same as destructive
 };
 
 export const typography: ThemeTypography = {
@@ -239,6 +261,14 @@ export const spacing: ThemeSpacing = {
   32: 128,
   40: 160,
   64: 256,
+
+  // Legacy support
+  xs: 4,
+  sm: 8,
+  md: 16,
+  lg: 24,
+  xl: 32,
+  xxl: 48,
 };
 
 export const radius: ThemeRadius = {
