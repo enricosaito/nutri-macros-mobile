@@ -1,17 +1,17 @@
 import React from "react";
-import { View, StatusBar, ViewProps, SafeAreaView } from "react-native";
+import { View, SafeAreaView, ScrollView, StyleSheet, ViewStyle, StatusBar } from "react-native";
 import { Text } from "./text";
-import { Container } from "./container";
+import { theme } from "../../styles/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-interface ScreenProps extends ViewProps {
+interface ScreenProps {
   children: React.ReactNode;
   title?: string;
   headerRight?: React.ReactNode;
   showHeader?: boolean;
   scroll?: boolean;
   padding?: boolean;
-  className?: string;
+  style?: ViewStyle;
 }
 
 export function Screen({
@@ -21,26 +21,62 @@ export function Screen({
   showHeader = true,
   scroll = true,
   padding = true,
-  className = "",
-  ...props
+  style,
 }: ScreenProps) {
   const insets = useSafeAreaInsets();
 
+  const renderContent = () => {
+    const contentStyle = [styles.content, padding && styles.contentPadded, style];
+
+    if (scroll) {
+      return (
+        <ScrollView style={styles.scrollView} contentContainerStyle={contentStyle} showsVerticalScrollIndicator={false}>
+          {children}
+        </ScrollView>
+      );
+    }
+
+    return <View style={contentStyle}>{children}</View>;
+  };
+
   return (
-    <Container useSafeArea={false} scroll={scroll} padding={false} className={`bg-background ${className}`} {...props}>
-      <SafeAreaView style={{ paddingTop: insets.top }} className="flex-1">
-        <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
 
-        {showHeader && (
-          <View className="flex-row items-center justify-between px-4 py-3 border-b border-muted">
-            {title ? <Text variant="h3">{title}</Text> : <View />}
+      {showHeader && (
+        <View style={styles.header}>
+          {title ? <Text variant="h3">{title}</Text> : <View />}
+          {headerRight ? <View>{headerRight}</View> : null}
+        </View>
+      )}
 
-            {headerRight ? <View>{headerRight}</View> : null}
-          </View>
-        )}
-
-        <View className={`flex-1 ${padding ? "px-4" : ""}`}>{children}</View>
-      </SafeAreaView>
-    </Container>
+      {renderContent()}
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+    backgroundColor: "white",
+  },
+  scrollView: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+  },
+  contentPadded: {
+    paddingHorizontal: theme.spacing.md,
+  },
+});
