@@ -1,13 +1,13 @@
 // app/_layout.tsx
 import React from "react";
-import { StyleSheet } from "react-native";
 import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Feather } from "@expo/vector-icons";
-import { ThemeProvider, useTheme } from "../context/ThemeContext";
+import { ThemeProvider, useTheme } from "../src/context/ThemeContext";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-function TabsLayout() {
+// Create a separate TabsNavigator component that uses the theme
+function TabsNavigator() {
   const { theme, isDark } = useTheme();
 
   return (
@@ -64,7 +64,7 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <ThemeProvider>
-        <TabsLayout />
+        <TabsNavigator />
       </ThemeProvider>
     </SafeAreaProvider>
   );
