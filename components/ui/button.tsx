@@ -122,7 +122,7 @@ export function Button({
   const getTextStyle = (): TextStyle => {
     const baseStyle: TextStyle = {
       fontSize: theme.typography.fontSize.sm,
-      fontWeight: theme.typography.fontWeight.medium,
+      fontWeight: 500,
     };
 
     switch (variant) {
