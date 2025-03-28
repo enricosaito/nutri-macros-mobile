@@ -37,4 +37,17 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   return <ThemeContext.Provider value={{ theme, isDark, toggleTheme }}>{children}</ThemeContext.Provider>;
 };
 
-export const useTheme = () => useContext(ThemeContext);
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+
+  if (context === undefined) {
+    console.warn("useTheme hook used outside of ThemeProvider, using default theme");
+    return {
+      theme: defaultTheme,
+      isDark: false,
+      toggleTheme: () => {},
+    };
+  }
+
+  return context;
+};
