@@ -1,3 +1,4 @@
+// app/calculator.tsx
 import React, { useState } from "react";
 import { View, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
@@ -14,6 +15,8 @@ import {
   GoalSelector,
   Goal,
 } from "../components";
+import { useTheme } from "../context/ThemeContext";
+import { Feather } from "@expo/vector-icons";
 
 // Define activity levels
 const activityLevels = [
@@ -33,6 +36,7 @@ const goals: Goal[] = [
 
 export default function CalculatorScreen() {
   const router = useRouter();
+  const { theme } = useTheme();
 
   // State for user inputs
   const [gender, setGender] = useState<"male" | "female">("male");
@@ -111,8 +115,6 @@ export default function CalculatorScreen() {
 
   const handleCalculate = () => {
     const results = calculateMacros();
-    // In a real app, you'd probably use state management or context
-    // But for simplicity, we're using URL params to pass the data
     router.push({
       pathname: "/results",
       params: {
@@ -131,21 +133,23 @@ export default function CalculatorScreen() {
         <CardHeader>
           <CardTitle>Sexo Biológico</CardTitle>
         </CardHeader>
-        <CardContent className="flex-row space-x-4">
-          <Button
-            variant={gender === "male" ? "primary" : "outline"}
-            onPress={() => setGender("male")}
-            className="flex-1"
-          >
-            Masculino
-          </Button>
-          <Button
-            variant={gender === "female" ? "primary" : "outline"}
-            onPress={() => setGender("female")}
-            className="flex-1"
-          >
-            Feminino
-          </Button>
+        <CardContent>
+          <View style={{ flexDirection: "row", gap: theme.spacing[4] }}>
+            <Button
+              title="Masculino"
+              variant={gender === "male" ? "default" : "outline"}
+              onPress={() => setGender("male")}
+              leftIcon={<Feather name="user" size={18} color={gender === "male" ? "white" : theme.colors.primary} />}
+              style={{ flex: 1 }}
+            />
+            <Button
+              title="Feminino"
+              variant={gender === "female" ? "default" : "outline"}
+              onPress={() => setGender("female")}
+              leftIcon={<Feather name="user" size={18} color={gender === "female" ? "white" : theme.colors.primary} />}
+              style={{ flex: 1 }}
+            />
+          </View>
         </CardContent>
       </Card>
 
@@ -154,19 +158,21 @@ export default function CalculatorScreen() {
         <CardHeader>
           <CardTitle>Informações Básicas</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <NumericInput label="Idade" value={age} onChange={setAge} min={15} max={100} unit="anos" />
-          <NumericInput
-            label="Peso"
-            value={weight}
-            onChange={setWeight}
-            min={30}
-            max={250}
-            unit="kg"
-            allowDecimal={true}
-            step={0.5}
-          />
-          <NumericInput label="Altura" value={height} onChange={setHeight} min={100} max={250} unit="cm" />
+        <CardContent>
+          <View style={{ gap: theme.spacing[4] }}>
+            <NumericInput label="Idade" value={age} onChange={setAge} min={15} max={100} unit="anos" />
+            <NumericInput
+              label="Peso"
+              value={weight}
+              onChange={setWeight}
+              min={30}
+              max={250}
+              unit="kg"
+              allowDecimal={true}
+              step={0.5}
+            />
+            <NumericInput label="Altura" value={height} onChange={setHeight} min={100} max={250} unit="cm" />
+          </View>
         </CardContent>
       </Card>
 
@@ -191,9 +197,13 @@ export default function CalculatorScreen() {
       </Card>
 
       {/* Calculate Button */}
-      <Button size="lg" onPress={handleCalculate} className="my-4">
-        Calcular Macros
-      </Button>
+      <Button
+        title="Calcular Macros"
+        size="lg"
+        onPress={handleCalculate}
+        style={{ marginVertical: theme.spacing[4] }}
+        rightIcon={<Feather name="arrow-right" size={18} color="white" />}
+      />
     </Screen>
   );
 }
