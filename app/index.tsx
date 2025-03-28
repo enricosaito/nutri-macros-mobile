@@ -87,7 +87,11 @@ export default function HomeScreen() {
             <TouchableOpacity
               key={index}
               style={styles.featureCard}
-              onPress={() => router.push(feature.route)}
+              onPress={() => {
+                if (feature.route) {
+                  router.push(feature.route.replace("/", "") as any);
+                }
+              }}
               disabled={feature.comingSoon}
             >
               <View style={styles.featureIconContainer}>
