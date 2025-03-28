@@ -1,7 +1,7 @@
 import React from "react";
 import { View, StyleSheet, ViewStyle, TextStyle } from "react-native";
 import { Text } from "./text";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../src/context/ThemeContext";
 
 // Card container
 interface CardProps {

@@ -2,7 +2,7 @@
 import React from "react";
 import { View, TextInput, TextInputProps, StyleSheet, ViewStyle } from "react-native";
 import { Text } from "./text";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../src/context/ThemeContext";
 
 interface InputProps extends TextInputProps {
   label?: string;

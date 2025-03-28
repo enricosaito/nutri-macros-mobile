@@ -4,7 +4,7 @@ import { View, StyleSheet, ViewStyle } from "react-native";
 import { Text } from "./ui/text";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../src/context/ThemeContext";
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 

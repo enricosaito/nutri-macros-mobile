@@ -15,7 +15,7 @@ import {
   GoalSelector,
   Goal,
 } from "../components";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../src/context/ThemeContext";
 import { Feather } from "@expo/vector-icons";
 
 // Define activity levels

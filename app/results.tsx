@@ -15,7 +15,7 @@ import {
   MacroDisplay,
 } from "../components";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../src/context/ThemeContext";
 
 export default function ResultsScreen() {
   const router = useRouter();

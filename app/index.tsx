@@ -6,7 +6,7 @@ import { Text } from "../components/ui/text";
 import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Feather } from "@expo/vector-icons";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../src/context/ThemeContext";
 
 export default function HomeScreen() {
   const router = useRouter();

@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal as RNModal, View, StyleSheet, TouchableWithoutFeedback, TouchableOpacity } from "react-native";
 import { Text } from "./text";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../src/context/ThemeContext";
 
 interface ModalProps {
   visible: boolean;

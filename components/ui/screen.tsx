@@ -2,7 +2,7 @@
 import React from "react";
 import { View, SafeAreaView, ScrollView, StyleSheet, ViewStyle, StatusBar } from "react-native";
 import { Text } from "./text";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../src/context/ThemeContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface ScreenProps {

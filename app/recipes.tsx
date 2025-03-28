@@ -3,7 +3,7 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Screen, Text, Card, CardHeader, CardTitle, CardContent } from "../components";
 import { Feather } from "@expo/vector-icons";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../src/context/ThemeContext";
 
 export default function RecipesScreen() {
   const { theme } = useTheme();

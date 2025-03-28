@@ -9,7 +9,7 @@ import Animated, {
   withRepeat,
   withSequence,
 } from "react-native-reanimated";
-import { useTheme } from "../../context/ThemeContext";
+import { useTheme } from "../../src/context/ThemeContext";
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);

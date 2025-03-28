@@ -3,7 +3,7 @@ import React from "react";
 import { View, Pressable, StyleSheet } from "react-native";
 import { Text } from "./ui/text";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../src/context/ThemeContext";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
