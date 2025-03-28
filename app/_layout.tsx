@@ -1,8 +1,9 @@
 import React from "react";
+import { StyleSheet } from "react-native";
 import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Feather } from "@expo/vector-icons";
-import { View } from "react-native";
+import { theme } from "../styles/theme";
 
 export default function RootLayout() {
   return (
@@ -10,15 +11,9 @@ export default function RootLayout() {
       <StatusBar style="auto" />
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: "#4CAF50",
-          tabBarInactiveTintColor: "#9CA3AF",
-          tabBarStyle: {
-            borderTopWidth: 1,
-            borderTopColor: "#E5E7EB",
-            backgroundColor: "white",
-            height: 60,
-            paddingBottom: 10,
-          },
+          tabBarActiveTintColor: theme.colors.primary,
+          tabBarInactiveTintColor: theme.colors.textMuted,
+          tabBarStyle: styles.tabBar,
           headerShown: false,
         }}
       >
@@ -54,3 +49,13 @@ export default function RootLayout() {
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBar: {
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.border,
+    backgroundColor: "white",
+    height: 60,
+    paddingBottom: 10,
+  },
+});
