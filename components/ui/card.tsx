@@ -1,87 +1,110 @@
 import React from "react";
-import { View, ViewProps } from "react-native";
+import { View, StyleSheet, ViewStyle } from "react-native";
 import { Text } from "./text";
+import { theme } from "../../styles/theme";
 
 // Card container
-interface CardProps extends ViewProps {
+interface CardProps {
   children: React.ReactNode;
-  className?: string;
+  style?: ViewStyle;
 }
 
-export function Card({ children, className = "", ...props }: CardProps) {
-  return (
-    <View className={`bg-card rounded-lg border border-muted p-4 shadow ${className}`} {...props}>
-      {children}
-    </View>
-  );
+export function Card({ children, style }: CardProps) {
+  return <View style={[styles.card, style]}>{children}</View>;
 }
 
 // Card header
-interface CardHeaderProps extends ViewProps {
+interface CardHeaderProps {
   children: React.ReactNode;
-  className?: string;
+  style?: ViewStyle;
 }
 
-export function CardHeader({ children, className = "", ...props }: CardHeaderProps) {
-  return (
-    <View className={`space-y-1.5 pb-3 ${className}`} {...props}>
-      {children}
-    </View>
-  );
+export function CardHeader({ children, style }: CardHeaderProps) {
+  return <View style={[styles.cardHeader, style]}>{children}</View>;
 }
 
 // Card title
 interface CardTitleProps {
   children: React.ReactNode;
-  className?: string;
+  style?: ViewStyle;
 }
 
-export function CardTitle({ children, className = "", ...props }: CardTitleProps) {
-  return (
-    <Text variant="h3" className={`text-foreground ${className}`} {...props}>
-      {children}
-    </Text>
-  );
+export function CardTitle({ children, style }: CardTitleProps) {
+  return <Text style={[styles.cardTitle, style]}>{children}</Text>;
 }
 
 // Card description
 interface CardDescriptionProps {
   children: React.ReactNode;
-  className?: string;
+  style?: ViewStyle;
 }
 
-export function CardDescription({ children, className = "", ...props }: CardDescriptionProps) {
-  return (
-    <Text variant="body" color="muted" className={className} {...props}>
-      {children}
-    </Text>
-  );
+export function CardDescription({ children, style }: CardDescriptionProps) {
+  return <Text style={[styles.cardDescription, style]}>{children}</Text>;
 }
 
 // Card content
-interface CardContentProps extends ViewProps {
+interface CardContentProps {
   children: React.ReactNode;
-  className?: string;
+  style?: ViewStyle;
 }
 
-export function CardContent({ children, className = "", ...props }: CardContentProps) {
-  return (
-    <View className={`pt-0 ${className}`} {...props}>
-      {children}
-    </View>
-  );
+export function CardContent({ children, style }: CardContentProps) {
+  return <View style={[styles.cardContent, style]}>{children}</View>;
 }
 
 // Card footer
-interface CardFooterProps extends ViewProps {
+interface CardFooterProps {
   children: React.ReactNode;
-  className?: string;
+  style?: ViewStyle;
 }
 
-export function CardFooter({ children, className = "", ...props }: CardFooterProps) {
-  return (
-    <View className={`flex flex-row items-center pt-4 ${className}`} {...props}>
-      {children}
-    </View>
-  );
+export function CardFooter({ children, style }: CardFooterProps) {
+  return <View style={[styles.cardFooter, style]}>{children}</View>;
 }
+
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: "white",
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  cardHeader: {
+    paddingHorizontal: theme.spacing.md,
+    paddingTop: theme.spacing.md,
+    paddingBottom: theme.spacing.sm,
+  },
+  cardTitle: {
+    fontSize: theme.fontSize.lg,
+    fontWeight: "600",
+    color: theme.colors.text,
+  },
+  cardDescription: {
+    fontSize: theme.fontSize.sm,
+    color: theme.colors.textMuted,
+    marginTop: theme.spacing.xs,
+  },
+  cardContent: {
+    paddingHorizontal: theme.spacing.md,
+    paddingBottom: theme.spacing.md,
+  },
+  cardFooter: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: theme.spacing.md,
+    paddingTop: theme.spacing.md,
+    paddingBottom: theme.spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.border,
+  },
+});
