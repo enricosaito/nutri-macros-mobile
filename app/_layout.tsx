@@ -1,19 +1,29 @@
+// app/_layout.tsx
 import React from "react";
 import { StyleSheet } from "react-native";
 import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Feather } from "@expo/vector-icons";
-import { theme } from "../styles/theme";
+import { ThemeProvider, useTheme } from "../context/ThemeContext";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
-export default function RootLayout() {
+function TabsLayout() {
+  const { theme, isDark } = useTheme();
+
   return (
     <>
-      <StatusBar style="auto" />
+      <StatusBar style={isDark ? "light" : "dark"} />
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: theme.colors.primary,
-          tabBarInactiveTintColor: theme.colors.textMuted,
-          tabBarStyle: styles.tabBar,
+          tabBarInactiveTintColor: theme.colors.mutedForeground,
+          tabBarStyle: {
+            borderTopWidth: 1,
+            borderTopColor: theme.colors.border,
+            backgroundColor: theme.colors.card,
+            height: 60,
+            paddingBottom: 10,
+          },
           headerShown: false,
         }}
       >
@@ -50,12 +60,12 @@ export default function RootLayout() {
   );
 }
 
-const styles = StyleSheet.create({
-  tabBar: {
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
-    backgroundColor: "white",
-    height: 60,
-    paddingBottom: 10,
-  },
-});
+export default function RootLayout() {
+  return (
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <TabsLayout />
+      </ThemeProvider>
+    </SafeAreaProvider>
+  );
+}
