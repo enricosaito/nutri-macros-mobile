@@ -1,5 +1,6 @@
+// app/results.tsx
 import React from "react";
-import { View, Share, ScrollView } from "react-native";
+import { View, Share, ScrollView, StyleSheet } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import {
@@ -14,6 +15,7 @@ import {
   MacroDisplay,
 } from "../components";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
+import { theme } from "../styles/theme";
 
 export default function ResultsScreen() {
   const router = useRouter();
@@ -65,28 +67,32 @@ export default function ResultsScreen() {
       title="Resultados"
       showHeader={true}
       headerRight={
-        <Button variant="ghost" onPress={handleShare} leftIcon={<Feather name="share-2" size={18} color="#0891b2" />}>
-          Compartilhar
-        </Button>
+        <Button
+          title="Compartilhar"
+          variant="ghost"
+          onPress={handleShare}
+          leftIcon={<Feather name="share-2" size={18} color={theme.colors.primary} />}
+        />
       }
-      scroll={true}
+      scroll={false}
+      padding={false}
     >
-      <ScrollView className="py-4">
-        <Animated.View entering={FadeInUp.delay(100).duration(500)}>
-          <Text variant="h2" className="text-center mb-2">
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <Animated.View entering={FadeInUp.delay(100).duration(500)} style={styles.header}>
+          <Text variant="h2" style={styles.headerTitle}>
             Seus Macros Diários
           </Text>
-          <Text className="text-center text-muted-foreground mb-4">Baseados nas suas informações e objetivos</Text>
+          <Text style={styles.headerSubtitle}>Baseados nas suas informações e objetivos</Text>
         </Animated.View>
 
-        <Animated.View entering={FadeInDown.delay(300).duration(500)}>
-          <Card className="mb-6">
+        <Animated.View entering={FadeInDown.delay(300).duration(500)} style={styles.section}>
+          <Card>
             <CardHeader>
               <CardTitle>Necessidade Calórica</CardTitle>
             </CardHeader>
-            <CardContent className="items-center justify-center py-6">
-              <View className="mb-2 items-center">
-                <Text variant="h1" className="text-primary-600">
+            <CardContent style={styles.caloriesContainer}>
+              <View style={styles.caloriesContent}>
+                <Text variant="h1" style={styles.caloriesNumber}>
                   {calories}
                 </Text>
                 <Text variant="subtitle" color="muted">
@@ -97,28 +103,28 @@ export default function ResultsScreen() {
           </Card>
         </Animated.View>
 
-        <Animated.View entering={FadeInDown.delay(500).duration(500)}>
-          <MacroDisplay macros={macros} calories={calories} showPercentages={true} className="mb-6" />
+        <Animated.View entering={FadeInDown.delay(500).duration(500)} style={styles.section}>
+          <MacroDisplay macros={macros} calories={calories} showPercentages={true} />
         </Animated.View>
 
-        <Animated.View entering={FadeInDown.delay(700).duration(500)}>
-          <Card className="mb-6">
+        <Animated.View entering={FadeInDown.delay(700).duration(500)} style={styles.section}>
+          <Card>
             <CardHeader>
               <CardTitle>Dicas de Alimentação</CardTitle>
             </CardHeader>
             <CardContent>
-              <Text className="mb-4">
+              <Text style={styles.tipsIntro}>
                 Para atingir seus macros diários, tente incluir estes alimentos na sua dieta:
               </Text>
 
               {getTips().map((category, index) => (
-                <View key={index} className="mb-4">
-                  <Text variant="subtitle" className="mb-2">
+                <View key={index} style={styles.tipCategory}>
+                  <Text variant="subtitle" style={styles.tipTitle}>
                     {category.title}:
                   </Text>
-                  <View className="flex-row flex-wrap">
+                  <View style={styles.tagContainer}>
                     {category.items.map((item, itemIndex) => (
-                      <View key={itemIndex} className="bg-secondary mr-2 mb-2 px-3 py-1 rounded-full">
+                      <View key={itemIndex} style={styles.tag}>
                         <Text variant="caption">{item}</Text>
                       </View>
                     ))}
@@ -129,42 +135,125 @@ export default function ResultsScreen() {
           </Card>
         </Animated.View>
 
-        <Animated.View entering={FadeInDown.delay(900).duration(500)}>
+        <Animated.View entering={FadeInDown.delay(900).duration(500)} style={styles.section}>
           <Card>
             <CardHeader>
               <CardTitle>Próximos Passos</CardTitle>
             </CardHeader>
             <CardContent>
-              <View className="space-y-3">
-                <View className="flex-row">
-                  <View className="w-2 h-2 rounded-full bg-primary-600 mt-2 mr-2" />
-                  <Text className="flex-1">Distribua suas refeições ao longo do dia</Text>
+              <View style={styles.featureList}>
+                <View style={styles.featureItem}>
+                  <View style={styles.bullet} />
+                  <Text style={styles.featureText}>Distribua suas refeições ao longo do dia</Text>
                 </View>
-                <View className="flex-row">
-                  <View className="w-2 h-2 rounded-full bg-primary-600 mt-2 mr-2" />
-                  <Text className="flex-1">Priorize alimentos integrais e não processados</Text>
+                <View style={styles.featureItem}>
+                  <View style={styles.bullet} />
+                  <Text style={styles.featureText}>Priorize alimentos integrais e não processados</Text>
                 </View>
-                <View className="flex-row">
-                  <View className="w-2 h-2 rounded-full bg-primary-600 mt-2 mr-2" />
-                  <Text className="flex-1">Mantenha-se hidratado(a) bebendo água suficiente</Text>
+                <View style={styles.featureItem}>
+                  <View style={styles.bullet} />
+                  <Text style={styles.featureText}>Mantenha-se hidratado(a) bebendo água suficiente</Text>
                 </View>
-                <View className="flex-row">
-                  <View className="w-2 h-2 rounded-full bg-primary-600 mt-2 mr-2" />
-                  <Text className="flex-1">Monitore seu progresso semanalmente</Text>
+                <View style={styles.featureItem}>
+                  <View style={styles.bullet} />
+                  <Text style={styles.featureText}>Monitore seu progresso semanalmente</Text>
                 </View>
               </View>
             </CardContent>
-            <CardFooter className="flex-row space-x-3 pt-4">
-              <Button variant="outline" onPress={() => router.back()} className="flex-1">
-                Recalcular
-              </Button>
-              <Button variant="primary" onPress={() => router.push("/")} className="flex-1">
-                Salvar
-              </Button>
+            <CardFooter style={styles.cardFooter}>
+              <Button title="Recalcular" variant="outline" onPress={() => router.back()} style={styles.footerButton} />
+              <Button title="Salvar" variant="primary" onPress={() => router.push("/")} style={styles.footerButton} />
             </CardFooter>
           </Card>
         </Animated.View>
+
+        <View style={styles.spacer} />
       </ScrollView>
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: theme.spacing.md,
+  },
+  header: {
+    alignItems: "center",
+    paddingTop: theme.spacing.md,
+    paddingBottom: theme.spacing.sm,
+  },
+  headerTitle: {
+    textAlign: "center",
+    marginBottom: theme.spacing.xs,
+  },
+  headerSubtitle: {
+    textAlign: "center",
+    color: theme.colors.textMuted,
+    marginBottom: theme.spacing.md,
+  },
+  section: {
+    marginBottom: theme.spacing.lg,
+  },
+  caloriesContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: theme.spacing.lg,
+  },
+  caloriesContent: {
+    alignItems: "center",
+  },
+  caloriesNumber: {
+    color: theme.colors.primary,
+  },
+  tipsIntro: {
+    marginBottom: theme.spacing.md,
+  },
+  tipCategory: {
+    marginBottom: theme.spacing.md,
+  },
+  tipTitle: {
+    marginBottom: theme.spacing.sm,
+  },
+  tagContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  tag: {
+    backgroundColor: theme.colors.secondary,
+    borderRadius: theme.borderRadius.full,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 4,
+    marginRight: theme.spacing.sm,
+    marginBottom: theme.spacing.sm,
+  },
+  featureList: {
+    marginTop: theme.spacing.sm,
+  },
+  featureItem: {
+    flexDirection: "row",
+    marginBottom: theme.spacing.sm,
+  },
+  bullet: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: theme.colors.primary,
+    marginTop: 8,
+    marginRight: theme.spacing.sm,
+  },
+  featureText: {
+    flex: 1,
+  },
+  cardFooter: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  footerButton: {
+    flex: 1,
+    marginHorizontal: theme.spacing.xs,
+  },
+  spacer: {
+    height: 80, // Extra space at the bottom for the tab bar
+  },
+});
