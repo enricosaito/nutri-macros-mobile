@@ -297,3 +297,44 @@ export const darkTheme: Theme = {
   spacing,
   radius,
 };
+
+export const theme = {
+  colors: {
+    primary: lightColors.primary,
+    primaryDark: "#199a55", // Darker version
+    primaryLight: "#3cc77a", // Lighter version
+    secondary: lightColors.secondary,
+    secondaryDark: "#d6e7d9", // Darker version
+    secondaryLight: "#f8fbf8", // Lighter version
+    background: lightColors.background,
+    foreground: lightColors.foreground,
+    card: lightColors.card,
+    text: lightColors.foreground,
+    textMuted: lightColors.mutedForeground,
+    border: lightColors.border,
+    error: lightColors.destructive,
+    success: lightColors.success,
+  },
+  spacing: {
+    xs: 4,
+    sm: 8,
+    md: 16,
+    lg: 24,
+    xl: 32,
+    xxl: 48,
+  },
+  fontSize: {
+    xs: 12,
+    sm: 14,
+    md: 16,
+    lg: 18,
+    xl: 24,
+    xxl: 32,
+  },
+  borderRadius: {
+    sm: 4,
+    md: 8,
+    lg: 12,
+    full: 9999,
+  },
+};
