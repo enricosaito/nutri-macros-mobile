@@ -1,12 +1,13 @@
+// Full fix for components/ui/card.tsx
 import React from "react";
-import { View, StyleSheet, ViewStyle } from "react-native";
+import { View, StyleSheet, ViewStyle, TextStyle } from "react-native";
 import { Text } from "./text";
 import { theme } from "../../styles/theme";
 
 // Card container
 interface CardProps {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: ViewStyle | ViewStyle[] | undefined;
 }
 
 export function Card({ children, style }: CardProps) {
@@ -16,7 +17,7 @@ export function Card({ children, style }: CardProps) {
 // Card header
 interface CardHeaderProps {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: ViewStyle | ViewStyle[] | undefined;
 }
 
 export function CardHeader({ children, style }: CardHeaderProps) {
@@ -26,27 +27,35 @@ export function CardHeader({ children, style }: CardHeaderProps) {
 // Card title
 interface CardTitleProps {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: TextStyle | TextStyle[] | undefined;
 }
 
 export function CardTitle({ children, style }: CardTitleProps) {
-  return <Text style={[styles.cardTitle, style]}>{children}</Text>;
+  return (
+    <Text variant="h3" style={style}>
+      {children}
+    </Text>
+  );
 }
 
 // Card description
 interface CardDescriptionProps {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: TextStyle | TextStyle[] | undefined;
 }
 
 export function CardDescription({ children, style }: CardDescriptionProps) {
-  return <Text style={[styles.cardDescription, style]}>{children}</Text>;
+  return (
+    <Text variant="caption" color="muted" style={style}>
+      {children}
+    </Text>
+  );
 }
 
 // Card content
 interface CardContentProps {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: ViewStyle | ViewStyle[] | undefined;
 }
 
 export function CardContent({ children, style }: CardContentProps) {
@@ -56,7 +65,7 @@ export function CardContent({ children, style }: CardContentProps) {
 // Card footer
 interface CardFooterProps {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: ViewStyle | ViewStyle[] | undefined;
 }
 
 export function CardFooter({ children, style }: CardFooterProps) {
@@ -83,16 +92,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.md,
     paddingTop: theme.spacing.md,
     paddingBottom: theme.spacing.sm,
-  },
-  cardTitle: {
-    fontSize: theme.fontSize.lg,
-    fontWeight: "600",
-    color: theme.colors.text,
-  },
-  cardDescription: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textMuted,
-    marginTop: theme.spacing.xs,
   },
   cardContent: {
     paddingHorizontal: theme.spacing.md,
