@@ -1,5 +1,6 @@
+// src/components/ui/numeric-input.tsx
 import React, { useState, useEffect } from "react";
-import { View, TextInput, Pressable } from "react-native";
+import { View, TextInput, Pressable, StyleSheet } from "react-native";
 import { Text } from "./text";
 import Animated, {
   useAnimatedStyle,
@@ -8,6 +9,7 @@ import Animated, {
   withRepeat,
   withSequence,
 } from "react-native-reanimated";
+import { useTheme } from "../../context/ThemeContext";
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -37,6 +39,7 @@ export function NumericInput({
   allowDecimal = false,
   containerClassName = "",
 }: NumericInputProps) {
+  const { theme } = useTheme();
   const [inputValue, setInputValue] = useState(value.toString());
   const buttonScale = useSharedValue(1);
   const errorAnim = useSharedValue(0);
@@ -122,29 +125,65 @@ export function NumericInput({
   });
 
   return (
-    <AnimatedView style={containerAnimStyle} className={`w-full mb-4 ${containerClassName}`}>
+    <AnimatedView style={[containerAnimStyle, { marginBottom: theme.spacing[4] }]}>
       {label && (
-        <Text variant="caption" className="mb-1 ml-1">
+        <Text
+          style={{
+            marginBottom: theme.spacing[1],
+            marginLeft: theme.spacing[1],
+            fontSize: theme.typography.fontSize.sm,
+          }}
+        >
           {label}
         </Text>
       )}
 
-      <View className="flex-row items-center">
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
         <AnimatedPressable
-          style={buttonAnimStyle}
+          style={[
+            buttonAnimStyle,
+            styles.button,
+            {
+              width: 48,
+              height: 48,
+              backgroundColor: theme.colors.muted,
+              borderTopLeftRadius: theme.radius.md,
+              borderBottomLeftRadius: theme.radius.md,
+              borderWidth: 1,
+              borderColor: theme.colors.border,
+            },
+          ]}
           onPressIn={handleButtonPressIn}
           onPressOut={handleButtonPressOut}
           onPress={decrement}
-          className="w-12 h-12 bg-muted rounded-l-md items-center justify-center border border-muted"
         >
-          <Text variant="subtitle" color="primary">
+          <Text
+            style={{
+              fontSize: theme.typography.fontSize.xl,
+              fontWeight: theme.typography.fontWeight.medium,
+              color: theme.colors.primary,
+            }}
+          >
             -
           </Text>
         </AnimatedPressable>
 
-        <View className="flex-1 flex-row">
+        <View style={{ flex: 1, flexDirection: "row" }}>
           <TextInput
-            className="flex-1 h-12 border-t border-b border-muted bg-white px-2 text-center"
+            style={[
+              styles.input,
+              {
+                flex: 1,
+                height: 48,
+                borderTopWidth: 1,
+                borderBottomWidth: 1,
+                borderColor: theme.colors.border,
+                backgroundColor: theme.colors.card,
+                paddingHorizontal: theme.spacing[2],
+                textAlign: "center",
+                color: theme.colors.foreground,
+              },
+            ]}
             value={inputValue}
             onChangeText={handleInputChange}
             keyboardType={allowDecimal ? "decimal-pad" : "number-pad"}
@@ -153,8 +192,27 @@ export function NumericInput({
           />
 
           {unit && (
-            <View className="h-12 min-w-[40px] border-t border-b border-r border-muted bg-muted justify-center items-center px-2">
-              <Text variant="caption" color="muted">
+            <View
+              style={[
+                styles.unitContainer,
+                {
+                  height: 48,
+                  minWidth: 40,
+                  borderTopWidth: 1,
+                  borderBottomWidth: 1,
+                  borderRightWidth: 1,
+                  borderColor: theme.colors.border,
+                  backgroundColor: theme.colors.muted,
+                  paddingHorizontal: theme.spacing[2],
+                },
+              ]}
+            >
+              <Text
+                style={{
+                  fontSize: theme.typography.fontSize.sm,
+                  color: theme.colors.mutedForeground,
+                }}
+              >
                 {unit}
               </Text>
             </View>
@@ -162,23 +220,61 @@ export function NumericInput({
         </View>
 
         <AnimatedPressable
-          style={buttonAnimStyle}
+          style={[
+            buttonAnimStyle,
+            styles.button,
+            {
+              width: 48,
+              height: 48,
+              backgroundColor: theme.colors.muted,
+              borderTopRightRadius: theme.radius.md,
+              borderBottomRightRadius: theme.radius.md,
+              borderWidth: 1,
+              borderColor: theme.colors.border,
+            },
+          ]}
           onPressIn={handleButtonPressIn}
           onPressOut={handleButtonPressOut}
           onPress={increment}
-          className="w-12 h-12 bg-muted rounded-r-md items-center justify-center border border-muted"
         >
-          <Text variant="subtitle" color="primary">
+          <Text
+            style={{
+              fontSize: theme.typography.fontSize.xl,
+              fontWeight: theme.typography.fontWeight.medium,
+              color: theme.colors.primary,
+            }}
+          >
             +
           </Text>
         </AnimatedPressable>
       </View>
 
       {error && (
-        <Text variant="caption" color="danger" className="mt-1 ml-1">
+        <Text
+          style={{
+            marginTop: theme.spacing[1],
+            marginLeft: theme.spacing[1],
+            color: theme.colors.destructive,
+            fontSize: theme.typography.fontSize.sm,
+          }}
+        >
           {error}
         </Text>
       )}
     </AnimatedView>
   );
 }
+
+const styles = StyleSheet.create({
+  button: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  input: {
+    fontSize: 16,
+  },
+  unitContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
