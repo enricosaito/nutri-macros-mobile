@@ -1,3 +1,4 @@
+// app/index.tsx
 import React from "react";
 import { View, ScrollView, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
@@ -5,10 +6,11 @@ import { Text } from "../components/ui/text";
 import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Feather } from "@expo/vector-icons";
-import { theme } from "../styles/theme";
+import { useTheme } from "../context/ThemeContext";
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { theme } = useTheme();
 
   const features = [
     {
@@ -48,231 +50,254 @@ export default function HomeScreen() {
   ];
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>NutriMacros</Text>
+    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+      <View
+        style={{
+          paddingTop: 50,
+          paddingHorizontal: theme.spacing[4],
+          paddingBottom: theme.spacing[4],
+          borderBottomWidth: 1,
+          borderBottomColor: theme.colors.border,
+          backgroundColor: theme.colors.card,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: theme.typography.fontSize.lg,
+            fontWeight: theme.typography.fontWeight.bold,
+            color: theme.colors.foreground,
+          }}
+        >
+          NutriMacros
+        </Text>
       </View>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         {/* Hero Section */}
-        <View style={styles.heroContainer}>
-          <Image source={require("../assets/images/icon.png")} style={styles.logo} resizeMode="contain" />
-          <Text style={styles.title}>Bem-vindo ao NutriMacros</Text>
-          <Text style={styles.subtitle}>
+        <View
+          style={{
+            alignItems: "center",
+            paddingHorizontal: theme.spacing[4],
+            paddingTop: theme.spacing.xl,
+            paddingBottom: theme.spacing.lg,
+          }}
+        >
+          <Image
+            source={require("../assets/images/icon.png")}
+            style={{ width: 120, height: 120 }}
+            resizeMode="contain"
+          />
+          <Text
+            variant="h2"
+            style={{
+              textAlign: "center",
+              marginTop: theme.spacing[4],
+            }}
+          >
+            Bem-vindo ao NutriMacros
+          </Text>
+          <Text
+            style={{
+              textAlign: "center",
+              marginTop: theme.spacing[2],
+              color: theme.colors.mutedForeground,
+              paddingHorizontal: theme.spacing[4],
+            }}
+          >
             Seu assistente nutricional para alcançar seus objetivos de forma saudável e equilibrada
           </Text>
         </View>
 
         {/* Featured Card */}
-        <Card style={styles.featuredCard}>
-          <View style={styles.featuredCardContent}>
-            <Text style={styles.featuredCardTitle}>Calcule Seus Macros</Text>
-            <Text style={styles.featuredCardDescription}>
+        <Card
+          style={{
+            marginHorizontal: theme.spacing[4],
+            marginBottom: theme.spacing[6],
+            borderRadius: theme.radius.xl,
+            overflow: "hidden",
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: theme.colors.primary,
+              padding: theme.spacing[6],
+            }}
+          >
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize.lg,
+                fontWeight: theme.typography.fontWeight.bold,
+                color: "white",
+                marginBottom: theme.spacing[2],
+              }}
+            >
+              Calcule Seus Macros
+            </Text>
+            <Text
+              style={{
+                fontSize: theme.typography.fontSize.md,
+                color: "white",
+                marginBottom: theme.spacing[4],
+              }}
+            >
               Descubra sua necessidade calórica ideal e distribuição de macronutrientes
             </Text>
             <Button
               title="Começar Agora"
               onPress={() => router.push("/calculator")}
               rightIcon={<Feather name="arrow-right" size={16} color={theme.colors.primary} />}
-              style={styles.featuredCardButton}
+              style={{ backgroundColor: "white" }}
+              textStyle={{ color: theme.colors.primary }}
             />
           </View>
         </Card>
 
         {/* Features */}
-        <Text style={styles.sectionTitle}>Recursos</Text>
+        <Text
+          style={{
+            fontSize: theme.typography.fontSize.lg,
+            fontWeight: theme.typography.fontWeight.bold,
+            color: theme.colors.foreground,
+            marginBottom: theme.spacing[4],
+            marginHorizontal: theme.spacing[4],
+            marginTop: theme.spacing[6],
+          }}
+        >
+          Recursos
+        </Text>
 
-        <View style={styles.featuresContainer}>
+        <View style={{ paddingHorizontal: theme.spacing[4] }}>
           {features.map((feature, index) => (
             <TouchableOpacity
               key={index}
-              style={styles.featureCard}
+              style={{
+                flexDirection: "row",
+                backgroundColor: theme.colors.card,
+                borderRadius: theme.radius.lg,
+                padding: theme.spacing[4],
+                borderWidth: 1,
+                borderColor: theme.colors.border,
+                marginBottom: theme.spacing[4],
+                alignItems: "center",
+              }}
               onPress={() => {
-                if (feature.route) {
+                if (feature.route && !feature.comingSoon) {
                   router.push(feature.route.replace("/", "") as any);
                 }
               }}
               disabled={feature.comingSoon}
             >
-              <View style={styles.featureIconContainer}>
+              <View
+                style={{
+                  height: 48,
+                  width: 48,
+                  borderRadius: theme.radius.full,
+                  backgroundColor: theme.colors.secondary,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginRight: theme.spacing[4],
+                }}
+              >
                 <Feather name={feature.icon as any} size={24} color={theme.colors.primary} />
               </View>
-              <View style={styles.featureContent}>
-                <Text style={styles.featureTitle}>{feature.title}</Text>
-                <Text style={styles.featureDescription}>{feature.description}</Text>
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.md,
+                    fontWeight: theme.typography.fontWeight.semibold,
+                    color: theme.colors.foreground,
+                    marginBottom: 4,
+                  }}
+                >
+                  {feature.title}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: theme.typography.fontSize.sm,
+                    color: theme.colors.mutedForeground,
+                  }}
+                >
+                  {feature.description}
+                </Text>
               </View>
               {feature.comingSoon ? (
-                <View style={styles.comingSoonBadge}>
-                  <Text style={styles.comingSoonText}>Em breve</Text>
+                <View
+                  style={{
+                    backgroundColor: theme.colors.secondary,
+                    paddingHorizontal: theme.spacing[2],
+                    paddingVertical: 4,
+                    borderRadius: theme.radius.full,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: theme.typography.fontSize.xs,
+                      color: theme.colors.foreground,
+                    }}
+                  >
+                    Em breve
+                  </Text>
                 </View>
               ) : (
-                <Feather name="chevron-right" size={20} color={theme.colors.textMuted} />
+                <Feather name="chevron-right" size={20} color={theme.colors.mutedForeground} />
               )}
             </TouchableOpacity>
           ))}
         </View>
 
         {/* Nutrition Tips */}
-        <Text style={styles.sectionTitle}>Dicas Nutricionais</Text>
+        <Text
+          style={{
+            fontSize: theme.typography.fontSize.lg,
+            fontWeight: theme.typography.fontWeight.bold,
+            color: theme.colors.foreground,
+            marginBottom: theme.spacing[4],
+            marginHorizontal: theme.spacing[4],
+            marginTop: theme.spacing[6],
+          }}
+        >
+          Dicas Nutricionais
+        </Text>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tipsContainer}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{ paddingHorizontal: theme.spacing[4], marginBottom: theme.spacing[6] }}
+        >
           {nutritionTips.map((item, index) => (
-            <Card key={index} style={styles.tipCard}>
-              <Text style={styles.tipTitle}>{item.title}</Text>
-              <Text style={styles.tipDescription}>{item.tip}</Text>
+            <Card
+              key={index}
+              style={{
+                width: 200,
+                padding: theme.spacing[4],
+                marginRight: theme.spacing[4],
+                borderRadius: theme.radius.lg,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: theme.typography.fontSize.md,
+                  fontWeight: theme.typography.fontWeight.semibold,
+                  color: theme.colors.foreground,
+                  marginBottom: theme.spacing[2],
+                }}
+              >
+                {item.title}
+              </Text>
+              <Text
+                style={{
+                  fontSize: theme.typography.fontSize.sm,
+                  color: theme.colors.mutedForeground,
+                }}
+              >
+                {item.tip}
+              </Text>
             </Card>
           ))}
         </ScrollView>
 
-        <View style={styles.spacer} />
+        <View style={{ height: 80 }} />
       </ScrollView>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  header: {
-    paddingTop: 50,
-    paddingHorizontal: theme.spacing.md,
-    paddingBottom: theme.spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-    backgroundColor: "white",
-  },
-  headerTitle: {
-    fontSize: theme.fontSize.lg,
-    fontWeight: "700",
-    color: theme.colors.text,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  heroContainer: {
-    alignItems: "center",
-    paddingHorizontal: theme.spacing.md,
-    paddingTop: theme.spacing.xl,
-    paddingBottom: theme.spacing.lg,
-  },
-  logo: {
-    width: 120,
-    height: 120,
-  },
-  title: {
-    fontSize: theme.fontSize.xl,
-    fontWeight: "700",
-    color: theme.colors.text,
-    textAlign: "center",
-    marginTop: theme.spacing.md,
-  },
-  subtitle: {
-    fontSize: theme.fontSize.md,
-    color: theme.colors.textMuted,
-    textAlign: "center",
-    marginTop: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.md,
-  },
-  featuredCard: {
-    marginHorizontal: theme.spacing.md,
-    marginBottom: theme.spacing.lg,
-    borderRadius: theme.borderRadius.md,
-    overflow: "hidden",
-  },
-  featuredCardContent: {
-    backgroundColor: theme.colors.primary,
-    padding: theme.spacing.lg,
-  },
-  featuredCardTitle: {
-    fontSize: theme.fontSize.lg,
-    fontWeight: "700",
-    color: "white",
-    marginBottom: theme.spacing.sm,
-  },
-  featuredCardDescription: {
-    fontSize: theme.fontSize.md,
-    color: "white",
-    marginBottom: theme.spacing.md,
-  },
-  featuredCardButton: {
-    backgroundColor: "white",
-  },
-  sectionTitle: {
-    fontSize: theme.fontSize.lg,
-    fontWeight: "700",
-    color: theme.colors.text,
-    marginBottom: theme.spacing.md,
-    marginHorizontal: theme.spacing.md,
-    marginTop: theme.spacing.lg,
-  },
-  featuresContainer: {
-    paddingHorizontal: theme.spacing.md,
-  },
-  featureCard: {
-    flexDirection: "row",
-    backgroundColor: "white",
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.md,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    marginBottom: theme.spacing.md,
-    alignItems: "center",
-  },
-  featureIconContainer: {
-    height: 48,
-    width: 48,
-    borderRadius: theme.borderRadius.full,
-    backgroundColor: theme.colors.secondaryLight,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: theme.spacing.md,
-  },
-  featureContent: {
-    flex: 1,
-  },
-  featureTitle: {
-    fontSize: theme.fontSize.md,
-    fontWeight: "600",
-    color: theme.colors.text,
-    marginBottom: 4,
-  },
-  featureDescription: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textMuted,
-  },
-  comingSoonBadge: {
-    backgroundColor: theme.colors.secondary,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: 4,
-    borderRadius: theme.borderRadius.full,
-  },
-  comingSoonText: {
-    fontSize: theme.fontSize.xs,
-    color: theme.colors.text,
-  },
-  tipsContainer: {
-    paddingHorizontal: theme.spacing.md,
-    marginBottom: theme.spacing.lg,
-  },
-  tipCard: {
-    width: 200,
-    padding: theme.spacing.md,
-    marginRight: theme.spacing.md,
-    borderRadius: theme.borderRadius.md,
-  },
-  tipTitle: {
-    fontSize: theme.fontSize.md,
-    fontWeight: "600",
-    color: theme.colors.text,
-    marginBottom: theme.spacing.sm,
-  },
-  tipDescription: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textMuted,
-  },
-  spacer: {
-    height: 80, // Extra space at the bottom for the tab bar
-  },
-});
