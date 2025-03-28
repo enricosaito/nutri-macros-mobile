@@ -1,7 +1,6 @@
-// components/ui/text.tsx
 import React from "react";
 import { Text as RNText, StyleSheet, TextStyle, TextProps as RNTextProps } from "react-native";
-import { theme } from "../../styles/theme";
+import { useTheme } from "../../context/ThemeContext";
 
 type TextVariant = "h1" | "h2" | "h3" | "h4" | "subtitle" | "body" | "caption" | "small";
 type TextColor = "primary" | "secondary" | "foreground" | "muted" | "success" | "warning" | "danger" | "white";
@@ -11,7 +10,6 @@ interface TextProps extends RNTextProps {
   color?: TextColor;
   bold?: boolean;
   italic?: boolean;
-  // Fix the style type definition:
   style?: TextStyle | TextStyle[] | undefined;
 }
 
@@ -24,155 +22,125 @@ export function Text({
   children,
   ...props
 }: TextProps) {
-  const getTextStyle = (): Array<TextStyle> => {
-    const textStyles: Array<TextStyle> = [{ ...styles.base }];
+  const { theme } = useTheme();
+
+  const getTextStyle = (): TextStyle => {
+    // Base style
+    let textStyle: TextStyle = {
+      fontSize: theme.typography.fontSize.base,
+      color: theme.colors.foreground,
+    };
 
     // Add variant styles
     switch (variant) {
       case "h1":
-        textStyles.push({ ...styles.h1 });
+        textStyle = {
+          ...textStyle,
+          fontSize: theme.typography.fontSize["4xl"],
+          fontWeight: theme.typography.fontWeight.bold,
+          lineHeight: theme.typography.fontSize["4xl"] * theme.typography.lineHeight.tight,
+        };
         break;
       case "h2":
-        textStyles.push({ ...styles.h2 });
+        textStyle = {
+          ...textStyle,
+          fontSize: theme.typography.fontSize["3xl"],
+          fontWeight: theme.typography.fontWeight.bold,
+          lineHeight: theme.typography.fontSize["3xl"] * theme.typography.lineHeight.tight,
+        };
         break;
       case "h3":
-        textStyles.push({ ...styles.h3 });
+        textStyle = {
+          ...textStyle,
+          fontSize: theme.typography.fontSize["2xl"],
+          fontWeight: theme.typography.fontWeight.semibold,
+          lineHeight: theme.typography.fontSize["2xl"] * theme.typography.lineHeight.tight,
+        };
         break;
       case "h4":
-        textStyles.push({ ...styles.h4 });
+        textStyle = {
+          ...textStyle,
+          fontSize: theme.typography.fontSize.xl,
+          fontWeight: theme.typography.fontWeight.semibold,
+          lineHeight: theme.typography.fontSize.xl * theme.typography.lineHeight.tight,
+        };
         break;
       case "subtitle":
-        textStyles.push({ ...styles.subtitle });
+        textStyle = {
+          ...textStyle,
+          fontSize: theme.typography.fontSize.lg,
+          fontWeight: theme.typography.fontWeight.medium,
+          lineHeight: theme.typography.fontSize.lg * theme.typography.lineHeight.normal,
+        };
         break;
       case "body":
-        textStyles.push({ ...styles.body });
+        textStyle = {
+          ...textStyle,
+          fontSize: theme.typography.fontSize.base,
+          lineHeight: theme.typography.fontSize.base * theme.typography.lineHeight.normal,
+        };
         break;
       case "caption":
-        textStyles.push({ ...styles.caption });
+        textStyle = {
+          ...textStyle,
+          fontSize: theme.typography.fontSize.sm,
+          lineHeight: theme.typography.fontSize.sm * theme.typography.lineHeight.normal,
+        };
         break;
       case "small":
-        textStyles.push({ ...styles.small });
+        textStyle = {
+          ...textStyle,
+          fontSize: theme.typography.fontSize.xs,
+          lineHeight: theme.typography.fontSize.xs * theme.typography.lineHeight.normal,
+        };
         break;
     }
 
     // Add color styles
     switch (color) {
       case "primary":
-        textStyles.push({ ...styles.primaryText });
+        textStyle.color = theme.colors.primary;
         break;
       case "secondary":
-        textStyles.push({ ...styles.secondaryText });
+        textStyle.color = theme.colors.secondary;
         break;
       case "foreground":
-        textStyles.push({ ...styles.foregroundText });
+        textStyle.color = theme.colors.foreground;
         break;
       case "muted":
-        textStyles.push({ ...styles.mutedText });
+        textStyle.color = theme.colors.mutedForeground;
         break;
       case "success":
-        textStyles.push({ ...styles.successText });
+        textStyle.color = theme.colors.success;
         break;
       case "warning":
-        textStyles.push({ ...styles.warningText });
+        textStyle.color = theme.colors.warning;
         break;
       case "danger":
-        textStyles.push({ ...styles.dangerText });
+        textStyle.color = theme.colors.destructive;
         break;
       case "white":
-        textStyles.push({ ...styles.whiteText });
+        textStyle.color = "#ffffff";
         break;
     }
 
     // Add weight and style
     if (bold) {
-      textStyles.push({ ...styles.bold });
+      textStyle.fontWeight = theme.typography.fontWeight.bold;
     }
 
     if (italic) {
-      textStyles.push({ ...styles.italic });
+      textStyle.fontStyle = "italic";
     }
 
-    // Add custom style as the last item to override defaults if needed
-    if (style) {
-      if (Array.isArray(style)) {
-        textStyles.push(...style);
-      } else {
-        textStyles.push(style);
-      }
-    }
-
-    return textStyles;
+    return textStyle;
   };
 
+  const finalStyle = [getTextStyle(), ...(Array.isArray(style) ? style : [style])].filter(Boolean);
+
   return (
-    <RNText style={getTextStyle()} {...props}>
+    <RNText style={finalStyle} {...props}>
       {children}
     </RNText>
   );
 }
-
-const styles = StyleSheet.create({
-  base: {
-    fontSize: theme.fontSize.md,
-    color: theme.colors.text,
-  },
-  h1: {
-    fontSize: theme.fontSize.xxl,
-    fontWeight: "700",
-  },
-  h2: {
-    fontSize: theme.fontSize.xl,
-    fontWeight: "700",
-  },
-  h3: {
-    fontSize: theme.fontSize.lg,
-    fontWeight: "600",
-  },
-  h4: {
-    fontSize: theme.fontSize.md,
-    fontWeight: "600",
-  },
-  subtitle: {
-    fontSize: theme.fontSize.md,
-    fontWeight: "500",
-  },
-  body: {
-    fontSize: theme.fontSize.md,
-  },
-  caption: {
-    fontSize: theme.fontSize.sm,
-  },
-  small: {
-    fontSize: theme.fontSize.xs,
-  },
-  primaryText: {
-    color: theme.colors.primary,
-  },
-  secondaryText: {
-    color: theme.colors.secondary,
-  },
-  foregroundText: {
-    color: theme.colors.text,
-  },
-  mutedText: {
-    color: theme.colors.textMuted,
-  },
-  successText: {
-    color: theme.colors.success,
-  },
-  warningText: {
-    color: "#f59e0b", // Amber color for warnings
-  },
-  dangerText: {
-    color: theme.colors.error,
-  },
-  whiteText: {
-    color: "white",
-  },
-  bold: {
-    fontWeight: "700",
-  },
-  italic: {
-    fontStyle: "italic",
-  },
-});
