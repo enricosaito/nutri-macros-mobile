@@ -1,6 +1,6 @@
 // app/results.tsx
 import React from "react";
-import { View, Share, ScrollView, StyleSheet } from "react-native";
+import { View, Share, StyleSheet } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import {
@@ -69,7 +69,6 @@ export default function ResultsScreen() {
       showHeader={true}
       headerRight={
         <Button
-          title="Compartilhar"
           variant="ghost"
           onPress={handleShare}
           leftIcon={<Feather name="share-2" size={18} color={theme.colors.primary} />}
@@ -89,9 +88,10 @@ export default function ResultsScreen() {
           Seus Macros Diários
         </Text>
         <Text
+          variant="body"
+          color="muted"
           style={{
             textAlign: "center",
-            color: theme.colors.mutedForeground,
             marginBottom: theme.spacing[4],
           }}
         >
@@ -99,40 +99,9 @@ export default function ResultsScreen() {
         </Text>
       </Animated.View>
 
-      <Animated.View entering={FadeInDown.delay(300).duration(500)} style={{ marginBottom: theme.spacing[6] }}>
-        <Card>
-          <CardHeader>
-            <CardTitle>Necessidade Calórica</CardTitle>
-          </CardHeader>
-          <CardContent style={{ alignItems: "center", paddingVertical: theme.spacing[6] }}>
-            <View style={{ alignItems: "center" }}>
-              <Text
-                variant="h1"
-                style={{
-                  color: theme.colors.primary,
-                  marginBottom: theme.spacing[2],
-                }}
-              >
-                {calories}
-              </Text>
-              <Text
-                style={{
-                  fontSize: theme.typography.fontSize.lg,
-                  color: theme.colors.mutedForeground,
-                }}
-              >
-                Calorias diárias
-              </Text>
-            </View>
-          </CardContent>
-        </Card>
-      </Animated.View>
+      <MacroDisplay macros={macros} calories={calories} showPercentages={true} />
 
-      <Animated.View entering={FadeInDown.delay(500).duration(500)} style={{ marginBottom: theme.spacing[6] }}>
-        <MacroDisplay macros={macros} calories={calories} showPercentages={true} />
-      </Animated.View>
-
-      <Animated.View entering={FadeInDown.delay(700).duration(500)} style={{ marginBottom: theme.spacing[6] }}>
+      <Animated.View entering={FadeInDown.delay(400).duration(500)} style={{ marginVertical: theme.spacing[6] }}>
         <Card>
           <CardHeader>
             <CardTitle>Dicas de Alimentação</CardTitle>
@@ -161,12 +130,14 @@ export default function ResultsScreen() {
                         backgroundColor: theme.colors.secondary,
                         borderRadius: theme.radius.full,
                         paddingHorizontal: theme.spacing[3],
-                        paddingVertical: 4,
+                        paddingVertical: 8,
                         marginRight: theme.spacing[2],
                         marginBottom: theme.spacing[2],
                       }}
                     >
-                      <Text variant="caption">{item}</Text>
+                      <Text variant="caption" style={{ color: theme.colors.foreground }}>
+                        {item}
+                      </Text>
                     </View>
                   ))}
                 </View>
@@ -176,7 +147,7 @@ export default function ResultsScreen() {
         </Card>
       </Animated.View>
 
-      <Animated.View entering={FadeInDown.delay(900).duration(500)} style={{ marginBottom: theme.spacing[6] }}>
+      <Animated.View entering={FadeInDown.delay(600).duration(500)} style={{ marginBottom: theme.spacing[6] }}>
         <Card>
           <CardHeader>
             <CardTitle>Próximos Passos</CardTitle>
@@ -198,14 +169,18 @@ export default function ResultsScreen() {
                 >
                   <View
                     style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: 4,
+                      width: 24,
+                      height: 24,
+                      borderRadius: 12,
                       backgroundColor: theme.colors.primary,
-                      marginTop: 8,
-                      marginRight: theme.spacing[2],
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginRight: theme.spacing[3],
+                      marginTop: 2,
                     }}
-                  />
+                  >
+                    <Feather name="check" size={14} color="white" />
+                  </View>
                   <Text style={{ flex: 1 }}>{item}</Text>
                 </View>
               ))}
