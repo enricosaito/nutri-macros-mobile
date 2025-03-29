@@ -1,6 +1,6 @@
 // app/calculator.tsx
 import React, { useState } from "react";
-import { View } from "react-native";
+import { View, useColorScheme } from "react-native";
 import { useRouter } from "expo-router";
 import {
   Screen,
@@ -14,7 +14,7 @@ import {
   GoalSelector,
   Goal,
 } from "../components";
-import { useTheme } from "../src/context/ThemeContext";
+import { colors, darkColors, spacing } from "../src/styles/globalStyles";
 import { Feather } from "@expo/vector-icons";
 import Animated, { FadeInUp, FadeInDown } from "react-native-reanimated";
 
@@ -36,7 +36,8 @@ const goals: Goal[] = [
 
 function CalculatorScreen() {
   const router = useRouter();
-  const { theme } = useTheme();
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
 
   // State for user inputs
   const [gender, setGender] = useState<"male" | "female">("male");
@@ -129,7 +130,7 @@ function CalculatorScreen() {
   return (
     <Screen title="Calculadora" showHeader={true} scroll={true}>
       {/* Introduction */}
-      <Animated.View entering={FadeInDown.duration(600).springify()} style={{ marginBottom: theme.spacing[6] }}>
+      <Animated.View entering={FadeInDown.duration(600).springify()} style={{ marginBottom: spacing[6] }}>
         <Text variant="body" color="muted" style={{ textAlign: "center" }}>
           Preencha suas informações para calcular suas necessidades diárias de macronutrientes.
         </Text>
@@ -137,17 +138,17 @@ function CalculatorScreen() {
 
       {/* Gender Selection */}
       <Animated.View entering={FadeInUp.delay(100).duration(600).springify()}>
-        <Card style={{ marginBottom: theme.spacing[4] }}>
+        <Card style={{ marginBottom: spacing[4] }}>
           <CardHeader>
             <CardTitle>Sexo Biológico</CardTitle>
           </CardHeader>
           <CardContent>
-            <View style={{ flexDirection: "row", gap: theme.spacing[4] }}>
+            <View style={{ flexDirection: "row", gap: spacing[4] }}>
               <Button
                 title="Masculino"
                 variant={gender === "male" ? "default" : "outline"}
                 onPress={() => setGender("male")}
-                leftIcon={<Feather name="user" size={18} color={gender === "male" ? "white" : theme.colors.primary} />}
+                leftIcon={<Feather name="user" size={18} color={gender === "male" ? "white" : activeColors.primary} />}
                 style={{ flex: 1 }}
               />
               <Button
@@ -155,7 +156,7 @@ function CalculatorScreen() {
                 variant={gender === "female" ? "default" : "outline"}
                 onPress={() => setGender("female")}
                 leftIcon={
-                  <Feather name="user" size={18} color={gender === "female" ? "white" : theme.colors.primary} />
+                  <Feather name="user" size={18} color={gender === "female" ? "white" : activeColors.primary} />
                 }
                 style={{ flex: 1 }}
               />
@@ -166,12 +167,12 @@ function CalculatorScreen() {
 
       {/* Basic Info */}
       <Animated.View entering={FadeInUp.delay(200).duration(600).springify()}>
-        <Card style={{ marginBottom: theme.spacing[4] }}>
+        <Card style={{ marginBottom: spacing[4] }}>
           <CardHeader>
             <CardTitle>Informações Básicas</CardTitle>
           </CardHeader>
           <CardContent>
-            <View style={{ gap: theme.spacing[4] }}>
+            <View style={{ gap: spacing[4] }}>
               <NumericInput label="Idade" value={age} onChange={setAge} min={15} max={100} unit="anos" />
               <NumericInput
                 label="Peso"
@@ -191,7 +192,7 @@ function CalculatorScreen() {
 
       {/* Activity Level */}
       <Animated.View entering={FadeInUp.delay(300).duration(600).springify()}>
-        <Card style={{ marginBottom: theme.spacing[4] }}>
+        <Card style={{ marginBottom: spacing[4] }}>
           <CardHeader>
             <CardTitle>Nível de Atividade</CardTitle>
           </CardHeader>
@@ -203,7 +204,7 @@ function CalculatorScreen() {
 
       {/* Goal */}
       <Animated.View entering={FadeInUp.delay(400).duration(600).springify()}>
-        <Card style={{ marginBottom: theme.spacing[6] }}>
+        <Card style={{ marginBottom: spacing[6] }}>
           <CardHeader>
             <CardTitle>Objetivo</CardTitle>
           </CardHeader>
@@ -219,7 +220,7 @@ function CalculatorScreen() {
           title="Calcular Macros"
           size="lg"
           onPress={handleCalculate}
-          style={{ marginBottom: theme.spacing[6] }}
+          style={{ marginBottom: spacing[6] }}
           rightIcon={<Feather name="arrow-right" size={18} color="white" />}
           fullWidth
         />
