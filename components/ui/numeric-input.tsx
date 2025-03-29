@@ -8,8 +8,10 @@ import Animated, {
   withTiming,
   withRepeat,
   withSequence,
+  Easing,
 } from "react-native-reanimated";
-import { theme } from "../../src/styles/theme";
+import { useTheme } from "../../src/context/ThemeContext";
+import { Feather } from "@expo/vector-icons";
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -24,7 +26,6 @@ interface NumericInputProps {
   unit?: string;
   error?: string;
   allowDecimal?: boolean;
-  containerClassName?: string;
 }
 
 export function NumericInput({
@@ -37,11 +38,12 @@ export function NumericInput({
   unit,
   error,
   allowDecimal = false,
-  containerClassName = "",
 }: NumericInputProps) {
+  const { theme } = useTheme();
   const [inputValue, setInputValue] = useState(value.toString());
   const buttonScale = useSharedValue(1);
   const errorAnim = useSharedValue(0);
+  const [isFocused, setIsFocused] = useState(false);
 
   // Update input value when prop changes
   useEffect(() => {
@@ -125,46 +127,112 @@ export function NumericInput({
 
   return (
     <AnimatedView style={[containerAnimStyle, styles.container]}>
-      {label && <Text style={styles.label}>{label}</Text>}
+      {label && (
+        <Text style={[styles.label, { color: theme.colors.foreground, marginBottom: theme.spacing[2] }]}>{label}</Text>
+      )}
 
       <View style={styles.inputRow}>
         <AnimatedPressable
-          style={[buttonAnimStyle, styles.button, styles.decrementButton]}
+          style={[
+            buttonAnimStyle,
+            styles.button,
+            styles.decrementButton,
+            {
+              backgroundColor: theme.colors.secondary,
+              borderColor: theme.colors.border,
+              borderTopLeftRadius: theme.radius.md,
+              borderBottomLeftRadius: theme.radius.md,
+            },
+          ]}
           onPressIn={handleButtonPressIn}
           onPressOut={handleButtonPressOut}
           onPress={decrement}
         >
-          <Text style={styles.buttonText}>-</Text>
+          <Feather name="minus" size={20} color={theme.colors.foreground} />
         </AnimatedPressable>
 
-        <View style={styles.inputContainer}>
+        <View
+          style={[
+            styles.inputContainer,
+            {
+              borderColor: isFocused ? theme.colors.primary : theme.colors.border,
+              borderTopWidth: 1,
+              borderBottomWidth: 1,
+            },
+          ]}
+        >
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input,
+              {
+                color: theme.colors.foreground,
+                backgroundColor: theme.colors.card,
+              },
+            ]}
             value={inputValue}
             onChangeText={handleInputChange}
             keyboardType={allowDecimal ? "decimal-pad" : "number-pad"}
             returnKeyType="done"
             selectTextOnFocus
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
           />
 
           {unit && (
-            <View style={styles.unitContainer}>
-              <Text style={styles.unitText}>{unit}</Text>
+            <View
+              style={[
+                styles.unitContainer,
+                {
+                  backgroundColor: theme.colors.secondary,
+                  borderColor: theme.colors.border,
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.unitText,
+                  {
+                    color: theme.colors.mutedForeground,
+                  },
+                ]}
+              >
+                {unit}
+              </Text>
             </View>
           )}
         </View>
 
         <AnimatedPressable
-          style={[buttonAnimStyle, styles.button, styles.incrementButton]}
+          style={[
+            buttonAnimStyle,
+            styles.button,
+            styles.incrementButton,
+            {
+              backgroundColor: theme.colors.secondary,
+              borderColor: theme.colors.border,
+              borderTopRightRadius: theme.radius.md,
+              borderBottomRightRadius: theme.radius.md,
+            },
+          ]}
           onPressIn={handleButtonPressIn}
           onPressOut={handleButtonPressOut}
           onPress={increment}
         >
-          <Text style={styles.buttonText}>+</Text>
+          <Feather name="plus" size={20} color={theme.colors.foreground} />
         </AnimatedPressable>
       </View>
 
-      {error && <Text style={styles.errorText}>{error}</Text>}
+      {error && (
+        <Text
+          style={{
+            color: theme.colors.destructive,
+            fontSize: theme.typography.fontSize.sm,
+            marginTop: theme.spacing[2],
+          }}
+        >
+          {error}
+        </Text>
+      )}
     </AnimatedView>
   );
 }
@@ -175,70 +243,46 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   label: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.text,
+    fontSize: 14,
     marginBottom: 4,
-    marginLeft: 4,
   },
   inputRow: {
     flexDirection: "row",
     alignItems: "center",
   },
   button: {
-    width: 48,
-    height: 48,
+    width: 44,
+    height: 44,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: theme.colors.secondary,
     borderWidth: 1,
-    borderColor: theme.colors.border,
   },
-  decrementButton: {
-    borderTopLeftRadius: theme.borderRadius.md,
-    borderBottomLeftRadius: theme.borderRadius.md,
-  },
-  incrementButton: {
-    borderTopRightRadius: theme.borderRadius.md,
-    borderBottomRightRadius: theme.borderRadius.md,
-  },
+  decrementButton: {},
+  incrementButton: {},
   buttonText: {
-    fontSize: theme.fontSize.xl,
-    color: theme.colors.primary,
+    fontSize: 18,
     fontWeight: "500",
   },
   inputContainer: {
     flex: 1,
     flexDirection: "row",
-    height: 48,
+    height: 44,
   },
   input: {
     flex: 1,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: theme.colors.border,
-    backgroundColor: "white",
     textAlign: "center",
-    color: theme.colors.text,
+    paddingHorizontal: 8,
   },
   unitContainer: {
     paddingHorizontal: 8,
     justifyContent: "center",
-    backgroundColor: theme.colors.secondary,
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderRightWidth: 1,
-    borderColor: theme.colors.border,
     minWidth: 40,
   },
   unitText: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textMuted,
+    fontSize: 14,
     textAlign: "center",
-  },
-  errorText: {
-    color: theme.colors.error,
-    fontSize: theme.fontSize.sm,
-    marginTop: 4,
-    marginLeft: 4,
   },
 });
