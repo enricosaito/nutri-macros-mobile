@@ -179,7 +179,12 @@ export default function HomeScreen() {
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tipsContainer}>
             {nutritionTips.map((item, index) => (
-              <Card key={index} style={[styles.tipCard, { borderRadius: theme.radius.lg }]}>
+              <Card
+                style={{
+                  ...styles.tipCard,
+                  borderRadius: theme.radius.lg,
+                }}
+              >
                 <CardContent style={{ padding: theme.spacing[5] }}>
                   <View
                     style={[
