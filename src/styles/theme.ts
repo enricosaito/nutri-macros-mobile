@@ -1,4 +1,5 @@
-// src/styles/theme.ts
+// src/styles/theme.ts - Let's improve this file
+
 import { Platform } from "react-native";
 
 // Define types for our theme
@@ -37,11 +38,6 @@ export interface ThemeColors {
   chart3: string;
   chart4: string;
   chart5: string;
-
-  // Legacy support (for backward compatibility)
-  text: string;
-  textMuted: string;
-  error: string;
 }
 
 export interface ThemeTypography {
@@ -64,6 +60,7 @@ export interface ThemeTypography {
     "2xl": number;
     "3xl": number;
     "4xl": number;
+    "5xl": number;
   };
   lineHeight: {
     tight: number;
@@ -94,14 +91,6 @@ export interface ThemeSpacing {
   32: number;
   40: number;
   64: number;
-
-  // Legacy support
-  xs: number;
-  sm: number;
-  md: number;
-  lg: number;
-  xl: number;
-  xxl: number;
 }
 
 export interface ThemeRadius {
@@ -125,90 +114,78 @@ export interface Theme {
 
 // Light theme
 export const lightColors: ThemeColors = {
-  // Light mode - Green theme
-  background: "#f7fbf9", // hsl(140 50% 98%)
-  foreground: "#151915", // hsl(140 10% 10%)
-  card: "#ffffff", // hsl(0 0% 100%)
-  cardForeground: "#151915", // hsl(140 10% 10%)
-  popover: "#ffffff", // hsl(0 0% 100%)
-  popoverForeground: "#151915", // hsl(140 10% 10%)
-  primary: "#1eb866", // hsl(142 70% 45%)
-  primaryForeground: "#ffffff", // hsl(0 0% 100%)
-  secondary: "#edf4ee", // hsl(140 15% 94%)
-  secondaryForeground: "#233823", // hsl(140 25% 25%)
-  muted: "#f1f5f2", // hsl(140 10% 96%)
-  mutedForeground: "#6a706b", // hsl(140 5% 45%)
-  accent: "#e6f4ea", // hsl(142 35% 94%)
-  accentForeground: "#1f4928", // hsl(140 40% 25%)
-  destructive: "#e92c2c", // hsl(0 84% 60%)
-  destructiveForeground: "#f8faf8", // hsl(0 0% 98%)
-  border: "#dfe5df", // hsl(140 10% 90%)
-  input: "#dfe5df", // hsl(140 10% 90%)
-  ring: "#1eb866", // hsl(142 70% 45%)
+  background: "#f5f9f7", // Slightly lighter background
+  foreground: "#151915",
+  card: "#ffffff",
+  cardForeground: "#151915",
+  popover: "#ffffff",
+  popoverForeground: "#151915",
+  primary: "#22c069", // Slightly brighter green
+  primaryForeground: "#ffffff",
+  secondary: "#edf4ee",
+  secondaryForeground: "#233823",
+  muted: "#f1f5f2",
+  mutedForeground: "#6a706b",
+  accent: "#e6f4ea",
+  accentForeground: "#1f4928",
+  destructive: "#e92c2c",
+  destructiveForeground: "#f8faf8",
+  border: "#e5e9e6", // Slightly lighter border
+  input: "#e5e9e6",
+  ring: "#22c069",
 
   // Semantic colors
-  success: "#14a85e", // hsl(160 84% 39%)
-  successForeground: "#f8faf8", // hsl(0 0% 98%)
-  info: "#1a66ff", // hsl(220 80% 50%)
-  infoForeground: "#f8faf8", // hsl(0 0% 98%)
-  warning: "#ffc107", // hsl(38 92% 50%)
-  warningForeground: "#f8faf8", // hsl(0 0% 98%)
+  success: "#14a85e",
+  successForeground: "#f8faf8",
+  info: "#1a66ff",
+  infoForeground: "#f8faf8",
+  warning: "#ffc107",
+  warningForeground: "#f8faf8",
 
   // Chart colors
-  chart1: "#1eb866", // hsl(142 70% 45%)
-  chart2: "#14a85e", // hsl(160 84% 39%)
-  chart3: "#14a9b8", // hsl(180 80% 45%)
-  chart4: "#149bd8", // hsl(200 75% 55%)
-  chart5: "#1a66ff", // hsl(220 70% 60%)
-
-  // Legacy support
-  text: "#151915", // Same as foreground
-  textMuted: "#6a706b", // Same as mutedForeground
-  error: "#e92c2c", // Same as destructive
+  chart1: "#22c069", // Primary
+  chart2: "#14a85e", // Success
+  chart3: "#14a9b8", // Blue
+  chart4: "#149bd8", // Light Blue
+  chart5: "#1a66ff", // Info
 };
 
 // Dark theme
 export const darkColors: ThemeColors = {
-  // Dark mode - Green theme
-  background: "#131913", // hsl(140 15% 10%)
-  foreground: "#f8faf8", // hsl(0 0% 98%)
-  card: "#181d18", // hsl(140 15% 12%)
-  cardForeground: "#f8faf8", // hsl(0 0% 98%)
-  popover: "#181d18", // hsl(140 15% 12%)
-  popoverForeground: "#f8faf8", // hsl(0 0% 98%)
-  primary: "#2ac46e", // hsl(142 60% 50%)
-  primaryForeground: "#ffffff", // hsl(0 0% 100%)
-  secondary: "#1e231e", // hsl(140 10% 20%)
-  secondaryForeground: "#f8faf8", // hsl(0 0% 98%)
-  muted: "#1c211c", // hsl(140 15% 18%)
-  mutedForeground: "#9ca29d", // hsl(140 5% 65%)
-  accent: "#1c291e", // hsl(142 15% 25%)
-  accentForeground: "#f8faf8", // hsl(0 0% 98%)
-  destructive: "#9b1f1f", // hsl(0 62% 40%)
-  destructiveForeground: "#f8faf8", // hsl(0 0% 98%)
-  border: "#1c291e", // hsl(140 15% 25%)
-  input: "#1c291e", // hsl(140 15% 25%)
-  ring: "#2ac46e", // hsl(142 60% 50%)
+  background: "#0f120f", // Slightly darker for better contrast
+  foreground: "#f8faf8",
+  card: "#1a1f1a", // Slightly darker card
+  cardForeground: "#f8faf8",
+  popover: "#1a1f1a",
+  popoverForeground: "#f8faf8",
+  primary: "#2ac46e",
+  primaryForeground: "#ffffff",
+  secondary: "#1e231e",
+  secondaryForeground: "#f8faf8",
+  muted: "#1c211c",
+  mutedForeground: "#9ca29d",
+  accent: "#1c291e",
+  accentForeground: "#f8faf8",
+  destructive: "#9b1f1f",
+  destructiveForeground: "#f8faf8",
+  border: "#2a332a", // Slightly darker border
+  input: "#2a332a",
+  ring: "#2ac46e",
 
   // Semantic colors - dark mode
-  success: "#16b465", // hsl(160 70% 40%)
-  successForeground: "#f8faf8", // hsl(0 0% 98%)
-  info: "#4d8df6", // hsl(220 70% 55%)
-  infoForeground: "#f8faf8", // hsl(0 0% 98%)
-  warning: "#f0ad4e", // hsl(38 80% 50%)
-  warningForeground: "#f8faf8", // hsl(0 0% 98%)
+  success: "#16b465",
+  successForeground: "#f8faf8",
+  info: "#4d8df6",
+  infoForeground: "#f8faf8",
+  warning: "#f0ad4e",
+  warningForeground: "#f8faf8",
 
   // Chart colors - dark mode
-  chart1: "#2ac46e", // hsl(142 60% 50%)
-  chart2: "#1fc177", // hsl(160 70% 45%)
-  chart3: "#1fb7c1", // hsl(180 65% 50%)
-  chart4: "#1da1d7", // hsl(200 60% 55%)
-  chart5: "#4d8df6", // hsl(220 55% 60%)
-
-  // Legacy support
-  text: "#f8faf8", // Same as foreground
-  textMuted: "#9ca29d", // Same as mutedForeground
-  error: "#9b1f1f", // Same as destructive
+  chart1: "#2ac46e",
+  chart2: "#1fc177",
+  chart3: "#1fb7c1",
+  chart4: "#1da1d7",
+  chart5: "#4d8df6",
 };
 
 export const typography: ThemeTypography = {
@@ -231,6 +208,7 @@ export const typography: ThemeTypography = {
     "2xl": 24,
     "3xl": 30,
     "4xl": 36,
+    "5xl": 48,
   },
   lineHeight: {
     tight: 1.2,
@@ -261,14 +239,6 @@ export const spacing: ThemeSpacing = {
   32: 128,
   40: 160,
   64: 256,
-
-  // Legacy support
-  xs: 4,
-  sm: 8,
-  md: 16,
-  lg: 24,
-  xl: 32,
-  xxl: 48,
 };
 
 export const radius: ThemeRadius = {
@@ -296,45 +266,4 @@ export const darkTheme: Theme = {
   typography,
   spacing,
   radius,
-};
-
-export const theme = {
-  colors: {
-    primary: lightColors.primary,
-    primaryDark: "#199a55", // Darker version
-    primaryLight: "#3cc77a", // Lighter version
-    secondary: lightColors.secondary,
-    secondaryDark: "#d6e7d9", // Darker version
-    secondaryLight: "#f8fbf8", // Lighter version
-    background: lightColors.background,
-    foreground: lightColors.foreground,
-    card: lightColors.card,
-    text: lightColors.foreground,
-    textMuted: lightColors.mutedForeground,
-    border: lightColors.border,
-    error: lightColors.destructive,
-    success: lightColors.success,
-  },
-  spacing: {
-    xs: 4,
-    sm: 8,
-    md: 16,
-    lg: 24,
-    xl: 32,
-    xxl: 48,
-  },
-  fontSize: {
-    xs: 12,
-    sm: 14,
-    md: 16,
-    lg: 18,
-    xl: 24,
-    xxl: 32,
-  },
-  borderRadius: {
-    sm: 4,
-    md: 8,
-    lg: 12,
-    full: 9999,
-  },
 };
