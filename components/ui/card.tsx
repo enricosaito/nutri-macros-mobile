@@ -8,7 +8,7 @@ import Animated, { FadeIn } from "react-native-reanimated";
 // Card container
 interface CardProps {
   children: React.ReactNode;
-  style?: ViewStyle | undefined;
+  style?: ViewStyle;
   animate?: boolean;
 }
 
@@ -17,15 +17,13 @@ const AnimatedView = Animated.createAnimatedComponent(View);
 export function Card({ children, style, animate = false }: CardProps) {
   const { theme } = useTheme();
 
-  const cardStyle = [
-    styles.card,
-    {
-      backgroundColor: theme.colors.card,
-      borderColor: theme.colors.border,
-      borderRadius: theme.radius.xl,
-    },
-    style,
-  ];
+  const cardStyle = {
+    ...styles.card,
+    backgroundColor: theme.colors.card,
+    borderColor: theme.colors.border,
+    borderRadius: theme.radius.xl,
+    ...(style as object),
+  };
 
   if (animate) {
     return (
@@ -41,7 +39,7 @@ export function Card({ children, style, animate = false }: CardProps) {
 // Card header
 interface CardHeaderProps {
   children: React.ReactNode;
-  style?: ViewStyle | undefined;
+  style?: ViewStyle;
 }
 
 export function CardHeader({ children, style }: CardHeaderProps) {
@@ -49,14 +47,12 @@ export function CardHeader({ children, style }: CardHeaderProps) {
 
   return (
     <View
-      style={[
-        styles.cardHeader,
-        {
-          paddingHorizontal: theme.spacing[6],
-          paddingVertical: theme.spacing[4],
-        },
-        style,
-      ]}
+      style={{
+        ...styles.cardHeader,
+        paddingHorizontal: theme.spacing[6],
+        paddingVertical: theme.spacing[4],
+        ...(style as object),
+      }}
     >
       {children}
     </View>
@@ -66,7 +62,7 @@ export function CardHeader({ children, style }: CardHeaderProps) {
 // Card title
 interface CardTitleProps {
   children: React.ReactNode;
-  style?: TextStyle | undefined;
+  style?: TextStyle;
 }
 
 export function CardTitle({ children, style }: CardTitleProps) {
@@ -74,14 +70,12 @@ export function CardTitle({ children, style }: CardTitleProps) {
 
   return (
     <Text
-      style={[
-        {
-          fontSize: theme.typography.fontSize.lg,
-          fontWeight: theme.typography.fontWeight.semibold,
-          color: theme.colors.cardForeground,
-        },
-        style,
-      ]}
+      style={{
+        fontSize: theme.typography.fontSize.lg,
+        fontWeight: theme.typography.fontWeight.semibold as TextStyle["fontWeight"],
+        color: theme.colors.cardForeground,
+        ...(style as object),
+      }}
     >
       {children}
     </Text>
@@ -91,7 +85,7 @@ export function CardTitle({ children, style }: CardTitleProps) {
 // Card description
 interface CardDescriptionProps {
   children: React.ReactNode;
-  style?: TextStyle | undefined;
+  style?: TextStyle;
 }
 
 export function CardDescription({ children, style }: CardDescriptionProps) {
@@ -99,14 +93,12 @@ export function CardDescription({ children, style }: CardDescriptionProps) {
 
   return (
     <Text
-      style={[
-        {
-          fontSize: theme.typography.fontSize.sm,
-          color: theme.colors.mutedForeground,
-          marginTop: theme.spacing[1],
-        },
-        style,
-      ]}
+      style={{
+        fontSize: theme.typography.fontSize.sm,
+        color: theme.colors.mutedForeground,
+        marginTop: theme.spacing[1],
+        ...(style as object),
+      }}
     >
       {children}
     </Text>
@@ -116,7 +108,7 @@ export function CardDescription({ children, style }: CardDescriptionProps) {
 // Card content
 interface CardContentProps {
   children: React.ReactNode;
-  style?: ViewStyle | undefined;
+  style?: ViewStyle;
 }
 
 export function CardContent({ children, style }: CardContentProps) {
@@ -124,14 +116,12 @@ export function CardContent({ children, style }: CardContentProps) {
 
   return (
     <View
-      style={[
-        styles.cardContent,
-        {
-          paddingHorizontal: theme.spacing[6],
-          paddingBottom: theme.spacing[6],
-        },
-        style,
-      ]}
+      style={{
+        ...styles.cardContent,
+        paddingHorizontal: theme.spacing[6],
+        paddingBottom: theme.spacing[6],
+        ...(style as object),
+      }}
     >
       {children}
     </View>
@@ -141,7 +131,7 @@ export function CardContent({ children, style }: CardContentProps) {
 // Card footer
 interface CardFooterProps {
   children: React.ReactNode;
-  style?: ViewStyle | undefined;
+  style?: ViewStyle;
 }
 
 export function CardFooter({ children, style }: CardFooterProps) {
@@ -149,15 +139,13 @@ export function CardFooter({ children, style }: CardFooterProps) {
 
   return (
     <View
-      style={[
-        styles.cardFooter,
-        {
-          borderTopColor: theme.colors.border,
-          paddingHorizontal: theme.spacing[6],
-          paddingVertical: theme.spacing[4],
-        },
-        style,
-      ]}
+      style={{
+        ...styles.cardFooter,
+        borderTopColor: theme.colors.border,
+        paddingHorizontal: theme.spacing[6],
+        paddingVertical: theme.spacing[4],
+        ...(style as object),
+      }}
     >
       {children}
     </View>
