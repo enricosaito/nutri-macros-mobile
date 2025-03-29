@@ -1,18 +1,19 @@
 // app/index.tsx
 import React from "react";
-import { View, ScrollView, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { View, ScrollView, Image, StyleSheet, TouchableOpacity, useColorScheme } from "react-native";
 import { useRouter } from "expo-router";
 import { Text } from "../components/ui/text";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Screen } from "../components/ui/screen";
 import { Feather } from "@expo/vector-icons";
-import { useTheme } from "../src/context/ThemeContext";
+import { colors, darkColors, spacing, radius } from "../src/styles/globalStyles";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 
-export default function HomeScreen() {
+function HomeScreen() {
   const router = useRouter();
-  const { theme } = useTheme();
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
 
   const features = [
     {
@@ -41,32 +42,32 @@ export default function HomeScreen() {
       title: "Proteínas",
       tip: "Essenciais para reparação muscular e saciedade",
       icon: "award",
-      color: theme.colors.chart3,
+      color: activeColors.chart3,
     },
     {
       title: "Carboidratos",
       tip: "Principal fonte de energia para o corpo e cérebro",
       icon: "battery-charging",
-      color: theme.colors.chart1,
+      color: activeColors.chart1,
     },
     {
       title: "Gorduras",
       tip: "Importantes para hormônios e absorção de vitaminas",
       icon: "droplet",
-      color: theme.colors.chart5,
+      color: activeColors.chart5,
     },
   ];
 
   return (
     <Screen showHeader={false} scroll={true} padding={false}>
       {/* Hero Section */}
-      <View style={[styles.heroContainer, { backgroundColor: theme.colors.card }]}>
+      <View style={[styles.heroContainer, { backgroundColor: activeColors.card }]}>
         <Animated.View entering={FadeInDown.duration(800).springify()} style={styles.logoContainer}>
           <Image source={require("../assets/images/icon.png")} style={styles.logo} resizeMode="contain" />
         </Animated.View>
 
         <Animated.View entering={FadeInUp.delay(200).duration(800).springify()}>
-          <Text variant="h1" style={[styles.title, { color: theme.colors.foreground }]}>
+          <Text variant="h1" style={[styles.title, { color: activeColors.foreground }]}>
             NutriMacros
           </Text>
           <Text variant="body" color="muted" style={styles.subtitle}>
@@ -75,15 +76,15 @@ export default function HomeScreen() {
         </Animated.View>
       </View>
 
-      <View style={{ padding: theme.spacing[4] }}>
+      <View style={{ padding: spacing[4] }}>
         {/* Featured Card */}
         <Animated.View entering={FadeInUp.delay(400).duration(800).springify()}>
           <Card style={styles.featuredCard}>
             <CardContent
               style={{
-                backgroundColor: theme.colors.primary,
-                padding: theme.spacing[6],
-                borderRadius: theme.radius.xl,
+                backgroundColor: activeColors.primary,
+                padding: spacing[6],
+                borderRadius: radius.xl,
               }}
             >
               <Text variant="h3" style={styles.featuredCardTitle} color="white">
@@ -95,7 +96,7 @@ export default function HomeScreen() {
               <Button
                 title="Começar Agora"
                 onPress={() => router.push("/calculator")}
-                rightIcon={<Feather name="arrow-right" size={16} color={theme.colors.primary} />}
+                rightIcon={<Feather name="arrow-right" size={16} color={activeColors.primary} />}
                 style={styles.featuredCardButton}
                 variant="secondary"
               />
@@ -105,7 +106,7 @@ export default function HomeScreen() {
 
         {/* Features */}
         <Animated.View entering={FadeInUp.delay(600).duration(800).springify()}>
-          <Text variant="h3" style={[styles.sectionTitle, { color: theme.colors.foreground }]}>
+          <Text variant="h3" style={[styles.sectionTitle, { color: activeColors.foreground }]}>
             Recursos
           </Text>
 
@@ -116,9 +117,9 @@ export default function HomeScreen() {
                 style={[
                   styles.featureCard,
                   {
-                    backgroundColor: theme.colors.card,
-                    borderColor: theme.colors.border,
-                    borderRadius: theme.radius.lg,
+                    backgroundColor: activeColors.card,
+                    borderColor: activeColors.border,
+                    borderRadius: radius.lg,
                     opacity: feature.comingSoon ? 0.7 : 1,
                   },
                 ]}
@@ -134,15 +135,15 @@ export default function HomeScreen() {
                   style={[
                     styles.featureIconContainer,
                     {
-                      backgroundColor: `${theme.colors.primary}15`,
-                      borderRadius: theme.radius.md,
+                      backgroundColor: `${activeColors.primary}15`,
+                      borderRadius: radius.md,
                     },
                   ]}
                 >
-                  <Feather name={feature.icon as any} size={24} color={theme.colors.primary} />
+                  <Feather name={feature.icon as any} size={24} color={activeColors.primary} />
                 </View>
                 <View style={styles.featureContent}>
-                  <Text variant="subtitle" style={{ color: theme.colors.foreground }}>
+                  <Text variant="subtitle" style={{ color: activeColors.foreground }}>
                     {feature.title}
                   </Text>
                   <Text variant="caption" color="muted">
@@ -154,17 +155,17 @@ export default function HomeScreen() {
                     style={[
                       styles.comingSoonBadge,
                       {
-                        backgroundColor: theme.colors.secondary,
-                        borderRadius: theme.radius.full,
+                        backgroundColor: activeColors.secondary,
+                        borderRadius: radius.full,
                       },
                     ]}
                   >
-                    <Text variant="small" style={{ color: theme.colors.primary }}>
+                    <Text variant="small" style={{ color: activeColors.primary }}>
                       Em breve
                     </Text>
                   </View>
                 ) : (
-                  <Feather name="chevron-right" size={20} color={theme.colors.mutedForeground} />
+                  <Feather name="chevron-right" size={20} color={activeColors.mutedForeground} />
                 )}
               </TouchableOpacity>
             ))}
@@ -173,26 +174,26 @@ export default function HomeScreen() {
 
         {/* Nutrition Tips */}
         <Animated.View entering={FadeInUp.delay(800).duration(800).springify()}>
-          <Text variant="h3" style={[styles.sectionTitle, { color: theme.colors.foreground }]}>
+          <Text variant="h3" style={[styles.sectionTitle, { color: activeColors.foreground }]}>
             Dicas Nutricionais
           </Text>
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tipsContainer}>
             {nutritionTips.map((item, index) => (
-              <Card key={`tip-${index}`} style={{ ...styles.tipCard, borderRadius: theme.radius.lg }}>
-                <CardContent style={{ padding: theme.spacing[5] }}>
+              <Card key={`tip-${index}`} style={{ ...styles.tipCard, borderRadius: radius.lg }}>
+                <CardContent style={{ padding: spacing[5] }}>
                   <View
                     style={[
                       styles.tipIconContainer,
                       {
                         backgroundColor: `${item.color}20`,
-                        borderRadius: theme.radius.md,
+                        borderRadius: radius.md,
                       },
                     ]}
                   >
                     <Feather name={item.icon as any} size={22} color={item.color} />
                   </View>
-                  <Text variant="subtitle" style={{ marginVertical: theme.spacing[2] }}>
+                  <Text variant="subtitle" style={{ marginVertical: spacing[2] }}>
                     {item.title}
                   </Text>
                   <Text variant="caption" color="muted">
@@ -297,3 +298,5 @@ const styles = StyleSheet.create({
     height: 80, // Extra space at the bottom for the tab bar
   },
 });
+
+export default HomeScreen;
