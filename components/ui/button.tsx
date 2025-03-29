@@ -1,4 +1,3 @@
-// components/ui/button.tsx
 import React from "react";
 import {
   TouchableOpacity,
@@ -12,6 +11,7 @@ import {
 } from "react-native";
 import { colors, darkColors, spacing, radius, typography } from "../../src/styles/globalStyles";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { useAnimationsEnabled } from "../../src/utils/animation";
 
 type ButtonVariant = "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
 type ButtonSize = "default" | "sm" | "lg" | "icon";
@@ -50,13 +50,18 @@ export function Button({
   const isDark = useColorScheme() === "dark";
   const activeColors = isDark ? darkColors : colors;
   const scale = useSharedValue(1);
+  const animationsEnabled = useAnimationsEnabled();
 
   const handlePressIn = () => {
-    scale.value = withTiming(0.98, { duration: 100 });
+    if (animationsEnabled) {
+      scale.value = withTiming(0.98, { duration: 100 });
+    }
   };
 
   const handlePressOut = () => {
-    scale.value = withTiming(1, { duration: 100 });
+    if (animationsEnabled) {
+      scale.value = withTiming(1, { duration: 100 });
+    }
   };
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -198,6 +203,25 @@ export function Button({
   };
 
   const content = children || title;
+
+  // Use regular TouchableOpacity if animations are disabled
+  if (!animationsEnabled) {
+    return (
+      <TouchableOpacity style={buttonStyles} onPress={onPress} disabled={disabled || loading} activeOpacity={0.7}>
+        <View style={styles.contentContainer}>
+          {loading ? (
+            <ActivityIndicator size="small" color={getLoaderColor()} />
+          ) : (
+            <>
+              {leftIcon && <View style={styles.iconContainer}>{leftIcon}</View>}
+              {content && (typeof content === "string" ? <Text style={finalTextStyle}>{content}</Text> : content)}
+              {rightIcon && <View style={styles.iconContainer}>{rightIcon}</View>}
+            </>
+          )}
+        </View>
+      </TouchableOpacity>
+    );
+  }
 
   return (
     <AnimatedTouchable
