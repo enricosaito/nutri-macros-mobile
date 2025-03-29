@@ -1,11 +1,10 @@
-// app/profile.tsx - Add animation toggle
+// app/profile.tsx
 import React, { useState } from "react";
 import { View, StyleSheet, Switch, useColorScheme } from "react-native";
 import { Screen, Text, Button, Card, CardHeader, CardTitle, CardContent } from "../components";
 import { Feather } from "@expo/vector-icons";
 import { colors, darkColors, spacing } from "../src/styles/globalStyles";
 import Animated, { FadeIn, FadeInRight } from "react-native-reanimated";
-import { useAnimations } from "../src/context/AnimationContext";
 import { useAnimationsEnabled } from "../src/utils/animation";
 
 function ProfileScreen() {
@@ -13,14 +12,9 @@ function ProfileScreen() {
   const [isDark, setIsDark] = useState(systemIsDark);
   const activeColors = isDark ? darkColors : colors;
   const animationsEnabled = useAnimationsEnabled();
-  const { animationsEnabled: animPref, setAnimationsEnabled, systemReducedMotion } = useAnimations();
 
   const toggleTheme = () => {
     setIsDark(!isDark);
-  };
-
-  const toggleAnimations = () => {
-    setAnimationsEnabled(!animPref);
   };
 
   // Resources that will be listed
@@ -40,17 +34,7 @@ function ProfileScreen() {
           entering={animationsEnabled ? FadeIn.duration(800) : undefined}
           style={{ alignItems: "center", marginBottom: spacing[6] }}
         >
-          <View
-            style={{
-              width: 96,
-              height: 96,
-              borderRadius: 48,
-              backgroundColor: `${activeColors.primary}15`,
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: spacing[3],
-            }}
-          >
+          <View style={styles.avatarContainer}>
             <Feather name="user" size={40} color={activeColors.primary} />
           </View>
           <Text variant="h3" style={{ marginBottom: spacing[1] }}>
@@ -61,34 +45,15 @@ function ProfileScreen() {
           </Text>
         </AnimatedContainer>
 
-        {/* App Settings Section */}
         <AnimatedContainer entering={animationsEnabled ? FadeInRight.delay(200).duration(500) : undefined}>
           <Card style={{ marginBottom: spacing[4] }}>
             <CardHeader>
-              <CardTitle>Aparência e Comportamento</CardTitle>
+              <CardTitle>Aparência</CardTitle>
             </CardHeader>
             <CardContent>
-              {/* Theme Toggle */}
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: spacing[4],
-                }}
-              >
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <View
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 20,
-                      backgroundColor: `${activeColors.primary}15`,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      marginRight: spacing[3],
-                    }}
-                  >
+              <View style={styles.settingRow}>
+                <View style={styles.settingLabelContainer}>
+                  <View style={styles.settingIcon}>
                     <Feather name={isDark ? "moon" : "sun"} size={20} color={activeColors.primary} />
                   </View>
                   <Text>{isDark ? "Tema Escuro" : "Tema Claro"}</Text>
@@ -98,46 +63,6 @@ function ProfileScreen() {
                   onValueChange={toggleTheme}
                   trackColor={{ false: "#767577", true: `${activeColors.primary}80` }}
                   thumbColor={isDark ? activeColors.primary : "#f4f3f4"}
-                />
-              </View>
-
-              {/* Animation Toggle */}
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <View
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 20,
-                      backgroundColor: `${activeColors.primary}15`,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      marginRight: spacing[3],
-                    }}
-                  >
-                    <Feather name="zap" size={20} color={activeColors.primary} />
-                  </View>
-                  <View>
-                    <Text>Animações</Text>
-                    {systemReducedMotion && (
-                      <Text variant="caption" color="muted">
-                        Desativado pelo sistema
-                      </Text>
-                    )}
-                  </View>
-                </View>
-                <Switch
-                  value={animPref}
-                  onValueChange={toggleAnimations}
-                  trackColor={{ false: "#767577", true: `${activeColors.primary}80` }}
-                  thumbColor={animPref ? activeColors.primary : "#f4f3f4"}
-                  disabled={systemReducedMotion}
                 />
               </View>
             </CardContent>
@@ -180,25 +105,8 @@ function ProfileScreen() {
             <CardContent>
               <View style={{ marginTop: spacing[2] }}>
                 {accountResources.map((item, index) => (
-                  <View
-                    key={`resource-${index}`}
-                    style={{
-                      flexDirection: "row",
-                      marginBottom: spacing[3],
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: 24,
-                        height: 24,
-                        borderRadius: 12,
-                        backgroundColor: activeColors.primary,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        marginRight: spacing[3],
-                        marginTop: 2,
-                      }}
-                    >
+                  <View key={`resource-${index}`} style={styles.resourceRow}>
+                    <View style={styles.checkIcon}>
                       <Feather name="check" size={14} color="white" />
                     </View>
                     <Text style={{ flex: 1 }}>{item}</Text>
@@ -212,5 +120,49 @@ function ProfileScreen() {
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  avatarContainer: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: `rgba(34, 192, 105, 0.15)`,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 12,
+  },
+  settingRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  settingLabelContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  settingIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: `rgba(34, 192, 105, 0.15)`,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
+  resourceRow: {
+    flexDirection: "row",
+    marginBottom: 12,
+  },
+  checkIcon: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: "#22c069",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+    marginTop: 2,
+  },
+});
 
 export default ProfileScreen;
