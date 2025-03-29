@@ -1,6 +1,5 @@
-// src/utils/animation.js
-import { Platform } from "react-native";
-import { useReducedMotion } from "react-native-reanimated";
+// src/utils/animation.js - Updated to use context
+import { useAnimations } from "../context/AnimationContext";
 
 /**
  * Helper function to safely apply animations with fallbacks for reduced motion
@@ -9,10 +8,9 @@ import { useReducedMotion } from "react-native-reanimated";
  * @returns Animation config or fallback style
  */
 export const useSafeAnimation = (animationConfig, fallbackStyle = {}) => {
-  const reducedMotion = useReducedMotion();
+  const { animationsEnabled } = useAnimations();
 
-  // If reduced motion is enabled or we're on specific platforms with issues, use fallback
-  if (reducedMotion) {
+  if (!animationsEnabled) {
     return fallbackStyle;
   }
 
@@ -20,10 +18,10 @@ export const useSafeAnimation = (animationConfig, fallbackStyle = {}) => {
 };
 
 /**
- * Determine if animations should be enabled based on preferences and platform
+ * Determine if animations should be enabled based on preferences
  * @returns {boolean} Whether animations should be enabled
  */
 export const useAnimationsEnabled = () => {
-  const reducedMotion = useReducedMotion();
-  return !reducedMotion;
+  const { animationsEnabled } = useAnimations();
+  return animationsEnabled;
 };
