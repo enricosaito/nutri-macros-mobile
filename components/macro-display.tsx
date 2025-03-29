@@ -72,6 +72,37 @@ export function MacroDisplay({ macros, calories, showPercentages = true, style }
   const carbsColor = theme.colors.chart1;
   const fatColor = theme.colors.chart5;
 
+  // Define the macro rows data for mapping
+  const macroRows = [
+    {
+      label: "Proteína",
+      grams: macros.protein,
+      calories: proteinCalories,
+      percent: proteinPercent,
+      color: proteinColor,
+      icon: "target",
+      delay: 0,
+    },
+    {
+      label: "Carboidratos",
+      grams: macros.carbs,
+      calories: carbsCalories,
+      percent: carbsPercent,
+      color: carbsColor,
+      icon: "circle",
+      delay: 100,
+    },
+    {
+      label: "Gordura",
+      grams: macros.fat,
+      calories: fatCalories,
+      percent: fatPercent,
+      color: fatColor,
+      icon: "droplet",
+      delay: 200,
+    },
+  ];
+
   return (
     <Card style={style} animate>
       <CardHeader>
@@ -109,38 +140,19 @@ export function MacroDisplay({ macros, calories, showPercentages = true, style }
 
           {/* Macros detail */}
           <View style={{ marginTop: theme.spacing[4] }}>
-            <MacroRow
-              label="Proteína"
-              grams={macros.protein}
-              calories={proteinCalories}
-              percent={proteinPercent}
-              showPercent={showPercentages}
-              color={proteinColor}
-              icon="target"
-              delay={0}
-            />
-
-            <MacroRow
-              label="Carboidratos"
-              grams={macros.carbs}
-              calories={carbsCalories}
-              percent={carbsPercent}
-              showPercent={showPercentages}
-              color={carbsColor}
-              icon="circle"
-              delay={100}
-            />
-
-            <MacroRow
-              label="Gordura"
-              grams={macros.fat}
-              calories={fatCalories}
-              percent={fatPercent}
-              showPercent={showPercentages}
-              color={fatColor}
-              icon="droplet"
-              delay={200}
-            />
+            {macroRows.map((row, index) => (
+              <MacroRow
+                key={`macro-${index}`}
+                label={row.label}
+                grams={row.grams}
+                calories={row.calories}
+                percent={row.percent}
+                showPercent={showPercentages}
+                color={row.color}
+                icon={row.icon}
+                delay={row.delay}
+              />
+            ))}
           </View>
         </Animated.View>
       </CardContent>

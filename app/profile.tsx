@@ -9,6 +9,14 @@ import Animated, { FadeIn, FadeInRight } from "react-native-reanimated";
 export default function ProfileScreen() {
   const { theme, isDark, toggleTheme } = useTheme();
 
+  // Resources that will be listed
+  const accountResources = [
+    "Salvar histórico de cálculos de macros",
+    "Acompanhamento diário de alimentação",
+    "Receitas premium personalizadas",
+    "Sincronização entre dispositivos",
+  ];
+
   return (
     <Screen title="Perfil" showHeader={true} scroll={true}>
       <View style={{ paddingVertical: theme.spacing[6] }}>
@@ -110,14 +118,9 @@ export default function ProfileScreen() {
             </CardHeader>
             <CardContent>
               <View style={{ marginTop: theme.spacing[2] }}>
-                {[
-                  "Salvar histórico de cálculos de macros",
-                  "Acompanhamento diário de alimentação",
-                  "Receitas premium personalizadas",
-                  "Sincronização entre dispositivos",
-                ].map((item, index) => (
+                {accountResources.map((item, index) => (
                   <View
-                    key={index}
+                    key={`resource-${index}`}
                     style={{
                       flexDirection: "row",
                       marginBottom: theme.spacing[3],

@@ -1,6 +1,6 @@
 // app/calculator.tsx
 import React, { useState } from "react";
-import { View, ScrollView } from "react-native";
+import { View } from "react-native";
 import { useRouter } from "expo-router";
 import {
   Screen,
@@ -10,7 +10,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  Input,
   NumericInput,
   GoalSelector,
   Goal,

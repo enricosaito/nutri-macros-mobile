@@ -112,7 +112,7 @@ export default function ResultsScreen() {
             </Text>
 
             {getTips().map((category, index) => (
-              <View key={index} style={{ marginBottom: theme.spacing[4] }}>
+              <View key={`category-${index}`} style={{ marginBottom: theme.spacing[4] }}>
                 <Text
                   style={{
                     fontSize: theme.typography.fontSize.lg,
@@ -125,7 +125,7 @@ export default function ResultsScreen() {
                 <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
                   {category.items.map((item, itemIndex) => (
                     <View
-                      key={itemIndex}
+                      key={`item-${index}-${itemIndex}`}
                       style={{
                         backgroundColor: theme.colors.secondary,
                         borderRadius: theme.radius.full,
@@ -161,7 +161,7 @@ export default function ResultsScreen() {
                 "Monitore seu progresso semanalmente",
               ].map((item, index) => (
                 <View
-                  key={index}
+                  key={`step-${index}`}
                   style={{
                     flexDirection: "row",
                     marginBottom: theme.spacing[3],

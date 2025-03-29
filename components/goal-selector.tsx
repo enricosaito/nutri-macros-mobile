@@ -27,7 +27,7 @@ export function GoalSelector({ goals, selectedGoalId, onSelectGoal }: GoalSelect
     <View style={{ gap: theme.spacing[3] }}>
       {goals.map((goal, index) => (
         <Animated.View
-          key={goal.id}
+          key={`goal-${goal.id}`}
           entering={FadeInDown.delay(index * 100)
             .duration(400)
             .springify()}

@@ -1,4 +1,4 @@
-// app/recipes.tsx (continued)
+// app/recipes.tsx
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Screen, Text, Card, CardHeader, CardTitle, CardContent, Button } from "../components";
@@ -8,6 +8,14 @@ import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 
 export default function RecipesScreen() {
   const { theme } = useTheme();
+
+  // Features to expect
+  const expectedFeatures = [
+    "Receitas personalizadas com base nos seus macros",
+    "Filtros por ingredientes disponíveis",
+    "Informações nutricionais completas",
+    "Salve suas receitas favoritas",
+  ];
 
   return (
     <Screen title="Receitas" showHeader={true} scroll={true}>
@@ -62,14 +70,9 @@ export default function RecipesScreen() {
             </CardHeader>
             <CardContent>
               <View style={{ marginTop: theme.spacing[2] }}>
-                {[
-                  "Receitas personalizadas com base nos seus macros",
-                  "Filtros por ingredientes disponíveis",
-                  "Informações nutricionais completas",
-                  "Salve suas receitas favoritas",
-                ].map((item, index) => (
+                {expectedFeatures.map((item, index) => (
                   <View
-                    key={index}
+                    key={`feature-${index}`}
                     style={{
                       flexDirection: "row",
                       marginBottom: theme.spacing[3],

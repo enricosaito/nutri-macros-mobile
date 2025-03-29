@@ -112,7 +112,7 @@ export default function HomeScreen() {
           <View style={styles.featuresContainer}>
             {features.map((feature, index) => (
               <TouchableOpacity
-                key={index}
+                key={`feature-${index}`}
                 style={[
                   styles.featureCard,
                   {
@@ -179,12 +179,7 @@ export default function HomeScreen() {
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tipsContainer}>
             {nutritionTips.map((item, index) => (
-              <Card
-                style={{
-                  ...styles.tipCard,
-                  borderRadius: theme.radius.lg,
-                }}
-              >
+              <Card key={`tip-${index}`} style={{ ...styles.tipCard, borderRadius: theme.radius.lg }}>
                 <CardContent style={{ padding: theme.spacing[5] }}>
                   <View
                     style={[
