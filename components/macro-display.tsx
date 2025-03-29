@@ -1,4 +1,4 @@
-// components/macro-display.tsx (continued)
+// components/macro-display.tsx
 import React, { useEffect } from "react";
 import { View, StyleSheet, ViewStyle } from "react-native";
 import { Text } from "./ui/text";
@@ -46,7 +46,7 @@ export function MacroDisplay({ macros, calories, showPercentages = true, style }
     proteinWidth.value = withTiming(proteinPercent, { duration: 800 });
     carbsWidth.value = withTiming(carbsPercent, { duration: 800 });
     fatWidth.value = withTiming(fatPercent, { duration: 800 });
-  }, [macros, proteinPercent, carbsPercent, fatPercent]);
+  }, [macros, proteinPercent, carbsPercent, fatPercent, proteinWidth, carbsWidth, fatWidth]);
 
   // Animated styles for progress bars
   const proteinAnimStyle = useAnimatedStyle(() => {
@@ -168,9 +168,11 @@ function MacroRow({ label, grams, calories, percent, showPercent, color, icon, d
       entering={SlideInRight.delay(delay).springify()}
     >
       <View style={[styles.macroIndicator, { backgroundColor: color, marginRight: theme.spacing[2] }]}>
-        <Feather name={icon} size={12} color="white" />
+        <Feather name={icon as any} size={12} color="white" />
       </View>
-      <Text style={[styles.macroLabel, { flex: 1, fontWeight: theme.typography.fontWeight.medium }]}>{label}</Text>
+      <Text style={[styles.macroLabel, { flex: 1, fontWeight: theme.typography.fontWeight.medium as any }]}>
+        {label}
+      </Text>
       <View style={styles.macroValues}>
         <Text style={[styles.macroGrams, { marginRight: theme.spacing[2] }]}>{grams}g</Text>
         <Text style={[styles.macroCalories, { marginRight: theme.spacing[2], color: theme.colors.mutedForeground }]}>
