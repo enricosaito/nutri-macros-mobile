@@ -1,4 +1,4 @@
-// app/index.tsx - Fix for router and icon type issues
+// app/index.tsx
 import React from "react";
 import { View, ScrollView, Image, StyleSheet, TouchableOpacity, useColorScheme } from "react-native";
 import { useRouter } from "expo-router";
@@ -85,7 +85,7 @@ function HomeScreen() {
         </AnimatedContainer>
 
         <AnimatedContainer entering={animationsEnabled ? FadeInUp.delay(200).duration(800).springify() : undefined}>
-          <Text variant="h1" style={[styles.title, { color: activeColors.foreground }]}>
+          <Text variant="h1" style={styles.title}>
             NutriMacros
           </Text>
           <Text variant="body" color="muted" style={styles.subtitle}>
@@ -94,17 +94,11 @@ function HomeScreen() {
         </AnimatedContainer>
       </View>
 
-      <View style={{ padding: spacing[4] }}>
+      <View style={styles.contentContainer}>
         {/* Featured Card */}
         <AnimatedContainer entering={animationsEnabled ? FadeInUp.delay(400).duration(800).springify() : undefined}>
           <Card style={styles.featuredCard}>
-            <CardContent
-              style={{
-                backgroundColor: activeColors.primary,
-                padding: spacing[6],
-                borderRadius: radius.xl,
-              }}
-            >
+            <CardContent style={styles.featuredCardContent}>
               <Text variant="h3" style={styles.featuredCardTitle} color="white">
                 Calcule Seus Macros
               </Text>
@@ -114,7 +108,7 @@ function HomeScreen() {
               <Button
                 title="Começar Agora"
                 onPress={() => navigateTo("/calculator")}
-                rightIcon={<Feather name="arrow-right" size={16} color={activeColors.primary} />}
+                rightIcon={<Feather name={"arrow-right" as FeatherIconName} size={16} color={activeColors.primary} />}
                 style={styles.featuredCardButton}
                 variant="secondary"
               />
@@ -124,7 +118,7 @@ function HomeScreen() {
 
         {/* Features */}
         <AnimatedContainer entering={animationsEnabled ? FadeInUp.delay(600).duration(800).springify() : undefined}>
-          <Text variant="h3" style={[styles.sectionTitle, { color: activeColors.foreground }]}>
+          <Text variant="h3" style={styles.sectionTitle}>
             Recursos
           </Text>
 
@@ -137,7 +131,6 @@ function HomeScreen() {
                   {
                     backgroundColor: activeColors.card,
                     borderColor: activeColors.border,
-                    borderRadius: radius.lg,
                     opacity: feature.comingSoon ? 0.7 : 1,
                   },
                 ]}
@@ -154,16 +147,13 @@ function HomeScreen() {
                     styles.featureIconContainer,
                     {
                       backgroundColor: `${activeColors.primary}15`,
-                      borderRadius: radius.md,
                     },
                   ]}
                 >
                   <Feather name={feature.icon} size={24} color={activeColors.primary} />
                 </View>
                 <View style={styles.featureContent}>
-                  <Text variant="subtitle" style={{ color: activeColors.foreground }}>
-                    {feature.title}
-                  </Text>
+                  <Text variant="subtitle">{feature.title}</Text>
                   <Text variant="caption" color="muted">
                     {feature.description}
                   </Text>
@@ -174,7 +164,6 @@ function HomeScreen() {
                       styles.comingSoonBadge,
                       {
                         backgroundColor: activeColors.secondary,
-                        borderRadius: radius.full,
                       },
                     ]}
                   >
@@ -183,7 +172,7 @@ function HomeScreen() {
                     </Text>
                   </View>
                 ) : (
-                  <Feather name={"chevron-right" as FeatherIconName} size={20} color={activeColors.mutedForeground} />
+                  <Feather name={"chevron-right" as FeatherIconName} size={20} color={activeColors.textMuted} />
                 )}
               </TouchableOpacity>
             ))}
@@ -192,26 +181,25 @@ function HomeScreen() {
 
         {/* Nutrition Tips */}
         <AnimatedContainer entering={animationsEnabled ? FadeInUp.delay(800).duration(800).springify() : undefined}>
-          <Text variant="h3" style={[styles.sectionTitle, { color: activeColors.foreground }]}>
+          <Text variant="h3" style={styles.sectionTitle}>
             Dicas Nutricionais
           </Text>
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tipsContainer}>
             {nutritionTips.map((item, index) => (
-              <Card key={`tip-${index}`} style={{ ...styles.tipCard, borderRadius: radius.lg }}>
-                <CardContent style={{ padding: spacing[5] }}>
+              <Card key={`tip-${index}`} style={styles.tipCard}>
+                <CardContent style={styles.tipCardContent}>
                   <View
                     style={[
                       styles.tipIconContainer,
                       {
                         backgroundColor: `${item.color}20`,
-                        borderRadius: radius.md,
                       },
                     ]}
                   >
                     <Feather name={item.icon} size={22} color={item.color} />
                   </View>
-                  <Text variant="subtitle" style={{ marginVertical: spacing[2] }}>
+                  <Text variant="subtitle" style={styles.tipTitle}>
                     {item.title}
                   </Text>
                   <Text variant="caption" color="muted">
@@ -230,7 +218,6 @@ function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  // Existing styles remain the same
   heroContainer: {
     alignItems: "center",
     paddingTop: 100,
@@ -253,6 +240,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     paddingHorizontal: 20,
   },
+  contentContainer: {
+    padding: 16,
+  },
   featuredCard: {
     marginBottom: 32,
     shadowColor: "#000",
@@ -263,6 +253,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.07,
     shadowRadius: 4,
     elevation: 3,
+  },
+  featuredCardContent: {
+    backgroundColor: "#22c069", // Primary green color
+    padding: 24,
+    borderRadius: 16,
   },
   featuredCardTitle: {
     marginBottom: 8,
@@ -285,6 +280,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 12,
     alignItems: "center",
+    borderRadius: 12,
   },
   featureIconContainer: {
     height: 48,
@@ -292,6 +288,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 16,
+    borderRadius: 8,
   },
   featureContent: {
     flex: 1,
@@ -299,6 +296,7 @@ const styles = StyleSheet.create({
   comingSoonBadge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
+    borderRadius: 99,
   },
   tipsContainer: {
     marginBottom: 32,
@@ -306,12 +304,21 @@ const styles = StyleSheet.create({
   tipCard: {
     width: 220,
     marginRight: 16,
+    borderRadius: 12,
+  },
+  tipCardContent: {
+    padding: 20,
   },
   tipIconContainer: {
     width: 44,
     height: 44,
     alignItems: "center",
     justifyContent: "center",
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  tipTitle: {
+    marginVertical: 8,
   },
   spacer: {
     height: 80, // Extra space at the bottom for the tab bar
