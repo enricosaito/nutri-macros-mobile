@@ -9,7 +9,7 @@ type ThemeContextType = {
   toggleTheme: () => void;
 };
 
-// Create a default theme context to avoid undefined issues
+// Create a default theme context with light theme
 const defaultThemeContext: ThemeContextType = {
   theme: lightTheme,
   isDark: false,
@@ -33,8 +33,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const theme = isDark ? darkTheme : lightTheme;
+  const contextValue = { theme, isDark, toggleTheme };
 
-  return <ThemeContext.Provider value={{ theme, isDark, toggleTheme }}>{children}</ThemeContext.Provider>;
+  return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>;
 };
 
 export const useTheme = () => {
