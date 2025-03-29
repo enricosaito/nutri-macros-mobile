@@ -1,4 +1,4 @@
-// src/context/AnimationContext.js
+// src/context/AnimationContext.js - Make sure this is correctly implemented
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { useReducedMotion } from "react-native-reanimated";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -7,7 +7,7 @@ const ANIMATION_PREF_KEY = "@NutriMacros:animationPreference";
 
 const AnimationContext = createContext({
   animationsEnabled: true,
-  setAnimationsEnabled: () => {},
+  setAnimationsEnabled: (value) => {}, // Note: This function expects a parameter
   systemReducedMotion: false,
 });
 
@@ -50,7 +50,7 @@ export const AnimationProvider = ({ children }) => {
     <AnimationContext.Provider
       value={{
         animationsEnabled,
-        setAnimationsEnabled,
+        setAnimationsEnabled, // This is a function that expects a boolean parameter
         systemReducedMotion,
       }}
     >
