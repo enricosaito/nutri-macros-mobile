@@ -9,14 +9,14 @@ type ThemeContextType = {
   toggleTheme: () => void;
 };
 
-// Create a default theme to avoid undefined issues
-const defaultTheme = lightTheme;
-
-const ThemeContext = createContext<ThemeContextType>({
-  theme: defaultTheme,
+// Create a default theme context to avoid undefined issues
+const defaultThemeContext: ThemeContextType = {
+  theme: lightTheme,
   isDark: false,
   toggleTheme: () => {},
-});
+};
+
+const ThemeContext = createContext<ThemeContextType>(defaultThemeContext);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const colorScheme = useColorScheme();
@@ -40,13 +40,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 export const useTheme = () => {
   const context = useContext(ThemeContext);
 
-  if (context === undefined) {
-    console.warn("useTheme hook used outside of ThemeProvider, using default theme");
-    return {
-      theme: defaultTheme,
-      isDark: false,
-      toggleTheme: () => {},
-    };
+  if (!context) {
+    console.warn("useTheme hook used outside of ThemeProvider");
+    return defaultThemeContext;
   }
 
   return context;
