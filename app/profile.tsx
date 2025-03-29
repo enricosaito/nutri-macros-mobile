@@ -5,16 +5,25 @@ import { Screen, Text, Button, Card, CardHeader, CardTitle, CardContent } from "
 import { Feather } from "@expo/vector-icons";
 import { colors, darkColors, spacing } from "../src/styles/globalStyles";
 import Animated, { FadeIn, FadeInRight } from "react-native-reanimated";
+import { useAnimations } from "../src/context/AnimationContext";
 import { useAnimationsEnabled } from "../src/utils/animation";
+
+// Define FeatherIconName type for type-safety
+type FeatherIconName = React.ComponentProps<typeof Feather>["name"];
 
 function ProfileScreen() {
   const systemIsDark = useColorScheme() === "dark";
   const [isDark, setIsDark] = useState(systemIsDark);
   const activeColors = isDark ? darkColors : colors;
   const animationsEnabled = useAnimationsEnabled();
+  const { animationsEnabled: animPref, setAnimationsEnabled, systemReducedMotion } = useAnimations();
 
   const toggleTheme = () => {
     setIsDark(!isDark);
+  };
+
+  const toggleAnimations = () => {
+    setAnimationsEnabled(!animPref);
   };
 
   // Resources that will be listed
@@ -35,7 +44,7 @@ function ProfileScreen() {
           style={{ alignItems: "center", marginBottom: spacing[6] }}
         >
           <View style={styles.avatarContainer}>
-            <Feather name="user" size={40} color={activeColors.primary} />
+            <Feather name={"user" as FeatherIconName} size={40} color={activeColors.primary} />
           </View>
           <Text variant="h3" style={{ marginBottom: spacing[1] }}>
             Usuário
@@ -45,16 +54,22 @@ function ProfileScreen() {
           </Text>
         </AnimatedContainer>
 
+        {/* App Settings Section */}
         <AnimatedContainer entering={animationsEnabled ? FadeInRight.delay(200).duration(500) : undefined}>
           <Card style={{ marginBottom: spacing[4] }}>
             <CardHeader>
-              <CardTitle>Aparência</CardTitle>
+              <CardTitle>Aparência e Comportamento</CardTitle>
             </CardHeader>
             <CardContent>
+              {/* Theme Toggle */}
               <View style={styles.settingRow}>
                 <View style={styles.settingLabelContainer}>
                   <View style={styles.settingIcon}>
-                    <Feather name={isDark ? "moon" : "sun"} size={20} color={activeColors.primary} />
+                    <Feather
+                      name={(isDark ? "moon" : "sun") as FeatherIconName}
+                      size={20}
+                      color={activeColors.primary}
+                    />
                   </View>
                   <Text>{isDark ? "Tema Escuro" : "Tema Claro"}</Text>
                 </View>
@@ -63,6 +78,30 @@ function ProfileScreen() {
                   onValueChange={toggleTheme}
                   trackColor={{ false: "#767577", true: `${activeColors.primary}80` }}
                   thumbColor={isDark ? activeColors.primary : "#f4f3f4"}
+                />
+              </View>
+
+              {/* Animation Toggle */}
+              <View style={[styles.settingRow, { marginTop: spacing[4] }]}>
+                <View style={styles.settingLabelContainer}>
+                  <View style={styles.settingIcon}>
+                    <Feather name={"zap" as FeatherIconName} size={20} color={activeColors.primary} />
+                  </View>
+                  <View>
+                    <Text>Animações</Text>
+                    {systemReducedMotion && (
+                      <Text variant="caption" color="muted">
+                        Desativado pelo sistema
+                      </Text>
+                    )}
+                  </View>
+                </View>
+                <Switch
+                  value={animPref}
+                  onValueChange={toggleAnimations} // This should call toggleAnimations with no arguments
+                  trackColor={{ false: "#767577", true: `${activeColors.primary}80` }}
+                  thumbColor={animPref ? activeColors.primary : "#f4f3f4"}
+                  disabled={systemReducedMotion}
                 />
               </View>
             </CardContent>
@@ -81,7 +120,7 @@ function ProfileScreen() {
               <Button
                 title="Entrar com Email"
                 variant="default"
-                leftIcon={<Feather name="log-in" size={18} color="white" />}
+                leftIcon={<Feather name={"log-in" as FeatherIconName} size={18} color="white" />}
                 style={{ marginBottom: spacing[3] }}
                 onPress={() => {}}
                 fullWidth
@@ -89,7 +128,7 @@ function ProfileScreen() {
               <Button
                 title="Continuar com Google"
                 variant="outline"
-                leftIcon={<Feather name="anchor" size={18} color={activeColors.primary} />}
+                leftIcon={<Feather name={"anchor" as FeatherIconName} size={18} color={activeColors.primary} />}
                 onPress={() => {}}
                 fullWidth
               />
@@ -107,7 +146,7 @@ function ProfileScreen() {
                 {accountResources.map((item, index) => (
                   <View key={`resource-${index}`} style={styles.resourceRow}>
                     <View style={styles.checkIcon}>
-                      <Feather name="check" size={14} color="white" />
+                      <Feather name={"check" as FeatherIconName} size={14} color="white" />
                     </View>
                     <Text style={{ flex: 1 }}>{item}</Text>
                   </View>
