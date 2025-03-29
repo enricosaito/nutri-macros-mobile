@@ -19,7 +19,7 @@ function HomeScreen() {
     {
       title: "Calculadora de Macros",
       description: "Calcule suas necessidades diárias de macronutrientes",
-      icon: "calculator",
+      icon: "sliders",
       route: "/calculator",
     },
     {

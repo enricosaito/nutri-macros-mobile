@@ -10,6 +10,3 @@ export * from "./ui/numeric-input";
 // Specialized Components
 export * from "./macro-display";
 export * from "./goal-selector";
-
-// Test Components
-export * from "./simple-test";
