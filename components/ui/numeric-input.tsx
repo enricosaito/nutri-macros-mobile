@@ -11,6 +11,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { colors, darkColors, spacing, radius, typography } from "../../src/styles/globalStyles";
 import { Feather } from "@expo/vector-icons";
+import { useAnimationsEnabled } from "../../src/utils/animation";
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -44,6 +45,7 @@ export function NumericInput({
   const buttonScale = useSharedValue(1);
   const errorAnim = useSharedValue(0);
   const [isFocused, setIsFocused] = useState(false);
+  const animationsEnabled = useAnimationsEnabled();
 
   // Update input value when prop changes
   useEffect(() => {
@@ -82,7 +84,7 @@ export function NumericInput({
     }
 
     // Add error animation if value is clamped
-    if (clampedValue !== newValue) {
+    if (clampedValue !== newValue && animationsEnabled) {
       errorAnim.value = withSequence(
         withTiming(10, { duration: 100 }),
         withRepeat(withTiming(-10, { duration: 100 }), 3, true),
@@ -106,11 +108,15 @@ export function NumericInput({
   };
 
   const handleButtonPressIn = () => {
-    buttonScale.value = withTiming(0.95, { duration: 100 });
+    if (animationsEnabled) {
+      buttonScale.value = withTiming(0.95, { duration: 100 });
+    }
   };
 
   const handleButtonPressOut = () => {
-    buttonScale.value = withTiming(1, { duration: 100 });
+    if (animationsEnabled) {
+      buttonScale.value = withTiming(1, { duration: 100 });
+    }
   };
 
   const buttonAnimStyle = useAnimatedStyle(() => {
@@ -124,6 +130,111 @@ export function NumericInput({
       transform: [{ translateX: errorAnim.value }],
     };
   });
+
+  // If animations are disabled, use regular components
+  if (!animationsEnabled) {
+    return (
+      <View style={styles.container}>
+        {label && (
+          <Text
+            style={[
+              styles.label,
+              {
+                color: activeColors.text,
+                marginBottom: spacing[2],
+              },
+            ]}
+          >
+            {label}
+          </Text>
+        )}
+
+        <View style={styles.inputRow}>
+          <Pressable
+            style={[
+              styles.button,
+              styles.decrementButton,
+              {
+                backgroundColor: activeColors.secondary,
+                borderColor: activeColors.border,
+                borderTopLeftRadius: radius.md,
+                borderBottomLeftRadius: radius.md,
+              },
+            ]}
+            onPress={decrement}
+          >
+            <Feather name="minus" size={20} color={activeColors.text} />
+          </Pressable>
+
+          <View
+            style={[
+              styles.inputContainer,
+              {
+                borderColor: isFocused ? activeColors.primary : activeColors.border,
+                borderTopWidth: 1,
+                borderBottomWidth: 1,
+              },
+            ]}
+          >
+            <TextInput
+              style={[
+                styles.input,
+                {
+                  color: activeColors.text,
+                  backgroundColor: activeColors.card,
+                },
+              ]}
+              value={inputValue}
+              onChangeText={handleInputChange}
+              keyboardType={allowDecimal ? "decimal-pad" : "number-pad"}
+              returnKeyType="done"
+              selectTextOnFocus
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+            />
+
+            {unit && (
+              <View
+                style={[
+                  styles.unitContainer,
+                  {
+                    backgroundColor: activeColors.secondary,
+                    borderColor: activeColors.border,
+                  },
+                ]}
+              >
+                <Text variant="caption" color="muted">
+                  {unit}
+                </Text>
+              </View>
+            )}
+          </View>
+
+          <Pressable
+            style={[
+              styles.button,
+              styles.incrementButton,
+              {
+                backgroundColor: activeColors.secondary,
+                borderColor: activeColors.border,
+                borderTopRightRadius: radius.md,
+                borderBottomRightRadius: radius.md,
+              },
+            ]}
+            onPress={increment}
+          >
+            <Feather name="plus" size={20} color={activeColors.text} />
+          </Pressable>
+        </View>
+
+        {error && (
+          <Text variant="caption" color="error" style={{ marginTop: spacing[2] }}>
+            {error}
+          </Text>
+        )}
+      </View>
+    );
+  }
 
   return (
     <AnimatedView style={[containerAnimStyle, styles.container]}>
