@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, FadeIn, SlideInRight } from "react-native-reanimated";
 import { colors, darkColors, spacing } from "../src/styles/globalStyles";
 import { Feather } from "@expo/vector-icons";
+import { useAnimationsEnabled } from "../src/utils/animation";
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 
@@ -25,6 +26,7 @@ interface MacroDisplayProps {
 export function MacroDisplay({ macros, calories, showPercentages = true, style }: MacroDisplayProps) {
   const isDark = useColorScheme() === "dark";
   const activeColors = isDark ? darkColors : colors;
+  const animationsEnabled = useAnimationsEnabled();
 
   // Animated values for each macro
   const proteinWidth = useSharedValue(0);
@@ -44,10 +46,16 @@ export function MacroDisplay({ macros, calories, showPercentages = true, style }
 
   // Update animated values when macros change
   useEffect(() => {
-    proteinWidth.value = withTiming(proteinPercent, { duration: 800 });
-    carbsWidth.value = withTiming(carbsPercent, { duration: 800 });
-    fatWidth.value = withTiming(fatPercent, { duration: 800 });
-  }, [macros, proteinPercent, carbsPercent, fatPercent, proteinWidth, carbsWidth, fatWidth]);
+    if (animationsEnabled) {
+      proteinWidth.value = withTiming(proteinPercent, { duration: 800 });
+      carbsWidth.value = withTiming(carbsPercent, { duration: 800 });
+      fatWidth.value = withTiming(fatPercent, { duration: 800 });
+    } else {
+      proteinWidth.value = proteinPercent;
+      carbsWidth.value = carbsPercent;
+      fatWidth.value = fatPercent;
+    }
+  }, [macros, proteinPercent, carbsPercent, fatPercent, proteinWidth, carbsWidth, fatWidth, animationsEnabled]);
 
   // Animated styles for progress bars
   const proteinAnimStyle = useAnimatedStyle(() => {
@@ -107,13 +115,15 @@ export function MacroDisplay({ macros, calories, showPercentages = true, style }
     },
   ];
 
+  const AnimatedContainer = animationsEnabled ? Animated.View : View;
+
   return (
     <Card style={style}>
       <CardHeader>
         <CardTitle>Distribuição de Macronutrientes</CardTitle>
       </CardHeader>
       <CardContent>
-        <Animated.View entering={FadeIn.delay(300).duration(500)}>
+        <AnimatedContainer entering={animationsEnabled ? FadeIn.delay(300).duration(500) : undefined}>
           <Text
             variant="h2"
             color="primary"
@@ -157,7 +167,7 @@ export function MacroDisplay({ macros, calories, showPercentages = true, style }
               />
             ))}
           </View>
-        </Animated.View>
+        </AnimatedContainer>
       </CardContent>
     </Card>
   );
@@ -177,15 +187,18 @@ interface MacroRowProps {
 function MacroRow({ label, grams, calories, percent, showPercent, color, icon, delay }: MacroRowProps) {
   const isDark = useColorScheme() === "dark";
   const activeColors = isDark ? darkColors : colors;
+  const animationsEnabled = useAnimationsEnabled();
+
+  const AnimatedContainer = animationsEnabled ? Animated.View : View;
 
   return (
-    <Animated.View
+    <AnimatedContainer
       style={{
         flexDirection: "row",
         alignItems: "center",
         marginBottom: spacing[3],
       }}
-      entering={SlideInRight.delay(delay).springify()}
+      entering={animationsEnabled ? SlideInRight.delay(delay).springify() : undefined}
     >
       <View
         style={{
@@ -246,6 +259,6 @@ function MacroRow({ label, grams, calories, percent, showPercent, color, icon, d
           </Text>
         )}
       </View>
-    </Animated.View>
+    </AnimatedContainer>
   );
 }
