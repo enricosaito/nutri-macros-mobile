@@ -1,8 +1,9 @@
-// src/components/ui/input.tsx
-import React from "react";
-import { View, TextInput, TextInputProps, StyleSheet, ViewStyle } from "react-native";
+// components/ui/input.tsx
+import React, { useState } from "react";
+import { View, TextInput, TextInputProps, StyleSheet, ViewStyle, TouchableOpacity } from "react-native";
 import { Text } from "./text";
 import { useTheme } from "../../src/context/ThemeContext";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -10,8 +11,9 @@ interface InputProps extends TextInputProps {
   containerStyle?: ViewStyle;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
-  className?: string;
 }
+
+const AnimatedView = Animated.createAnimatedComponent(View);
 
 export function Input({
   label,
@@ -19,31 +21,80 @@ export function Input({
   containerStyle,
   leftIcon,
   rightIcon,
-  className = "",
   style,
+  onFocus,
+  onBlur,
   ...props
 }: InputProps) {
   const { theme } = useTheme();
+  const [isFocused, setIsFocused] = useState(false);
+  const focusAnim = useSharedValue(0);
+
+  const handleFocus = (e: any) => {
+    setIsFocused(true);
+    focusAnim.value = withTiming(1, { duration: 200 });
+    onFocus && onFocus(e);
+  };
+
+  const handleBlur = (e: any) => {
+    setIsFocused(false);
+    focusAnim.value = withTiming(0, { duration: 200 });
+    onBlur && onBlur(e);
+  };
+
+  const labelAnimStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateY: withTiming(isFocused || props.value ? -24 : 0, {
+            duration: 150,
+          }),
+        },
+        {
+          scale: withTiming(isFocused || props.value ? 0.85 : 1, {
+            duration: 150,
+          }),
+        },
+      ],
+      color: withTiming(
+        isFocused ? theme.colors.primary : error ? theme.colors.destructive : theme.colors.mutedForeground,
+        { duration: 150 }
+      ),
+    };
+  });
 
   return (
     <View style={[styles.container, containerStyle]}>
       {label && (
-        <Text
+        <Animated.Text
           style={[
             styles.label,
             {
-              color: theme.colors.foreground,
+              left: leftIcon ? theme.spacing[9] : theme.spacing[3],
+              color: theme.colors.mutedForeground,
               fontSize: theme.typography.fontSize.sm,
-              marginBottom: theme.spacing[1],
             },
+            labelAnimStyle,
           ]}
         >
           {label}
-        </Text>
+        </Animated.Text>
       )}
 
       <View style={styles.inputContainer}>
-        {leftIcon && <View style={[styles.leftIconContainer, { left: theme.spacing[3] }]}>{leftIcon}</View>}
+        {leftIcon && (
+          <View
+            style={[
+              styles.leftIconContainer,
+              {
+                left: theme.spacing[3],
+                opacity: isFocused ? 1 : 0.7,
+              },
+            ]}
+          >
+            {leftIcon}
+          </View>
+        )}
 
         <TextInput
           style={[
@@ -51,22 +102,36 @@ export function Input({
             {
               color: theme.colors.foreground,
               backgroundColor: "transparent",
-              borderColor: error ? theme.colors.destructive : theme.colors.input,
+              borderColor: error ? theme.colors.destructive : isFocused ? theme.colors.primary : theme.colors.input,
               borderRadius: theme.radius.md,
               paddingLeft: leftIcon ? theme.spacing[9] : theme.spacing[3],
               paddingRight: rightIcon ? theme.spacing[9] : theme.spacing[3],
-              height: 36,
+              paddingTop: label ? theme.spacing[3] : theme.spacing[2],
+              paddingBottom: theme.spacing[2],
+              height: label ? 56 : 44,
               fontSize: theme.typography.fontSize.base,
-              paddingVertical: theme.spacing[1],
             },
-            error && { borderColor: theme.colors.destructive },
             style,
           ]}
           placeholderTextColor={theme.colors.mutedForeground}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           {...props}
         />
 
-        {rightIcon && <View style={[styles.rightIconContainer, { right: theme.spacing[3] }]}>{rightIcon}</View>}
+        {rightIcon && (
+          <View
+            style={[
+              styles.rightIconContainer,
+              {
+                right: theme.spacing[3],
+                opacity: isFocused ? 1 : 0.7,
+              },
+            ]}
+          >
+            {rightIcon}
+          </View>
+        )}
       </View>
 
       {error && (
@@ -77,6 +142,7 @@ export function Input({
               color: theme.colors.destructive,
               fontSize: theme.typography.fontSize.sm,
               marginTop: theme.spacing[1],
+              marginLeft: theme.spacing[1],
             },
           ]}
         >
@@ -93,7 +159,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   label: {
-    marginLeft: 4,
+    position: "absolute",
+    top: 16,
+    zIndex: 1,
+    backgroundColor: "transparent",
   },
   inputContainer: {
     position: "relative",
@@ -114,7 +183,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     zIndex: 1,
   },
-  errorText: {
-    marginLeft: 4,
-  },
+  errorText: {},
 });
