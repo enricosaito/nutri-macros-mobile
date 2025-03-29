@@ -2,16 +2,40 @@
 import React from "react";
 import { View, StyleSheet, ViewStyle, TextStyle } from "react-native";
 import { Text } from "./text";
-import { theme } from "../../src/styles/theme";
+import { useTheme } from "../../src/context/ThemeContext";
+import Animated, { FadeIn } from "react-native-reanimated";
 
 // Card container
 interface CardProps {
   children: React.ReactNode;
   style?: ViewStyle | undefined;
+  animate?: boolean;
 }
 
-export function Card({ children, style }: CardProps) {
-  return <View style={[styles.card, style]}>{children}</View>;
+const AnimatedView = Animated.createAnimatedComponent(View);
+
+export function Card({ children, style, animate = false }: CardProps) {
+  const { theme } = useTheme();
+
+  const cardStyle = [
+    styles.card,
+    {
+      backgroundColor: theme.colors.card,
+      borderColor: theme.colors.border,
+      borderRadius: theme.radius.xl,
+    },
+    style,
+  ];
+
+  if (animate) {
+    return (
+      <AnimatedView entering={FadeIn.duration(400)} style={cardStyle}>
+        {children}
+      </AnimatedView>
+    );
+  }
+
+  return <View style={cardStyle}>{children}</View>;
 }
 
 // Card header
@@ -21,7 +45,22 @@ interface CardHeaderProps {
 }
 
 export function CardHeader({ children, style }: CardHeaderProps) {
-  return <View style={[styles.cardHeader, style]}>{children}</View>;
+  const { theme } = useTheme();
+
+  return (
+    <View
+      style={[
+        styles.cardHeader,
+        {
+          paddingHorizontal: theme.spacing[6],
+          paddingVertical: theme.spacing[4],
+        },
+        style,
+      ]}
+    >
+      {children}
+    </View>
+  );
 }
 
 // Card title
@@ -31,8 +70,19 @@ interface CardTitleProps {
 }
 
 export function CardTitle({ children, style }: CardTitleProps) {
+  const { theme } = useTheme();
+
   return (
-    <Text variant="h3" style={style}>
+    <Text
+      style={[
+        {
+          fontSize: theme.typography.fontSize.lg,
+          fontWeight: theme.typography.fontWeight.semibold,
+          color: theme.colors.cardForeground,
+        },
+        style,
+      ]}
+    >
       {children}
     </Text>
   );
@@ -45,8 +95,19 @@ interface CardDescriptionProps {
 }
 
 export function CardDescription({ children, style }: CardDescriptionProps) {
+  const { theme } = useTheme();
+
   return (
-    <Text variant="caption" color="muted" style={style}>
+    <Text
+      style={[
+        {
+          fontSize: theme.typography.fontSize.sm,
+          color: theme.colors.mutedForeground,
+          marginTop: theme.spacing[1],
+        },
+        style,
+      ]}
+    >
       {children}
     </Text>
   );
@@ -59,7 +120,22 @@ interface CardContentProps {
 }
 
 export function CardContent({ children, style }: CardContentProps) {
-  return <View style={[styles.cardContent, style]}>{children}</View>;
+  const { theme } = useTheme();
+
+  return (
+    <View
+      style={[
+        styles.cardContent,
+        {
+          paddingHorizontal: theme.spacing[6],
+          paddingBottom: theme.spacing[6],
+        },
+        style,
+      ]}
+    >
+      {children}
+    </View>
+  );
 }
 
 // Card footer
@@ -69,41 +145,48 @@ interface CardFooterProps {
 }
 
 export function CardFooter({ children, style }: CardFooterProps) {
-  return <View style={[styles.cardFooter, style]}>{children}</View>;
+  const { theme } = useTheme();
+
+  return (
+    <View
+      style={[
+        styles.cardFooter,
+        {
+          borderTopColor: theme.colors.border,
+          paddingHorizontal: theme.spacing[6],
+          paddingVertical: theme.spacing[4],
+        },
+        style,
+      ]}
+    >
+      {children}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "white",
-    borderRadius: theme.borderRadius.md,
     borderWidth: 1,
-    borderColor: theme.colors.border,
     overflow: "hidden",
+    marginBottom: 16,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 1,
     },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 2,
   },
   cardHeader: {
-    paddingHorizontal: theme.spacing.md,
-    paddingTop: theme.spacing.md,
-    paddingBottom: theme.spacing.sm,
+    borderBottomWidth: 0,
   },
   cardContent: {
-    paddingHorizontal: theme.spacing.md,
-    paddingBottom: theme.spacing.md,
+    paddingTop: 0,
   },
   cardFooter: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: theme.spacing.md,
-    paddingTop: theme.spacing.md,
-    paddingBottom: theme.spacing.md,
     borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
   },
 });
