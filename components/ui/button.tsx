@@ -1,7 +1,16 @@
 // components/ui/button.tsx
 import React from "react";
-import { TouchableOpacity, Text, ActivityIndicator, StyleSheet, ViewStyle, TextStyle, View } from "react-native";
-import { useTheme } from "../../src/context/ThemeContext";
+import {
+  TouchableOpacity,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+  ViewStyle,
+  TextStyle,
+  View,
+  useColorScheme,
+} from "react-native";
+import { colors, darkColors, spacing, radius, typography } from "../../src/styles/globalStyles";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 type ButtonVariant = "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
@@ -38,7 +47,8 @@ export function Button({
   leftIcon,
   rightIcon,
 }: ButtonProps) {
-  const { theme } = useTheme();
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
   const scale = useSharedValue(1);
 
   const handlePressIn = () => {
@@ -59,26 +69,26 @@ export function Button({
     switch (variant) {
       case "default":
         return {
-          backgroundColor: theme.colors.primary,
-          borderColor: theme.colors.primary,
+          backgroundColor: activeColors.primary,
+          borderColor: activeColors.primary,
           borderWidth: 1,
         };
       case "destructive":
         return {
-          backgroundColor: theme.colors.destructive,
-          borderColor: theme.colors.destructive,
+          backgroundColor: activeColors.error,
+          borderColor: activeColors.error,
           borderWidth: 1,
         };
       case "outline":
         return {
           backgroundColor: "transparent",
-          borderColor: theme.colors.border,
+          borderColor: activeColors.border,
           borderWidth: 1,
         };
       case "secondary":
         return {
-          backgroundColor: theme.colors.secondary,
-          borderColor: theme.colors.secondary,
+          backgroundColor: activeColors.secondary,
+          borderColor: activeColors.secondary,
           borderWidth: 1,
         };
       case "ghost":
@@ -102,24 +112,24 @@ export function Button({
     switch (size) {
       case "default":
         return {
-          paddingHorizontal: theme.spacing[4],
-          paddingVertical: theme.spacing[2],
-          height: 44, // Increased for better touch targets
-          borderRadius: theme.radius.lg,
+          paddingHorizontal: spacing[4],
+          paddingVertical: spacing[2],
+          height: 44,
+          borderRadius: radius.lg,
         };
       case "sm":
         return {
-          paddingHorizontal: theme.spacing[3],
-          paddingVertical: theme.spacing[1],
+          paddingHorizontal: spacing[3],
+          paddingVertical: spacing[1],
           height: 36,
-          borderRadius: theme.radius.md,
+          borderRadius: radius.md,
         };
       case "lg":
         return {
-          paddingHorizontal: theme.spacing[8],
-          paddingVertical: theme.spacing[2],
+          paddingHorizontal: spacing[8],
+          paddingVertical: spacing[2],
           height: 48,
-          borderRadius: theme.radius.lg,
+          borderRadius: radius.lg,
         };
       case "icon":
         return {
@@ -129,7 +139,7 @@ export function Button({
           paddingVertical: 0,
           alignItems: "center",
           justifyContent: "center",
-          borderRadius: theme.radius.lg,
+          borderRadius: radius.lg,
         };
       default:
         return {};
@@ -138,29 +148,30 @@ export function Button({
 
   const getTextStyle = (): TextStyle => {
     const baseStyle: TextStyle = {
-      fontSize: theme.typography.fontSize.base,
-      fontWeight: "500" as const,
+      fontSize: typography.fontSize.base,
+      fontWeight: 500,
+      textAlign: "center",
     };
 
     switch (variant) {
       case "default":
-        return { ...baseStyle, color: theme.colors.primaryForeground };
+        return { ...baseStyle, color: "#ffffff" };
       case "destructive":
-        return { ...baseStyle, color: theme.colors.destructiveForeground };
+        return { ...baseStyle, color: "#ffffff" };
       case "outline":
-        return { ...baseStyle, color: theme.colors.primary };
+        return { ...baseStyle, color: activeColors.primary };
       case "secondary":
-        return { ...baseStyle, color: theme.colors.primary };
+        return { ...baseStyle, color: activeColors.primary };
       case "ghost":
-        return { ...baseStyle, color: theme.colors.primary };
+        return { ...baseStyle, color: activeColors.primary };
       case "link":
         return {
           ...baseStyle,
-          color: theme.colors.primary,
+          color: activeColors.primary,
           textDecorationLine: "underline",
         };
       default:
-        return { ...baseStyle, color: theme.colors.primaryForeground };
+        return { ...baseStyle, color: "#ffffff" };
     }
   };
 
@@ -181,9 +192,9 @@ export function Button({
 
   const getLoaderColor = () => {
     if (variant === "outline" || variant === "ghost" || variant === "link" || variant === "secondary") {
-      return theme.colors.primary;
+      return activeColors.primary;
     }
-    return theme.colors.primaryForeground;
+    return "#ffffff";
   };
 
   const content = children || title;

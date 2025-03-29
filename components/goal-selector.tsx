@@ -1,9 +1,9 @@
 // components/goal-selector.tsx
 import React from "react";
-import { View, Pressable, StyleSheet } from "react-native";
+import { View, Pressable, StyleSheet, useColorScheme } from "react-native";
 import { Text } from "./ui/text";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, FadeInDown } from "react-native-reanimated";
-import { useTheme } from "../src/context/ThemeContext";
+import { colors, darkColors, spacing, radius } from "../src/styles/globalStyles";
 import { Feather } from "@expo/vector-icons";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -21,10 +21,11 @@ interface GoalSelectorProps {
 }
 
 export function GoalSelector({ goals, selectedGoalId, onSelectGoal }: GoalSelectorProps) {
-  const { theme } = useTheme();
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
 
   return (
-    <View style={{ gap: theme.spacing[3] }}>
+    <View style={{ gap: spacing[3] }}>
       {goals.map((goal, index) => (
         <Animated.View
           key={`goal-${goal.id}`}
@@ -46,7 +47,8 @@ interface GoalOptionProps {
 }
 
 function GoalOption({ goal, isSelected, onPress }: GoalOptionProps) {
-  const { theme } = useTheme();
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
   const scale = useSharedValue(1);
 
   const handlePressIn = () => {
@@ -70,10 +72,10 @@ function GoalOption({ goal, isSelected, onPress }: GoalOptionProps) {
         styles.optionContainer,
         {
           borderWidth: isSelected ? 2 : 1,
-          borderRadius: theme.radius.lg,
-          padding: theme.spacing[4],
-          borderColor: isSelected ? theme.colors.primary : theme.colors.border,
-          backgroundColor: isSelected ? `${theme.colors.primary}10` : theme.colors.card,
+          borderRadius: radius.lg,
+          padding: spacing[4],
+          borderColor: isSelected ? activeColors.primary : activeColors.border,
+          backgroundColor: isSelected ? `${activeColors.primary}10` : activeColors.card,
         },
       ]}
       onPressIn={handlePressIn}
@@ -83,31 +85,23 @@ function GoalOption({ goal, isSelected, onPress }: GoalOptionProps) {
       <View style={styles.optionContent}>
         <View style={{ flex: 1 }}>
           <Text
+            variant="subtitle"
             style={{
-              fontSize: theme.typography.fontSize.base,
-              fontWeight: theme.typography.fontWeight.medium as any,
-              color: isSelected ? theme.colors.primary : theme.colors.foreground,
-              marginBottom: theme.spacing[1],
+              color: isSelected ? activeColors.primary : activeColors.text,
+              marginBottom: spacing[1],
             }}
           >
             {goal.name}
           </Text>
-          <Text
-            style={{
-              fontSize: theme.typography.fontSize.sm,
-              color: theme.colors.mutedForeground,
-            }}
-          >
-            {goal.description}
-          </Text>
+          <Text variant="caption">{goal.description}</Text>
         </View>
 
         <View
           style={[
             styles.radioCircle,
             {
-              borderColor: isSelected ? theme.colors.primary : theme.colors.border,
-              backgroundColor: isSelected ? theme.colors.primary : "transparent",
+              borderColor: isSelected ? activeColors.primary : activeColors.border,
+              backgroundColor: isSelected ? activeColors.primary : "transparent",
             },
           ]}
         >

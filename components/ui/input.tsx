@@ -1,9 +1,8 @@
 // components/ui/input.tsx
 import React, { useState } from "react";
-import { View, TextInput, TextInputProps, StyleSheet, ViewStyle, Text as RNText } from "react-native";
+import { View, TextInput, TextInputProps, StyleSheet, ViewStyle, useColorScheme } from "react-native";
 import { Text } from "./text";
-import { useTheme } from "../../src/context/ThemeContext";
-import Animated, { useAnimatedStyle, useSharedValue, withTiming, AnimatedStyleProp } from "react-native-reanimated";
+import { colors, darkColors, spacing, radius, typography } from "../../src/styles/globalStyles";
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -12,9 +11,6 @@ interface InputProps extends TextInputProps {
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
 }
-
-const AnimatedView = Animated.createAnimatedComponent(View);
-const AnimatedText = Animated.createAnimatedComponent(RNText);
 
 export function Input({
   label,
@@ -28,67 +24,49 @@ export function Input({
   value,
   ...props
 }: InputProps) {
-  const { theme } = useTheme();
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
   const [isFocused, setIsFocused] = useState(false);
-  const focusAnim = useSharedValue(0);
 
   const handleFocus = (e: any) => {
     setIsFocused(true);
-    focusAnim.value = withTiming(1, { duration: 200 });
     onFocus && onFocus(e);
   };
 
   const handleBlur = (e: any) => {
     setIsFocused(false);
-    focusAnim.value = withTiming(0, { duration: 200 });
     onBlur && onBlur(e);
   };
-
-  const labelAnimStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateY: withTiming(isFocused || (value && value.toString().length > 0) ? -24 : 0, {
-            duration: 150,
-          }),
-        },
-        {
-          scale: withTiming(isFocused || (value && value.toString().length > 0) ? 0.85 : 1, {
-            duration: 150,
-          }),
-        },
-      ],
-      color: isFocused ? theme.colors.primary : error ? theme.colors.destructive : theme.colors.mutedForeground,
-    } as AnimatedStyleProp<any>;
-  });
 
   return (
     <View style={[styles.container, containerStyle]}>
       {label && (
-        <AnimatedText
-          style={[
-            styles.label,
-            {
-              left: leftIcon ? theme.spacing[9] : theme.spacing[3],
-              fontSize: theme.typography.fontSize.sm,
-            },
-            labelAnimStyle,
-          ]}
+        <Text
+          style={{
+            position: "absolute",
+            top: isFocused || (value && value.toString().length > 0) ? 8 : 16,
+            left: leftIcon ? spacing[9] : spacing[3],
+            fontSize:
+              isFocused || (value && value.toString().length > 0) ? typography.fontSize.xs : typography.fontSize.sm,
+            color: isFocused ? activeColors.primary : error ? activeColors.error : activeColors.textMuted,
+            zIndex: 1,
+          }}
         >
           {label}
-        </AnimatedText>
+        </Text>
       )}
 
       <View style={styles.inputContainer}>
         {leftIcon && (
           <View
-            style={[
-              styles.leftIconContainer,
-              {
-                left: theme.spacing[3],
-                opacity: isFocused ? 1 : 0.7,
-              },
-            ]}
+            style={{
+              position: "absolute",
+              left: spacing[3],
+              height: "100%",
+              justifyContent: "center",
+              opacity: isFocused ? 1 : 0.7,
+              zIndex: 1,
+            }}
           >
             {leftIcon}
           </View>
@@ -96,22 +74,23 @@ export function Input({
 
         <TextInput
           style={[
-            styles.input,
             {
-              color: theme.colors.foreground,
+              color: activeColors.text,
               backgroundColor: "transparent",
-              borderColor: error ? theme.colors.destructive : isFocused ? theme.colors.primary : theme.colors.input,
-              borderRadius: theme.radius.md,
-              paddingLeft: leftIcon ? theme.spacing[9] : theme.spacing[3],
-              paddingRight: rightIcon ? theme.spacing[9] : theme.spacing[3],
-              paddingTop: label ? theme.spacing[3] : theme.spacing[2],
-              paddingBottom: theme.spacing[2],
+              borderColor: error ? activeColors.error : isFocused ? activeColors.primary : activeColors.border,
+              borderRadius: radius.md,
+              paddingLeft: leftIcon ? spacing[9] : spacing[3],
+              paddingRight: rightIcon ? spacing[9] : spacing[3],
+              paddingTop: label ? spacing[3] : spacing[2],
+              paddingBottom: spacing[2],
               height: label ? 56 : 44,
-              fontSize: theme.typography.fontSize.base,
+              fontSize: typography.fontSize.base,
+              borderWidth: 1,
+              width: "100%",
             },
             style,
           ]}
-          placeholderTextColor={theme.colors.mutedForeground}
+          placeholderTextColor={activeColors.textMuted}
           onFocus={handleFocus}
           onBlur={handleBlur}
           value={value}
@@ -120,13 +99,14 @@ export function Input({
 
         {rightIcon && (
           <View
-            style={[
-              styles.rightIconContainer,
-              {
-                right: theme.spacing[3],
-                opacity: isFocused ? 1 : 0.7,
-              },
-            ]}
+            style={{
+              position: "absolute",
+              right: spacing[3],
+              height: "100%",
+              justifyContent: "center",
+              opacity: isFocused ? 1 : 0.7,
+              zIndex: 1,
+            }}
           >
             {rightIcon}
           </View>
@@ -135,11 +115,11 @@ export function Input({
 
       {error && (
         <Text
+          variant="caption"
+          color="error"
           style={{
-            color: theme.colors.destructive,
-            fontSize: theme.typography.fontSize.sm,
-            marginTop: theme.spacing[1],
-            marginLeft: theme.spacing[1],
+            marginTop: spacing[1],
+            marginLeft: spacing[1],
           }}
         >
           {error}
@@ -154,29 +134,7 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 16,
   },
-  label: {
-    position: "absolute",
-    top: 16,
-    zIndex: 1,
-    backgroundColor: "transparent",
-  },
   inputContainer: {
     position: "relative",
-  },
-  input: {
-    borderWidth: 1,
-    width: "100%",
-  },
-  leftIconContainer: {
-    position: "absolute",
-    height: "100%",
-    justifyContent: "center",
-    zIndex: 1,
-  },
-  rightIconContainer: {
-    position: "absolute",
-    height: "100%",
-    justifyContent: "center",
-    zIndex: 1,
   },
 });

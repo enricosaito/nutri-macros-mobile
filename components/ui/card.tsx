@@ -1,8 +1,8 @@
 // components/ui/card.tsx
 import React from "react";
-import { View, StyleSheet, ViewStyle, TextStyle } from "react-native";
+import { View, StyleSheet, ViewStyle, TextStyle, useColorScheme } from "react-native";
 import { Text } from "./text";
-import { useTheme } from "../../src/context/ThemeContext";
+import { colors, darkColors, spacing, radius } from "../../src/styles/globalStyles";
 import Animated, { FadeIn } from "react-native-reanimated";
 
 // Card container
@@ -15,15 +15,18 @@ interface CardProps {
 const AnimatedView = Animated.createAnimatedComponent(View);
 
 export function Card({ children, style, animate = false }: CardProps) {
-  const { theme } = useTheme();
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
 
-  const cardStyle = {
-    ...styles.card,
-    backgroundColor: theme.colors.card,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.xl,
-    ...(style as object),
-  };
+  const cardStyle = [
+    styles.card,
+    {
+      backgroundColor: activeColors.card,
+      borderColor: activeColors.border,
+      borderRadius: radius.xl,
+    },
+    style,
+  ];
 
   if (animate) {
     return (
@@ -43,16 +46,16 @@ interface CardHeaderProps {
 }
 
 export function CardHeader({ children, style }: CardHeaderProps) {
-  const { theme } = useTheme();
-
   return (
     <View
-      style={{
-        ...styles.cardHeader,
-        paddingHorizontal: theme.spacing[6],
-        paddingVertical: theme.spacing[4],
-        ...(style as object),
-      }}
+      style={[
+        styles.cardHeader,
+        {
+          paddingHorizontal: spacing[6],
+          paddingVertical: spacing[4],
+        },
+        style,
+      ]}
     >
       {children}
     </View>
@@ -66,16 +69,18 @@ interface CardTitleProps {
 }
 
 export function CardTitle({ children, style }: CardTitleProps) {
-  const { theme } = useTheme();
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
 
   return (
     <Text
-      style={{
-        fontSize: theme.typography.fontSize.lg,
-        fontWeight: theme.typography.fontWeight.semibold as TextStyle["fontWeight"],
-        color: theme.colors.cardForeground,
-        ...(style as object),
-      }}
+      variant="h3"
+      style={[
+        {
+          color: activeColors.text,
+        },
+        style,
+      ]}
     >
       {children}
     </Text>
@@ -89,16 +94,19 @@ interface CardDescriptionProps {
 }
 
 export function CardDescription({ children, style }: CardDescriptionProps) {
-  const { theme } = useTheme();
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
 
   return (
     <Text
-      style={{
-        fontSize: theme.typography.fontSize.sm,
-        color: theme.colors.mutedForeground,
-        marginTop: theme.spacing[1],
-        ...(style as object),
-      }}
+      variant="caption"
+      style={[
+        {
+          color: activeColors.textMuted,
+          marginTop: spacing[1],
+        },
+        style,
+      ]}
     >
       {children}
     </Text>
@@ -112,16 +120,16 @@ interface CardContentProps {
 }
 
 export function CardContent({ children, style }: CardContentProps) {
-  const { theme } = useTheme();
-
   return (
     <View
-      style={{
-        ...styles.cardContent,
-        paddingHorizontal: theme.spacing[6],
-        paddingBottom: theme.spacing[6],
-        ...(style as object),
-      }}
+      style={[
+        styles.cardContent,
+        {
+          paddingHorizontal: spacing[6],
+          paddingBottom: spacing[6],
+        },
+        style,
+      ]}
     >
       {children}
     </View>
@@ -135,17 +143,20 @@ interface CardFooterProps {
 }
 
 export function CardFooter({ children, style }: CardFooterProps) {
-  const { theme } = useTheme();
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
 
   return (
     <View
-      style={{
-        ...styles.cardFooter,
-        borderTopColor: theme.colors.border,
-        paddingHorizontal: theme.spacing[6],
-        paddingVertical: theme.spacing[4],
-        ...(style as object),
-      }}
+      style={[
+        styles.cardFooter,
+        {
+          borderTopColor: activeColors.border,
+          paddingHorizontal: spacing[6],
+          paddingVertical: spacing[4],
+        },
+        style,
+      ]}
     >
       {children}
     </View>

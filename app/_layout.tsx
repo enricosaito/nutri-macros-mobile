@@ -1,26 +1,29 @@
 // app/_layout.tsx
 import React from "react";
 import { Tabs } from "expo-router";
-import { StatusBar } from "expo-status-bar";
+import { StatusBar, useColorScheme } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import { ThemeProvider, useTheme } from "../src/context/ThemeContext";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { colors, darkColors } from "../src/styles/globalStyles";
 
-// Create a separate TabsNavigator component that uses the theme hook
-function TabsNavigator() {
-  const { theme, isDark } = useTheme();
+export default function RootLayout() {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+
+  // Directly use theme colors based on color scheme
+  const activeColors = isDark ? darkColors : colors;
 
   return (
-    <>
-      <StatusBar style={isDark ? "light" : "dark"} />
+    <SafeAreaProvider>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={activeColors.background} />
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: theme.colors.primary,
-          tabBarInactiveTintColor: theme.colors.mutedForeground,
+          tabBarActiveTintColor: activeColors.primary,
+          tabBarInactiveTintColor: activeColors.textMuted,
           tabBarStyle: {
             borderTopWidth: 1,
-            borderTopColor: theme.colors.border,
-            backgroundColor: theme.colors.card,
+            borderTopColor: activeColors.border,
+            backgroundColor: activeColors.card,
             height: 60,
             paddingBottom: 10,
           },
@@ -38,7 +41,6 @@ function TabsNavigator() {
           name="calculator"
           options={{
             title: "Calculadora",
-            // Use a valid Feather icon name like "sliders"
             tabBarIcon: ({ color, size }) => <Feather name="sliders" size={size} color={color} />,
           }}
         />
@@ -56,18 +58,13 @@ function TabsNavigator() {
             tabBarIcon: ({ color, size }) => <Feather name="user" size={size} color={color} />,
           }}
         />
+        <Tabs.Screen
+          name="results"
+          options={{
+            href: null,
+          }}
+        />
       </Tabs>
-    </>
-  );
-}
-
-// Root layout component with the theme provider
-export default function RootLayout() {
-  return (
-    <SafeAreaProvider>
-      <ThemeProvider>
-        <TabsNavigator />
-      </ThemeProvider>
     </SafeAreaProvider>
   );
 }

@@ -1,6 +1,6 @@
 // components/ui/numeric-input.tsx
 import React, { useState, useEffect } from "react";
-import { View, TextInput, Pressable, StyleSheet } from "react-native";
+import { View, TextInput, Pressable, StyleSheet, useColorScheme } from "react-native";
 import { Text } from "./text";
 import Animated, {
   useAnimatedStyle,
@@ -8,9 +8,8 @@ import Animated, {
   withTiming,
   withRepeat,
   withSequence,
-  Easing,
 } from "react-native-reanimated";
-import { useTheme } from "../../src/context/ThemeContext";
+import { colors, darkColors, spacing, radius, typography } from "../../src/styles/globalStyles";
 import { Feather } from "@expo/vector-icons";
 
 const AnimatedView = Animated.createAnimatedComponent(View);
@@ -39,7 +38,8 @@ export function NumericInput({
   error,
   allowDecimal = false,
 }: NumericInputProps) {
-  const { theme } = useTheme();
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
   const [inputValue, setInputValue] = useState(value.toString());
   const buttonScale = useSharedValue(1);
   const errorAnim = useSharedValue(0);
@@ -128,7 +128,17 @@ export function NumericInput({
   return (
     <AnimatedView style={[containerAnimStyle, styles.container]}>
       {label && (
-        <Text style={[styles.label, { color: theme.colors.foreground, marginBottom: theme.spacing[2] }]}>{label}</Text>
+        <Text
+          style={[
+            styles.label,
+            {
+              color: activeColors.text,
+              marginBottom: spacing[2],
+            },
+          ]}
+        >
+          {label}
+        </Text>
       )}
 
       <View style={styles.inputRow}>
@@ -138,24 +148,24 @@ export function NumericInput({
             styles.button,
             styles.decrementButton,
             {
-              backgroundColor: theme.colors.secondary,
-              borderColor: theme.colors.border,
-              borderTopLeftRadius: theme.radius.md,
-              borderBottomLeftRadius: theme.radius.md,
+              backgroundColor: activeColors.secondary,
+              borderColor: activeColors.border,
+              borderTopLeftRadius: radius.md,
+              borderBottomLeftRadius: radius.md,
             },
           ]}
           onPressIn={handleButtonPressIn}
           onPressOut={handleButtonPressOut}
           onPress={decrement}
         >
-          <Feather name="minus" size={20} color={theme.colors.foreground} />
+          <Feather name="minus" size={20} color={activeColors.text} />
         </AnimatedPressable>
 
         <View
           style={[
             styles.inputContainer,
             {
-              borderColor: isFocused ? theme.colors.primary : theme.colors.border,
+              borderColor: isFocused ? activeColors.primary : activeColors.border,
               borderTopWidth: 1,
               borderBottomWidth: 1,
             },
@@ -165,8 +175,8 @@ export function NumericInput({
             style={[
               styles.input,
               {
-                color: theme.colors.foreground,
-                backgroundColor: theme.colors.card,
+                color: activeColors.text,
+                backgroundColor: activeColors.card,
               },
             ]}
             value={inputValue}
@@ -183,19 +193,12 @@ export function NumericInput({
               style={[
                 styles.unitContainer,
                 {
-                  backgroundColor: theme.colors.secondary,
-                  borderColor: theme.colors.border,
+                  backgroundColor: activeColors.secondary,
+                  borderColor: activeColors.border,
                 },
               ]}
             >
-              <Text
-                style={[
-                  styles.unitText,
-                  {
-                    color: theme.colors.mutedForeground,
-                  },
-                ]}
-              >
+              <Text variant="caption" color="muted">
                 {unit}
               </Text>
             </View>
@@ -208,28 +211,22 @@ export function NumericInput({
             styles.button,
             styles.incrementButton,
             {
-              backgroundColor: theme.colors.secondary,
-              borderColor: theme.colors.border,
-              borderTopRightRadius: theme.radius.md,
-              borderBottomRightRadius: theme.radius.md,
+              backgroundColor: activeColors.secondary,
+              borderColor: activeColors.border,
+              borderTopRightRadius: radius.md,
+              borderBottomRightRadius: radius.md,
             },
           ]}
           onPressIn={handleButtonPressIn}
           onPressOut={handleButtonPressOut}
           onPress={increment}
         >
-          <Feather name="plus" size={20} color={theme.colors.foreground} />
+          <Feather name="plus" size={20} color={activeColors.text} />
         </AnimatedPressable>
       </View>
 
       {error && (
-        <Text
-          style={{
-            color: theme.colors.destructive,
-            fontSize: theme.typography.fontSize.sm,
-            marginTop: theme.spacing[2],
-          }}
-        >
+        <Text variant="caption" color="error" style={{ marginTop: spacing[2] }}>
           {error}
         </Text>
       )}
@@ -259,10 +256,6 @@ const styles = StyleSheet.create({
   },
   decrementButton: {},
   incrementButton: {},
-  buttonText: {
-    fontSize: 18,
-    fontWeight: "500",
-  },
   inputContainer: {
     flex: 1,
     flexDirection: "row",
@@ -280,9 +273,5 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderRightWidth: 1,
     minWidth: 40,
-  },
-  unitText: {
-    fontSize: 14,
-    textAlign: "center",
   },
 });

@@ -1,10 +1,10 @@
 // components/macro-display.tsx
 import React, { useEffect } from "react";
-import { View, StyleSheet, ViewStyle } from "react-native";
+import { View, StyleSheet, ViewStyle, useColorScheme, TextStyle } from "react-native";
 import { Text } from "./ui/text";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, FadeIn, SlideInRight } from "react-native-reanimated";
-import { useTheme } from "../src/context/ThemeContext";
+import { colors, darkColors, spacing } from "../src/styles/globalStyles";
 import { Feather } from "@expo/vector-icons";
 
 const AnimatedView = Animated.createAnimatedComponent(View);
@@ -23,7 +23,8 @@ interface MacroDisplayProps {
 }
 
 export function MacroDisplay({ macros, calories, showPercentages = true, style }: MacroDisplayProps) {
-  const { theme } = useTheme();
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
 
   // Animated values for each macro
   const proteinWidth = useSharedValue(0);
@@ -67,12 +68,12 @@ export function MacroDisplay({ macros, calories, showPercentages = true, style }
     };
   });
 
-  // Use chart colors from the theme
-  const proteinColor = theme.colors.chart3;
-  const carbsColor = theme.colors.chart1;
-  const fatColor = theme.colors.chart5;
+  // Use chart colors
+  const proteinColor = activeColors.chart3;
+  const carbsColor = activeColors.chart1;
+  const fatColor = activeColors.chart5;
 
-  // Define the macro rows data for mapping
+  // Define the macro rows
   const macroRows = [
     {
       label: "Proteína",
@@ -82,6 +83,7 @@ export function MacroDisplay({ macros, calories, showPercentages = true, style }
       color: proteinColor,
       icon: "target",
       delay: 0,
+      key: "protein",
     },
     {
       label: "Carboidratos",
@@ -91,6 +93,7 @@ export function MacroDisplay({ macros, calories, showPercentages = true, style }
       color: carbsColor,
       icon: "circle",
       delay: 100,
+      key: "carbs",
     },
     {
       label: "Gordura",
@@ -100,11 +103,12 @@ export function MacroDisplay({ macros, calories, showPercentages = true, style }
       color: fatColor,
       icon: "droplet",
       delay: 200,
+      key: "fat",
     },
   ];
 
   return (
-    <Card style={style} animate>
+    <Card style={style}>
       <CardHeader>
         <CardTitle>Distribuição de Macronutrientes</CardTitle>
       </CardHeader>
@@ -112,10 +116,10 @@ export function MacroDisplay({ macros, calories, showPercentages = true, style }
         <Animated.View entering={FadeIn.delay(300).duration(500)}>
           <Text
             variant="h2"
+            color="primary"
             style={{
               textAlign: "center",
-              marginBottom: theme.spacing[4],
-              color: theme.colors.primary,
+              marginBottom: spacing[4],
             }}
           >
             {calories} kcal
@@ -123,26 +127,25 @@ export function MacroDisplay({ macros, calories, showPercentages = true, style }
 
           {/* Progress bar */}
           <View
-            style={[
-              styles.progressBarContainer,
-              {
-                borderRadius: theme.radius.lg,
-                backgroundColor: theme.colors.muted,
-                height: 16, // Increased height for better visibility
-                marginVertical: theme.spacing[4],
-              },
-            ]}
+            style={{
+              flexDirection: "row",
+              overflow: "hidden",
+              borderRadius: 8,
+              backgroundColor: activeColors.muted,
+              height: 16,
+              marginVertical: spacing[4],
+            }}
           >
-            <AnimatedView style={[styles.progressBarProtein, proteinAnimStyle, { backgroundColor: proteinColor }]} />
-            <AnimatedView style={[styles.progressBarCarbs, carbsAnimStyle, { backgroundColor: carbsColor }]} />
-            <AnimatedView style={[styles.progressBarFat, fatAnimStyle, { backgroundColor: fatColor }]} />
+            <AnimatedView style={[{ height: "100%" }, proteinAnimStyle, { backgroundColor: proteinColor }]} />
+            <AnimatedView style={[{ height: "100%" }, carbsAnimStyle, { backgroundColor: carbsColor }]} />
+            <AnimatedView style={[{ height: "100%" }, fatAnimStyle, { backgroundColor: fatColor }]} />
           </View>
 
           {/* Macros detail */}
-          <View style={{ marginTop: theme.spacing[4] }}>
-            {macroRows.map((row, index) => (
+          <View style={{ marginTop: spacing[4] }}>
+            {macroRows.map((row) => (
               <MacroRow
-                key={`macro-${index}`}
+                key={row.key}
                 label={row.label}
                 grams={row.grams}
                 calories={row.calories}
@@ -172,74 +175,77 @@ interface MacroRowProps {
 }
 
 function MacroRow({ label, grams, calories, percent, showPercent, color, icon, delay }: MacroRowProps) {
-  const { theme } = useTheme();
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
 
   return (
     <Animated.View
-      style={[styles.macroRow, { marginBottom: theme.spacing[3] }]}
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: spacing[3],
+      }}
       entering={SlideInRight.delay(delay).springify()}
     >
-      <View style={[styles.macroIndicator, { backgroundColor: color, marginRight: theme.spacing[2] }]}>
+      <View
+        style={{
+          width: 24,
+          height: 24,
+          borderRadius: 12,
+          backgroundColor: color,
+          alignItems: "center",
+          justifyContent: "center",
+          marginRight: spacing[2],
+        }}
+      >
         <Feather name={icon as any} size={12} color="white" />
       </View>
-      <Text style={[styles.macroLabel, { flex: 1, fontWeight: theme.typography.fontWeight.medium as any }]}>
+      <Text
+        style={{
+          flex: 1,
+          fontSize: 16,
+          fontWeight: "500" as TextStyle["fontWeight"],
+        }}
+      >
         {label}
       </Text>
-      <View style={styles.macroValues}>
-        <Text style={[styles.macroGrams, { marginRight: theme.spacing[2] }]}>{grams}g</Text>
-        <Text style={[styles.macroCalories, { marginRight: theme.spacing[2], color: theme.colors.mutedForeground }]}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 16,
+            fontWeight: "600" as TextStyle["fontWeight"],
+            marginRight: spacing[2],
+          }}
+        >
+          {grams}g
+        </Text>
+        <Text
+          variant="caption"
+          color="muted"
+          style={{
+            marginRight: spacing[2],
+          }}
+        >
           {calories} kcal
         </Text>
         {showPercent && (
-          <Text style={[styles.macroPercent, { color: theme.colors.mutedForeground }]}>{Math.round(percent)}%</Text>
+          <Text
+            variant="caption"
+            color="muted"
+            style={{
+              minWidth: 40,
+              textAlign: "right",
+            }}
+          >
+            {Math.round(percent)}%
+          </Text>
         )}
       </View>
     </Animated.View>
   );
 }
-
-const styles = StyleSheet.create({
-  progressBarContainer: {
-    flexDirection: "row",
-    overflow: "hidden",
-  },
-  progressBarProtein: {
-    height: "100%",
-  },
-  progressBarCarbs: {
-    height: "100%",
-  },
-  progressBarFat: {
-    height: "100%",
-  },
-  macroRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  macroIndicator: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  macroLabel: {
-    fontSize: 16,
-  },
-  macroValues: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  macroGrams: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  macroCalories: {
-    fontSize: 14,
-  },
-  macroPercent: {
-    fontSize: 14,
-    minWidth: 40,
-    textAlign: "right",
-  },
-});

@@ -1,8 +1,17 @@
 // components/ui/screen.tsx
 import React from "react";
-import { View, SafeAreaView, ScrollView, StyleSheet, ViewStyle, StatusBar, Platform } from "react-native";
+import {
+  View,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  ViewStyle,
+  StatusBar,
+  useColorScheme,
+  Platform,
+} from "react-native";
 import { Text } from "./text";
-import { useTheme } from "../../src/context/ThemeContext";
+import { colors, darkColors, spacing } from "../../src/styles/globalStyles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { FadeIn } from "react-native-reanimated";
 
@@ -32,7 +41,8 @@ export function Screen({
   contentContainerStyle,
   animate = true,
 }: ScreenProps) {
-  const { theme, isDark } = useTheme();
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
   const insets = useSafeAreaInsets();
 
   const renderContent = () => {
@@ -42,7 +52,7 @@ export function Screen({
         paddingTop: showHeader ? 0 : insets.top,
         paddingBottom: insets.bottom,
         ...(padding && {
-          paddingHorizontal: theme.spacing[4],
+          paddingHorizontal: spacing[4],
         }),
       },
       contentContainerStyle,
@@ -51,7 +61,7 @@ export function Screen({
     if (scroll) {
       return (
         <AnimatedScrollView
-          style={[styles.scrollView, { backgroundColor: theme.colors.background }]}
+          style={[styles.scrollView, { backgroundColor: activeColors.background }]}
           contentContainerStyle={contentStyle}
           showsVerticalScrollIndicator={false}
           entering={animate ? FadeIn.delay(50).duration(300) : undefined}
@@ -73,10 +83,10 @@ export function Screen({
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View style={[styles.container, { backgroundColor: activeColors.background }]}>
       <StatusBar
         barStyle={isDark ? "light-content" : "dark-content"}
-        backgroundColor={theme.colors.background}
+        backgroundColor={activeColors.background}
         translucent={true}
       />
 
@@ -85,17 +95,17 @@ export function Screen({
           style={[
             styles.header,
             {
-              backgroundColor: theme.colors.card,
-              borderBottomColor: theme.colors.border,
-              paddingTop: insets.top + (Platform.OS === "ios" ? 0 : theme.spacing[2]),
-              paddingBottom: theme.spacing[2],
-              paddingHorizontal: theme.spacing[4],
-              height: insets.top + theme.spacing[12],
+              backgroundColor: activeColors.card,
+              borderBottomColor: activeColors.border,
+              paddingTop: insets.top + (Platform.OS === "ios" ? 0 : spacing[2]),
+              paddingBottom: spacing[2],
+              paddingHorizontal: spacing[4],
+              height: insets.top + spacing[12],
             },
           ]}
         >
           {title ? (
-            <Text variant="h3" style={{ color: theme.colors.foreground }}>
+            <Text variant="h3" style={{ color: activeColors.text }}>
               {title}
             </Text>
           ) : (
