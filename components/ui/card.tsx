@@ -1,13 +1,13 @@
-// Full fix for components/ui/card.tsx
+// components/ui/card.tsx
 import React from "react";
 import { View, StyleSheet, ViewStyle, TextStyle } from "react-native";
 import { Text } from "./text";
-import { theme } from "../../styles/theme";
+import { theme } from "../../src/styles/theme";
 
 // Card container
 interface CardProps {
   children: React.ReactNode;
-  style?: ViewStyle | ViewStyle[] | undefined;
+  style?: ViewStyle | undefined;
 }
 
 export function Card({ children, style }: CardProps) {
@@ -17,7 +17,7 @@ export function Card({ children, style }: CardProps) {
 // Card header
 interface CardHeaderProps {
   children: React.ReactNode;
-  style?: ViewStyle | ViewStyle[] | undefined;
+  style?: ViewStyle | undefined;
 }
 
 export function CardHeader({ children, style }: CardHeaderProps) {
@@ -27,7 +27,7 @@ export function CardHeader({ children, style }: CardHeaderProps) {
 // Card title
 interface CardTitleProps {
   children: React.ReactNode;
-  style?: TextStyle | TextStyle[] | undefined;
+  style?: TextStyle | undefined;
 }
 
 export function CardTitle({ children, style }: CardTitleProps) {
@@ -41,7 +41,7 @@ export function CardTitle({ children, style }: CardTitleProps) {
 // Card description
 interface CardDescriptionProps {
   children: React.ReactNode;
-  style?: TextStyle | TextStyle[] | undefined;
+  style?: TextStyle | undefined;
 }
 
 export function CardDescription({ children, style }: CardDescriptionProps) {
@@ -55,7 +55,7 @@ export function CardDescription({ children, style }: CardDescriptionProps) {
 // Card content
 interface CardContentProps {
   children: React.ReactNode;
-  style?: ViewStyle | ViewStyle[] | undefined;
+  style?: ViewStyle | undefined;
 }
 
 export function CardContent({ children, style }: CardContentProps) {
@@ -65,7 +65,7 @@ export function CardContent({ children, style }: CardContentProps) {
 // Card footer
 interface CardFooterProps {
   children: React.ReactNode;
-  style?: ViewStyle | ViewStyle[] | undefined;
+  style?: ViewStyle | undefined;
 }
 
 export function CardFooter({ children, style }: CardFooterProps) {

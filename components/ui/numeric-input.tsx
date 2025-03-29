@@ -1,5 +1,6 @@
+// components/ui/numeric-input.tsx
 import React, { useState, useEffect } from "react";
-import { View, TextInput, Pressable } from "react-native";
+import { View, TextInput, Pressable, StyleSheet } from "react-native";
 import { Text } from "./text";
 import Animated, {
   useAnimatedStyle,
@@ -8,6 +9,7 @@ import Animated, {
   withRepeat,
   withSequence,
 } from "react-native-reanimated";
+import { theme } from "../../src/styles/theme";
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -122,29 +124,22 @@ export function NumericInput({
   });
 
   return (
-    <AnimatedView style={containerAnimStyle} className={`w-full mb-4 ${containerClassName}`}>
-      {label && (
-        <Text variant="caption" className="mb-1 ml-1">
-          {label}
-        </Text>
-      )}
+    <AnimatedView style={[containerAnimStyle, styles.container]}>
+      {label && <Text style={styles.label}>{label}</Text>}
 
-      <View className="flex-row items-center">
+      <View style={styles.inputRow}>
         <AnimatedPressable
-          style={buttonAnimStyle}
+          style={[buttonAnimStyle, styles.button, styles.decrementButton]}
           onPressIn={handleButtonPressIn}
           onPressOut={handleButtonPressOut}
           onPress={decrement}
-          className="w-12 h-12 bg-muted rounded-l-md items-center justify-center border border-muted"
         >
-          <Text variant="subtitle" color="primary">
-            -
-          </Text>
+          <Text style={styles.buttonText}>-</Text>
         </AnimatedPressable>
 
-        <View className="flex-1 flex-row">
+        <View style={styles.inputContainer}>
           <TextInput
-            className="flex-1 h-12 border-t border-b border-muted bg-white px-2 text-center"
+            style={styles.input}
             value={inputValue}
             onChangeText={handleInputChange}
             keyboardType={allowDecimal ? "decimal-pad" : "number-pad"}
@@ -153,32 +148,97 @@ export function NumericInput({
           />
 
           {unit && (
-            <View className="h-12 min-w-[40px] border-t border-b border-r border-muted bg-muted justify-center items-center px-2">
-              <Text variant="caption" color="muted">
-                {unit}
-              </Text>
+            <View style={styles.unitContainer}>
+              <Text style={styles.unitText}>{unit}</Text>
             </View>
           )}
         </View>
 
         <AnimatedPressable
-          style={buttonAnimStyle}
+          style={[buttonAnimStyle, styles.button, styles.incrementButton]}
           onPressIn={handleButtonPressIn}
           onPressOut={handleButtonPressOut}
           onPress={increment}
-          className="w-12 h-12 bg-muted rounded-r-md items-center justify-center border border-muted"
         >
-          <Text variant="subtitle" color="primary">
-            +
-          </Text>
+          <Text style={styles.buttonText}>+</Text>
         </AnimatedPressable>
       </View>
 
-      {error && (
-        <Text variant="caption" color="danger" className="mt-1 ml-1">
-          {error}
-        </Text>
-      )}
+      {error && <Text style={styles.errorText}>{error}</Text>}
     </AnimatedView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    width: "100%",
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: theme.fontSize.sm,
+    color: theme.colors.text,
+    marginBottom: 4,
+    marginLeft: 4,
+  },
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  button: {
+    width: 48,
+    height: 48,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: theme.colors.secondary,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  decrementButton: {
+    borderTopLeftRadius: theme.borderRadius.md,
+    borderBottomLeftRadius: theme.borderRadius.md,
+  },
+  incrementButton: {
+    borderTopRightRadius: theme.borderRadius.md,
+    borderBottomRightRadius: theme.borderRadius.md,
+  },
+  buttonText: {
+    fontSize: theme.fontSize.xl,
+    color: theme.colors.primary,
+    fontWeight: "500",
+  },
+  inputContainer: {
+    flex: 1,
+    flexDirection: "row",
+    height: 48,
+  },
+  input: {
+    flex: 1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: theme.colors.border,
+    backgroundColor: "white",
+    textAlign: "center",
+    color: theme.colors.text,
+  },
+  unitContainer: {
+    paddingHorizontal: 8,
+    justifyContent: "center",
+    backgroundColor: theme.colors.secondary,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderRightWidth: 1,
+    borderColor: theme.colors.border,
+    minWidth: 40,
+  },
+  unitText: {
+    fontSize: theme.fontSize.sm,
+    color: theme.colors.textMuted,
+    textAlign: "center",
+  },
+  errorText: {
+    color: theme.colors.error,
+    fontSize: theme.fontSize.sm,
+    marginTop: 4,
+    marginLeft: 4,
+  },
+});

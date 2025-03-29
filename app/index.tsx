@@ -1,3 +1,4 @@
+// app/index.tsx
 import React from "react";
 import { View, ScrollView, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
@@ -5,7 +6,7 @@ import { Text } from "../components/ui/text";
 import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Feather } from "@expo/vector-icons";
-import { theme } from "../styles/theme";
+import { theme } from "../src/styles/theme";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -88,8 +89,8 @@ export default function HomeScreen() {
               key={index}
               style={styles.featureCard}
               onPress={() => {
-                if (feature.route) {
-                  router.push(feature.route.replace("/", "") as any);
+                if (feature.route && !feature.comingSoon) {
+                  router.push(feature.route as any);
                 }
               }}
               disabled={feature.comingSoon}
@@ -178,8 +179,6 @@ const styles = StyleSheet.create({
   featuredCard: {
     marginHorizontal: theme.spacing.md,
     marginBottom: theme.spacing.lg,
-    borderRadius: theme.borderRadius.md,
-    overflow: "hidden",
   },
   featuredCardContent: {
     backgroundColor: theme.colors.primary,
@@ -260,7 +259,6 @@ const styles = StyleSheet.create({
     width: 200,
     padding: theme.spacing.md,
     marginRight: theme.spacing.md,
-    borderRadius: theme.borderRadius.md,
   },
   tipTitle: {
     fontSize: theme.fontSize.md,

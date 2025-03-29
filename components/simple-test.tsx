@@ -1,8 +1,10 @@
+// components/simple-test.tsx
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { theme } from "../styles/theme";
+import { theme } from "../src/styles/theme";
 
 export function SimpleTest() {
+  // Use a simple View and Text without custom styling
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Novo Sistema de Temas</Text>
@@ -11,22 +13,22 @@ export function SimpleTest() {
   );
 }
 
-// Estilos sem usar o sistema de temas dinâmico por enquanto
+// Simplified styling to avoid type issues
 const styles = StyleSheet.create({
   container: {
-    padding: theme.spacing[3],
-    margin: theme.spacing[3],
-    backgroundColor: theme.colors.background,
-    borderRadius: theme.borderRadius,
+    padding: 12,
+    margin: 12,
+    backgroundColor: "white",
+    borderRadius: 8,
   },
   title: {
-    fontSize: theme.fontSize.large,
+    fontSize: 18,
     fontWeight: "bold",
     color: theme.colors.primary,
-    marginBottom: theme.spacing[1],
+    marginBottom: 4,
   },
   text: {
-    fontSize: theme.fontSize.medium,
+    fontSize: 16,
     color: theme.colors.text,
   },
 });

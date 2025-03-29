@@ -1,12 +1,13 @@
 import React from "react";
 import { TouchableOpacity, Text, ActivityIndicator, StyleSheet, ViewStyle, TextStyle, View } from "react-native";
-import { theme } from "../../styles/theme";
+import { useTheme } from "../../src/context/ThemeContext";
 
-type ButtonVariant = "primary" | "secondary" | "outline" | "ghost";
-type ButtonSize = "sm" | "md" | "lg";
+type ButtonVariant = "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
+type ButtonSize = "default" | "sm" | "lg" | "icon";
 
 interface ButtonProps {
-  title: string;
+  title?: string;
+  children?: React.ReactNode;
   onPress: () => void;
   variant?: ButtonVariant;
   size?: ButtonSize;
@@ -17,13 +18,15 @@ interface ButtonProps {
   textStyle?: TextStyle;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
+  className?: string;
 }
 
 export function Button({
   title,
+  children,
   onPress,
-  variant = "primary",
-  size = "md",
+  variant = "default",
+  size = "default",
   loading = false,
   disabled = false,
   fullWidth = false,
@@ -31,119 +34,155 @@ export function Button({
   textStyle,
   leftIcon,
   rightIcon,
+  className,
 }: ButtonProps) {
-  const getButtonStyles = (): ViewStyle[] => {
-    const buttonStyles: ViewStyle[] = [styles.button];
+  const { theme } = useTheme();
 
-    // Add variant styles
+  const getVariantStyle = (): ViewStyle => {
     switch (variant) {
-      case "primary":
-        buttonStyles.push(styles.primaryButton);
-        break;
-      case "secondary":
-        buttonStyles.push(styles.secondaryButton);
-        break;
+      case "default":
+        return {
+          backgroundColor: theme.colors.primary,
+          borderColor: theme.colors.primary,
+          borderWidth: 1,
+        };
+      case "destructive":
+        return {
+          backgroundColor: theme.colors.destructive,
+          borderColor: theme.colors.destructive,
+          borderWidth: 1,
+        };
       case "outline":
-        buttonStyles.push(styles.outlineButton);
-        break;
+        return {
+          backgroundColor: "transparent",
+          borderColor: theme.colors.border,
+          borderWidth: 1,
+        };
+      case "secondary":
+        return {
+          backgroundColor: theme.colors.secondary,
+          borderColor: theme.colors.secondary,
+          borderWidth: 1,
+        };
       case "ghost":
-        buttonStyles.push(styles.ghostButton);
-        break;
+        return {
+          backgroundColor: "transparent",
+          borderWidth: 0,
+        };
+      case "link":
+        return {
+          backgroundColor: "transparent",
+          borderWidth: 0,
+          paddingHorizontal: 0,
+          paddingVertical: 0,
+        };
+      default:
+        return {};
     }
-
-    // Add size styles
-    switch (size) {
-      case "sm":
-        buttonStyles.push(styles.smallButton);
-        break;
-      case "md":
-        buttonStyles.push(styles.mediumButton);
-        break;
-      case "lg":
-        buttonStyles.push(styles.largeButton);
-        break;
-    }
-
-    // Add disabled styles
-    if (disabled || loading) {
-      buttonStyles.push(styles.disabledButton);
-    }
-
-    // Add full width styles
-    if (fullWidth) {
-      buttonStyles.push(styles.fullWidthButton);
-    }
-
-    // Add custom styles
-    if (style) {
-      buttonStyles.push(style);
-    }
-
-    return buttonStyles;
   };
 
-  const getTextStyles = (): TextStyle[] => {
-    const textStyles: TextStyle[] = [styles.buttonText];
-
-    // Add variant text styles
-    switch (variant) {
-      case "primary":
-        textStyles.push(styles.primaryButtonText);
-        break;
-      case "secondary":
-        textStyles.push(styles.secondaryButtonText);
-        break;
-      case "outline":
-        textStyles.push(styles.outlineButtonText);
-        break;
-      case "ghost":
-        textStyles.push(styles.ghostButtonText);
-        break;
-    }
-
-    // Add size text styles
+  const getSizeStyle = (): ViewStyle => {
     switch (size) {
+      case "default":
+        return {
+          paddingHorizontal: theme.spacing[4],
+          paddingVertical: theme.spacing[2],
+          height: 36,
+          borderRadius: theme.radius.DEFAULT,
+        };
       case "sm":
-        textStyles.push(styles.smallButtonText);
-        break;
-      case "md":
-        textStyles.push(styles.mediumButtonText);
-        break;
+        return {
+          paddingHorizontal: theme.spacing[3],
+          paddingVertical: theme.spacing[1],
+          height: 32,
+          borderRadius: theme.radius.md,
+        };
       case "lg":
-        textStyles.push(styles.largeButtonText);
-        break;
+        return {
+          paddingHorizontal: theme.spacing[8],
+          paddingVertical: theme.spacing[2],
+          height: 40,
+          borderRadius: theme.radius.md,
+        };
+      case "icon":
+        return {
+          height: 36,
+          width: 36,
+          paddingHorizontal: 0,
+          paddingVertical: 0,
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: theme.radius.md,
+        };
+      default:
+        return {};
     }
+  };
 
-    // Add disabled text styles
-    if (disabled || loading) {
-      textStyles.push(styles.disabledButtonText);
+  const getTextStyle = (): TextStyle => {
+    const baseStyle: TextStyle = {
+      fontSize: theme.typography.fontSize.sm,
+      fontWeight: 500,
+    };
+
+    switch (variant) {
+      case "default":
+        return { ...baseStyle, color: theme.colors.primaryForeground };
+      case "destructive":
+        return { ...baseStyle, color: theme.colors.destructiveForeground };
+      case "outline":
+        return { ...baseStyle, color: theme.colors.foreground };
+      case "secondary":
+        return { ...baseStyle, color: theme.colors.secondaryForeground };
+      case "ghost":
+        return { ...baseStyle, color: theme.colors.foreground };
+      case "link":
+        return {
+          ...baseStyle,
+          color: theme.colors.primary,
+          textDecorationLine: "underline",
+        };
+      default:
+        return { ...baseStyle, color: theme.colors.primaryForeground };
     }
+  };
 
-    // Add custom text styles
-    if (textStyle) {
-      textStyles.push(textStyle);
-    }
+  const buttonStyles: ViewStyle = {
+    ...styles.button,
+    ...getVariantStyle(),
+    ...getSizeStyle(),
+    ...(disabled && styles.disabled),
+    ...(fullWidth && { width: "100%" }),
+    ...(style || {}),
+  };
 
-    return textStyles;
+  const finalTextStyle: TextStyle = {
+    ...styles.text,
+    ...getTextStyle(),
+    ...(textStyle || {}),
   };
 
   const getLoaderColor = () => {
-    if (variant === "outline" || variant === "ghost") {
+    if (variant === "outline" || variant === "ghost" || variant === "link") {
       return theme.colors.primary;
     }
-    return "white";
+    return theme.colors.primaryForeground;
   };
 
+  const content = children || title;
+
   return (
-    <TouchableOpacity style={getButtonStyles()} onPress={onPress} disabled={disabled || loading} activeOpacity={0.7}>
-      <View style={styles.buttonContent}>
-        {loading && <ActivityIndicator size="small" color={getLoaderColor()} style={styles.loader} />}
-
-        {!loading && leftIcon && <View style={styles.leftIcon}>{leftIcon}</View>}
-
-        <Text style={getTextStyles()}>{title}</Text>
-
-        {!loading && rightIcon && <View style={styles.rightIcon}>{rightIcon}</View>}
+    <TouchableOpacity style={buttonStyles} onPress={onPress} disabled={disabled || loading} activeOpacity={0.7}>
+      <View style={styles.contentContainer}>
+        {loading ? (
+          <ActivityIndicator size="small" color={getLoaderColor()} />
+        ) : (
+          <>
+            {leftIcon && <View style={styles.iconContainer}>{leftIcon}</View>}
+            {content && (typeof content === "string" ? <Text style={finalTextStyle}>{content}</Text> : content)}
+            {rightIcon && <View style={styles.iconContainer}>{rightIcon}</View>}
+          </>
+        )}
       </View>
     </TouchableOpacity>
   );
@@ -151,87 +190,22 @@ export function Button({
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: theme.borderRadius.md,
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
   },
-  buttonContent: {
+  contentContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
   },
-  primaryButton: {
-    backgroundColor: theme.colors.primary,
-    borderWidth: 1,
-    borderColor: theme.colors.primary,
-  },
-  secondaryButton: {
-    backgroundColor: theme.colors.secondary,
-    borderWidth: 1,
-    borderColor: theme.colors.secondary,
-  },
-  outlineButton: {
-    backgroundColor: "transparent",
-    borderWidth: 1,
-    borderColor: theme.colors.text,
-  },
-  ghostButton: {
-    backgroundColor: "transparent",
-    borderWidth: 0,
-  },
-  smallButton: {
-    paddingVertical: theme.spacing.xs,
-    paddingHorizontal: theme.spacing.sm,
-  },
-  mediumButton: {
-    paddingVertical: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.md,
-  },
-  largeButton: {
-    paddingVertical: theme.spacing.md,
-    paddingHorizontal: theme.spacing.lg,
-  },
-  disabledButton: {
+  disabled: {
     opacity: 0.5,
   },
-  fullWidthButton: {
-    width: "100%",
+  iconContainer: {
+    marginHorizontal: 4,
   },
-  buttonText: {
-    fontWeight: "600",
+  text: {
     textAlign: "center",
-  },
-  primaryButtonText: {
-    color: "white",
-  },
-  secondaryButtonText: {
-    color: theme.colors.text,
-  },
-  outlineButtonText: {
-    color: theme.colors.text,
-  },
-  ghostButtonText: {
-    color: theme.colors.primary,
-  },
-  smallButtonText: {
-    fontSize: theme.fontSize.sm,
-  },
-  mediumButtonText: {
-    fontSize: theme.fontSize.md,
-  },
-  largeButtonText: {
-    fontSize: theme.fontSize.lg,
-  },
-  disabledButtonText: {
-    // No specific styles needed, the button opacity handles this
-  },
-  loader: {
-    marginRight: theme.spacing.sm,
-  },
-  leftIcon: {
-    marginRight: theme.spacing.sm,
-  },
-  rightIcon: {
-    marginLeft: theme.spacing.sm,
   },
 });
