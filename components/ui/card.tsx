@@ -4,6 +4,7 @@ import { View, StyleSheet, ViewStyle, TextStyle, useColorScheme } from "react-na
 import { Text } from "./text";
 import { colors, darkColors, spacing, radius } from "../../src/styles/globalStyles";
 import Animated, { FadeIn } from "react-native-reanimated";
+import { useAnimationsEnabled } from "../../src/utils/animation";
 
 // Card container
 interface CardProps {
@@ -17,6 +18,10 @@ const AnimatedView = Animated.createAnimatedComponent(View);
 export function Card({ children, style, animate = false }: CardProps) {
   const isDark = useColorScheme() === "dark";
   const activeColors = isDark ? darkColors : colors;
+  const animationsEnabled = useAnimationsEnabled();
+
+  // Only animate if explicitly requested AND animations are enabled
+  const shouldAnimate = animate && animationsEnabled;
 
   const cardStyle = [
     styles.card,
@@ -28,7 +33,7 @@ export function Card({ children, style, animate = false }: CardProps) {
     style,
   ];
 
-  if (animate) {
+  if (shouldAnimate) {
     return (
       <AnimatedView entering={FadeIn.duration(400)} style={cardStyle}>
         {children}
