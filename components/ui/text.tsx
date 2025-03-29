@@ -1,7 +1,7 @@
 // components/ui/text.tsx
 import React from "react";
-import { Text as RNText, StyleSheet, StyleProp, TextStyle, TextProps as RNTextProps } from "react-native";
-import { theme } from "../../src/styles/theme";
+import { Text as RNText, StyleSheet, TextStyle, TextProps as RNTextProps } from "react-native";
+import { useTheme } from "../../src/context/ThemeContext";
 
 type TextVariant = "h1" | "h2" | "h3" | "h4" | "subtitle" | "body" | "caption" | "small";
 type TextColor = "primary" | "secondary" | "foreground" | "muted" | "success" | "warning" | "danger" | "white";
@@ -11,7 +11,8 @@ interface TextProps extends RNTextProps {
   color?: TextColor;
   bold?: boolean;
   italic?: boolean;
-  style?: StyleProp<any>; // Use 'any' type to avoid TextStyle type errors
+  style?: TextStyle | TextStyle[];
+  children?: React.ReactNode;
 }
 
 export function Text({
@@ -23,44 +24,50 @@ export function Text({
   children,
   ...props
 }: TextProps) {
-  // Build the base style object with type any to avoid strict type checking
-  const getBaseStyle = (): any => {
+  const { theme } = useTheme();
+
+  // Build the base style object
+  const getBaseStyle = (): TextStyle => {
     // Base style
-    const baseStyle: any = {
-      fontSize: theme.fontSize.md,
-      color: theme.colors.text,
+    const baseStyle: TextStyle = {
+      fontSize: theme.typography.fontSize.base,
+      color: theme.colors.foreground,
+      fontFamily: theme.typography.fontFamily.sans,
     };
 
     // Add variant styles
     switch (variant) {
       case "h1":
-        baseStyle.fontSize = theme.fontSize.xxl;
-        baseStyle.fontWeight = "700"; // Use string value instead of number
+        baseStyle.fontSize = theme.typography.fontSize["3xl"];
+        baseStyle.fontWeight = "700";
+        baseStyle.letterSpacing = -0.5;
         break;
       case "h2":
-        baseStyle.fontSize = theme.fontSize.xl;
+        baseStyle.fontSize = theme.typography.fontSize["2xl"];
         baseStyle.fontWeight = "700";
         break;
       case "h3":
-        baseStyle.fontSize = theme.fontSize.lg;
+        baseStyle.fontSize = theme.typography.fontSize.xl;
         baseStyle.fontWeight = "600";
         break;
       case "h4":
-        baseStyle.fontSize = theme.fontSize.md;
+        baseStyle.fontSize = theme.typography.fontSize.lg;
         baseStyle.fontWeight = "600";
         break;
       case "subtitle":
-        baseStyle.fontSize = theme.fontSize.md;
+        baseStyle.fontSize = theme.typography.fontSize.base;
         baseStyle.fontWeight = "500";
         break;
       case "body":
-        baseStyle.fontSize = theme.fontSize.md;
+        baseStyle.fontSize = theme.typography.fontSize.base;
+        baseStyle.lineHeight = theme.typography.lineHeight.normal * baseStyle.fontSize;
         break;
       case "caption":
-        baseStyle.fontSize = theme.fontSize.sm;
+        baseStyle.fontSize = theme.typography.fontSize.sm;
+        baseStyle.color = theme.colors.mutedForeground;
         break;
       case "small":
-        baseStyle.fontSize = theme.fontSize.xs;
+        baseStyle.fontSize = theme.typography.fontSize.xs;
         break;
     }
 
@@ -73,22 +80,22 @@ export function Text({
         baseStyle.color = theme.colors.secondary;
         break;
       case "foreground":
-        baseStyle.color = theme.colors.text;
+        baseStyle.color = theme.colors.foreground;
         break;
       case "muted":
-        baseStyle.color = theme.colors.textMuted;
+        baseStyle.color = theme.colors.mutedForeground;
         break;
       case "success":
         baseStyle.color = theme.colors.success;
         break;
       case "warning":
-        baseStyle.color = "#f59e0b";
+        baseStyle.color = theme.colors.warning;
         break;
       case "danger":
-        baseStyle.color = theme.colors.error;
+        baseStyle.color = theme.colors.destructive;
         break;
       case "white":
-        baseStyle.color = "white";
+        baseStyle.color = "#ffffff";
         break;
     }
 
