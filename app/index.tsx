@@ -9,11 +9,13 @@ import { Screen } from "../components/ui/screen";
 import { Feather } from "@expo/vector-icons";
 import { colors, darkColors, spacing, radius } from "../src/styles/globalStyles";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
+import { useAnimationsEnabled } from "../src/utils/animation";
 
 function HomeScreen() {
   const router = useRouter();
   const isDark = useColorScheme() === "dark";
   const activeColors = isDark ? darkColors : colors;
+  const animationsEnabled = useAnimationsEnabled();
 
   const features = [
     {
@@ -58,27 +60,32 @@ function HomeScreen() {
     },
   ];
 
+  const AnimatedContainer = animationsEnabled ? Animated.View : View;
+
   return (
     <Screen showHeader={false} scroll={true} padding={false}>
       {/* Hero Section */}
       <View style={[styles.heroContainer, { backgroundColor: activeColors.card }]}>
-        <Animated.View entering={FadeInDown.duration(800).springify()} style={styles.logoContainer}>
+        <AnimatedContainer
+          entering={animationsEnabled ? FadeInDown.duration(800).springify() : undefined}
+          style={styles.logoContainer}
+        >
           <Image source={require("../assets/images/icon.png")} style={styles.logo} resizeMode="contain" />
-        </Animated.View>
+        </AnimatedContainer>
 
-        <Animated.View entering={FadeInUp.delay(200).duration(800).springify()}>
+        <AnimatedContainer entering={animationsEnabled ? FadeInUp.delay(200).duration(800).springify() : undefined}>
           <Text variant="h1" style={[styles.title, { color: activeColors.foreground }]}>
             NutriMacros
           </Text>
           <Text variant="body" color="muted" style={styles.subtitle}>
             Seu assistente nutricional para alcançar seus objetivos de forma saudável e equilibrada
           </Text>
-        </Animated.View>
+        </AnimatedContainer>
       </View>
 
       <View style={{ padding: spacing[4] }}>
         {/* Featured Card */}
-        <Animated.View entering={FadeInUp.delay(400).duration(800).springify()}>
+        <AnimatedContainer entering={animationsEnabled ? FadeInUp.delay(400).duration(800).springify() : undefined}>
           <Card style={styles.featuredCard}>
             <CardContent
               style={{
@@ -102,10 +109,10 @@ function HomeScreen() {
               />
             </CardContent>
           </Card>
-        </Animated.View>
+        </AnimatedContainer>
 
         {/* Features */}
-        <Animated.View entering={FadeInUp.delay(600).duration(800).springify()}>
+        <AnimatedContainer entering={animationsEnabled ? FadeInUp.delay(600).duration(800).springify() : undefined}>
           <Text variant="h3" style={[styles.sectionTitle, { color: activeColors.foreground }]}>
             Recursos
           </Text>
@@ -170,10 +177,10 @@ function HomeScreen() {
               </TouchableOpacity>
             ))}
           </View>
-        </Animated.View>
+        </AnimatedContainer>
 
         {/* Nutrition Tips */}
-        <Animated.View entering={FadeInUp.delay(800).duration(800).springify()}>
+        <AnimatedContainer entering={animationsEnabled ? FadeInUp.delay(800).duration(800).springify() : undefined}>
           <Text variant="h3" style={[styles.sectionTitle, { color: activeColors.foreground }]}>
             Dicas Nutricionais
           </Text>
@@ -203,7 +210,7 @@ function HomeScreen() {
               </Card>
             ))}
           </ScrollView>
-        </Animated.View>
+        </AnimatedContainer>
 
         <View style={styles.spacer} />
       </View>
@@ -212,90 +219,48 @@ function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  heroContainer: {
-    alignItems: "center",
-    paddingTop: 100,
-    paddingBottom: 40,
-    paddingHorizontal: 20,
+  container: {
+    flex: 1,
+    backgroundColor: "#f5f9f7", // Light green background
   },
-  logoContainer: {
+  content: {
+    flex: 1,
+    padding: 20,
     alignItems: "center",
-    marginBottom: 24,
-  },
-  logo: {
-    width: 120,
-    height: 120,
+    justifyContent: "center",
   },
   title: {
-    textAlign: "center",
+    fontSize: 32,
+    fontWeight: "bold",
+    color: "#151915", // Dark text
     marginBottom: 8,
   },
   subtitle: {
-    textAlign: "center",
-    paddingHorizontal: 20,
+    fontSize: 18,
+    color: "#6a706b", // Medium gray
+    marginBottom: 30,
   },
-  featuredCard: {
-    marginBottom: 32,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.07,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  featuredCardTitle: {
-    marginBottom: 8,
-  },
-  featuredCardDescription: {
-    marginBottom: 20,
-  },
-  featuredCardButton: {
-    alignSelf: "flex-start",
-  },
-  sectionTitle: {
+  card: {
+    backgroundColor: "#ffffff", // White
+    padding: 20,
+    borderRadius: 12,
+    width: "100%",
+    alignItems: "center",
     marginBottom: 16,
-  },
-  featuresContainer: {
-    marginBottom: 32,
-  },
-  featureCard: {
-    flexDirection: "row",
-    padding: 16,
     borderWidth: 1,
-    marginBottom: 12,
+    borderColor: "#e5e9e6", // Light border
+  },
+  card2: {
+    backgroundColor: "#22c069", // Primary green
+    padding: 20,
+    borderRadius: 12,
+    width: "100%",
     alignItems: "center",
   },
-  featureIconContainer: {
-    height: 48,
-    width: 48,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 16,
-  },
-  featureContent: {
-    flex: 1,
-  },
-  comingSoonBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-  },
-  tipsContainer: {
-    marginBottom: 32,
-  },
-  tipCard: {
-    width: 220,
-    marginRight: 16,
-  },
-  tipIconContainer: {
-    width: 44,
-    height: 44,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  spacer: {
-    height: 80, // Extra space at the bottom for the tab bar
+  cardText: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#151915", // Dark text
   },
 });
 
