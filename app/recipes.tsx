@@ -1,85 +1,57 @@
 // app/recipes.tsx
 import React from "react";
-import { View, StyleSheet } from "react-native";
-import { Screen, Text, Card, CardHeader, CardTitle, CardContent } from "../components";
-import { Feather } from "@expo/vector-icons";
-import { useTheme } from "../src/context/ThemeContext";
+import { View, StyleSheet, useColorScheme } from "react-native";
+import { Screen, Text, Card, CardHeader, CardTitle, CardContent, Button } from "../components";
+import { colors, darkColors, spacing } from "../src/styles/globalStyles";
 
-export default function RecipesScreen() {
-  const { theme } = useTheme();
+function RecipesScreen() {
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
 
   return (
-    <Screen title="Receitas" showHeader={true} scroll={true}>
-      <View style={{ paddingVertical: theme.spacing[6], alignItems: "center" }}>
-        <View
-          style={{
-            width: 80,
-            height: 80,
-            borderRadius: 40,
-            backgroundColor: theme.colors.secondary,
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: theme.spacing[4],
-          }}
-        >
-          <Feather name="book-open" size={32} color={theme.colors.primary} />
-        </View>
+    <Screen title="Receitas" showHeader={true} scroll={true} animate={false}>
+      <View style={{ paddingVertical: spacing[6], alignItems: "center" }}>
         <Text
           variant="h2"
           style={{
             textAlign: "center",
-            marginBottom: theme.spacing[2],
+            marginBottom: spacing[2],
+            color: activeColors.text,
           }}
         >
           Receitas em Breve
         </Text>
+
         <Text
+          variant="body"
+          color="muted"
           style={{
             textAlign: "center",
-            color: theme.colors.mutedForeground,
-            marginBottom: theme.spacing[6],
-            paddingHorizontal: theme.spacing.xl,
+            marginBottom: spacing[6],
+            paddingHorizontal: spacing[4],
           }}
         >
           Estamos trabalhando para trazer receitas personalizadas baseadas nos seus macros. Fique ligado!
         </Text>
 
-        <Card style={{ width: "100%" }}>
+        <Card>
           <CardHeader>
             <CardTitle>O que esperar</CardTitle>
           </CardHeader>
           <CardContent>
-            <View style={{ marginTop: theme.spacing[2] }}>
-              {[
-                "Receitas personalizadas com base nos seus macros",
-                "Filtros por ingredientes disponíveis",
-                "Informações nutricionais completas",
-                "Salve suas receitas favoritas",
-              ].map((item, index) => (
-                <View
-                  key={index}
-                  style={{
-                    flexDirection: "row",
-                    marginBottom: theme.spacing[3],
-                  }}
-                >
-                  <View
-                    style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: 4,
-                      backgroundColor: theme.colors.primary,
-                      marginTop: 8,
-                      marginRight: theme.spacing[2],
-                    }}
-                  />
-                  <Text style={{ flex: 1 }}>{item}</Text>
-                </View>
-              ))}
-            </View>
+            <Text style={{ marginBottom: spacing[3] }}>• Receitas personalizadas com base nos seus macros</Text>
+            <Text style={{ marginBottom: spacing[3] }}>• Filtros por ingredientes disponíveis</Text>
+            <Button
+              title="Inscreva-se para notificações"
+              variant="outline"
+              style={{ marginTop: spacing[4] }}
+              onPress={() => {}}
+            />
           </CardContent>
         </Card>
       </View>
     </Screen>
   );
 }
+
+export default RecipesScreen;

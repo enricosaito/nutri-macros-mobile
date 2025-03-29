@@ -1,10 +1,12 @@
 // components/macro-display.tsx
 import React, { useEffect } from "react";
-import { View, StyleSheet, ViewStyle } from "react-native";
+import { View, StyleSheet, ViewStyle, useColorScheme, TextStyle } from "react-native";
 import { Text } from "./ui/text";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
-import { useTheme } from "../src/context/ThemeContext";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming, FadeIn, SlideInRight } from "react-native-reanimated";
+import { colors, darkColors, spacing } from "../src/styles/globalStyles";
+import { Feather } from "@expo/vector-icons";
+import { useAnimationsEnabled } from "../src/utils/animation";
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 
@@ -22,7 +24,9 @@ interface MacroDisplayProps {
 }
 
 export function MacroDisplay({ macros, calories, showPercentages = true, style }: MacroDisplayProps) {
-  const { theme } = useTheme();
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
+  const animationsEnabled = useAnimationsEnabled();
 
   // Animated values for each macro
   const proteinWidth = useSharedValue(0);
@@ -42,10 +46,16 @@ export function MacroDisplay({ macros, calories, showPercentages = true, style }
 
   // Update animated values when macros change
   useEffect(() => {
-    proteinWidth.value = withTiming(proteinPercent, { duration: 500 });
-    carbsWidth.value = withTiming(carbsPercent, { duration: 500 });
-    fatWidth.value = withTiming(fatPercent, { duration: 500 });
-  }, [macros, proteinPercent, carbsPercent, fatPercent]);
+    if (animationsEnabled) {
+      proteinWidth.value = withTiming(proteinPercent, { duration: 800 });
+      carbsWidth.value = withTiming(carbsPercent, { duration: 800 });
+      fatWidth.value = withTiming(fatPercent, { duration: 800 });
+    } else {
+      proteinWidth.value = proteinPercent;
+      carbsWidth.value = carbsPercent;
+      fatWidth.value = fatPercent;
+    }
+  }, [macros, proteinPercent, carbsPercent, fatPercent, proteinWidth, carbsWidth, fatWidth, animationsEnabled]);
 
   // Animated styles for progress bars
   const proteinAnimStyle = useAnimatedStyle(() => {
@@ -66,10 +76,46 @@ export function MacroDisplay({ macros, calories, showPercentages = true, style }
     };
   });
 
-  // Use our new chart colors from the theme
-  const proteinColor = theme.colors.chart3;
-  const carbsColor = theme.colors.chart1;
-  const fatColor = theme.colors.chart5;
+  // Use chart colors
+  const proteinColor = activeColors.chart3;
+  const carbsColor = activeColors.chart1;
+  const fatColor = activeColors.chart5;
+
+  // Define the macro rows
+  const macroRows = [
+    {
+      label: "Proteína",
+      grams: macros.protein,
+      calories: proteinCalories,
+      percent: proteinPercent,
+      color: proteinColor,
+      icon: "target",
+      delay: 0,
+      key: "protein",
+    },
+    {
+      label: "Carboidratos",
+      grams: macros.carbs,
+      calories: carbsCalories,
+      percent: carbsPercent,
+      color: carbsColor,
+      icon: "circle",
+      delay: 100,
+      key: "carbs",
+    },
+    {
+      label: "Gordura",
+      grams: macros.fat,
+      calories: fatCalories,
+      percent: fatPercent,
+      color: fatColor,
+      icon: "droplet",
+      delay: 200,
+      key: "fat",
+    },
+  ];
+
+  const AnimatedContainer = animationsEnabled ? Animated.View : View;
 
   return (
     <Card style={style}>
@@ -77,53 +123,51 @@ export function MacroDisplay({ macros, calories, showPercentages = true, style }
         <CardTitle>Distribuição de Macronutrientes</CardTitle>
       </CardHeader>
       <CardContent>
-        <Text
-          variant="h3"
-          style={{
-            textAlign: "center",
-            marginBottom: theme.spacing[4],
-            color: theme.colors.primary,
-          }}
-        >
-          {calories} kcal
-        </Text>
+        <AnimatedContainer entering={animationsEnabled ? FadeIn.delay(300).duration(500) : undefined}>
+          <Text
+            variant="h2"
+            color="primary"
+            style={{
+              textAlign: "center",
+              marginBottom: spacing[4],
+            }}
+          >
+            {calories} kcal
+          </Text>
 
-        {/* Progress bar */}
-        <View style={[styles.progressBarContainer, { borderRadius: theme.radius.md }]}>
-          <AnimatedView style={[styles.progressBarProtein, proteinAnimStyle, { backgroundColor: proteinColor }]} />
-          <AnimatedView style={[styles.progressBarCarbs, carbsAnimStyle, { backgroundColor: carbsColor }]} />
-          <AnimatedView style={[styles.progressBarFat, fatAnimStyle, { backgroundColor: fatColor }]} />
-        </View>
+          {/* Progress bar */}
+          <View
+            style={{
+              flexDirection: "row",
+              overflow: "hidden",
+              borderRadius: 8,
+              backgroundColor: activeColors.muted,
+              height: 16,
+              marginVertical: spacing[4],
+            }}
+          >
+            <AnimatedView style={[{ height: "100%" }, proteinAnimStyle, { backgroundColor: proteinColor }]} />
+            <AnimatedView style={[{ height: "100%" }, carbsAnimStyle, { backgroundColor: carbsColor }]} />
+            <AnimatedView style={[{ height: "100%" }, fatAnimStyle, { backgroundColor: fatColor }]} />
+          </View>
 
-        {/* Macros detail */}
-        <View style={{ marginTop: theme.spacing[4] }}>
-          <MacroRow
-            label="Proteína"
-            grams={macros.protein}
-            calories={proteinCalories}
-            percent={proteinPercent}
-            showPercent={showPercentages}
-            color={proteinColor}
-          />
-
-          <MacroRow
-            label="Carboidratos"
-            grams={macros.carbs}
-            calories={carbsCalories}
-            percent={carbsPercent}
-            showPercent={showPercentages}
-            color={carbsColor}
-          />
-
-          <MacroRow
-            label="Gordura"
-            grams={macros.fat}
-            calories={fatCalories}
-            percent={fatPercent}
-            showPercent={showPercentages}
-            color={fatColor}
-          />
-        </View>
+          {/* Macros detail */}
+          <View style={{ marginTop: spacing[4] }}>
+            {macroRows.map((row) => (
+              <MacroRow
+                key={row.key}
+                label={row.label}
+                grams={row.grams}
+                calories={row.calories}
+                percent={row.percent}
+                showPercent={showPercentages}
+                color={row.color}
+                icon={row.icon}
+                delay={row.delay}
+              />
+            ))}
+          </View>
+        </AnimatedContainer>
       </CardContent>
     </Card>
   );
@@ -136,67 +180,85 @@ interface MacroRowProps {
   percent: number;
   showPercent: boolean;
   color: string;
+  icon: string;
+  delay: number;
 }
 
-function MacroRow({ label, grams, calories, percent, showPercent, color }: MacroRowProps) {
-  const { theme } = useTheme();
+function MacroRow({ label, grams, calories, percent, showPercent, color, icon, delay }: MacroRowProps) {
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
+  const animationsEnabled = useAnimationsEnabled();
+
+  const AnimatedContainer = animationsEnabled ? Animated.View : View;
 
   return (
-    <View style={[styles.macroRow, { marginBottom: theme.spacing[3] }]}>
-      <View style={[styles.macroIndicator, { backgroundColor: color, marginRight: theme.spacing[2] }]} />
-      <Text style={[styles.macroLabel, { flex: 1, fontWeight: theme.typography.fontWeight.medium }]}>{label}</Text>
-      <View style={styles.macroValues}>
-        <Text style={[styles.macroGrams, { marginRight: theme.spacing[2] }]}>{grams}g</Text>
-        <Text style={[styles.macroCalories, { marginRight: theme.spacing[2], color: theme.colors.mutedForeground }]}>
+    <AnimatedContainer
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: spacing[3],
+      }}
+      entering={animationsEnabled ? SlideInRight.delay(delay).springify() : undefined}
+    >
+      <View
+        style={{
+          width: 24,
+          height: 24,
+          borderRadius: 12,
+          backgroundColor: color,
+          alignItems: "center",
+          justifyContent: "center",
+          marginRight: spacing[2],
+        }}
+      >
+        <Feather name={icon as any} size={12} color="white" />
+      </View>
+      <Text
+        style={{
+          flex: 1,
+          fontSize: 16,
+          fontWeight: "500" as TextStyle["fontWeight"],
+        }}
+      >
+        {label}
+      </Text>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 16,
+            fontWeight: "600" as TextStyle["fontWeight"],
+            marginRight: spacing[2],
+          }}
+        >
+          {grams}g
+        </Text>
+        <Text
+          variant="caption"
+          color="muted"
+          style={{
+            marginRight: spacing[2],
+          }}
+        >
           {calories} kcal
         </Text>
         {showPercent && (
-          <Text style={[styles.macroPercent, { color: theme.colors.mutedForeground }]}>{Math.round(percent)}%</Text>
+          <Text
+            variant="caption"
+            color="muted"
+            style={{
+              minWidth: 40,
+              textAlign: "right",
+            }}
+          >
+            {Math.round(percent)}%
+          </Text>
         )}
       </View>
-    </View>
+    </AnimatedContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  progressBarContainer: {
-    height: 32,
-    flexDirection: "row",
-    overflow: "hidden",
-    backgroundColor: "#f3f4f6", // Light gray background
-  },
-  progressBarProtein: {
-    height: "100%",
-  },
-  progressBarCarbs: {
-    height: "100%",
-  },
-  progressBarFat: {
-    height: "100%",
-  },
-  macroRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  macroIndicator: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-  },
-  macroLabel: {
-    fontSize: 16,
-  },
-  macroValues: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  macroGrams: {
-    fontSize: 16,
-  },
-  macroCalories: {
-    fontSize: 16,
-  },
-  macroPercent: {
-    fontSize: 16,
-  },
-});
