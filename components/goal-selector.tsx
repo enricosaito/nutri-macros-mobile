@@ -2,8 +2,9 @@
 import React from "react";
 import { View, Pressable, StyleSheet } from "react-native";
 import { Text } from "./ui/text";
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming, FadeInDown, Easing } from "react-native-reanimated";
 import { useTheme } from "../src/context/ThemeContext";
+import { Feather } from "@expo/vector-icons";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -17,21 +18,22 @@ interface GoalSelectorProps {
   goals: Goal[];
   selectedGoalId: string;
   onSelectGoal: (goalId: string) => void;
-  className?: string;
 }
 
-export function GoalSelector({ goals, selectedGoalId, onSelectGoal, className = "" }: GoalSelectorProps) {
+export function GoalSelector({ goals, selectedGoalId, onSelectGoal }: GoalSelectorProps) {
   const { theme } = useTheme();
 
   return (
     <View style={{ gap: theme.spacing[3] }}>
-      {goals.map((goal) => (
-        <GoalOption
+      {goals.map((goal, index) => (
+        <Animated.View
           key={goal.id}
-          goal={goal}
-          isSelected={goal.id === selectedGoalId}
-          onPress={() => onSelectGoal(goal.id)}
-        />
+          entering={FadeInDown.delay(index * 100)
+            .duration(400)
+            .easing(Easing.bezier(0.25, 0.1, 0.25, 1))}
+        >
+          <GoalOption goal={goal} isSelected={goal.id === selectedGoalId} onPress={() => onSelectGoal(goal.id)} />
+        </Animated.View>
       ))}
     </View>
   );
@@ -67,7 +69,7 @@ function GoalOption({ goal, isSelected, onPress }: GoalOptionProps) {
         animatedStyle,
         styles.optionContainer,
         {
-          borderWidth: 1,
+          borderWidth: isSelected ? 2 : 1,
           borderRadius: theme.radius.lg,
           padding: theme.spacing[4],
           borderColor: isSelected ? theme.colors.primary : theme.colors.border,
@@ -82,7 +84,7 @@ function GoalOption({ goal, isSelected, onPress }: GoalOptionProps) {
         <View style={{ flex: 1 }}>
           <Text
             style={{
-              fontSize: theme.typography.fontSize.sm,
+              fontSize: theme.typography.fontSize.base,
               fontWeight: theme.typography.fontWeight.medium,
               color: isSelected ? theme.colors.primary : theme.colors.foreground,
               marginBottom: theme.spacing[1],
@@ -92,7 +94,7 @@ function GoalOption({ goal, isSelected, onPress }: GoalOptionProps) {
           </Text>
           <Text
             style={{
-              fontSize: theme.typography.fontSize.xs,
+              fontSize: theme.typography.fontSize.sm,
               color: theme.colors.mutedForeground,
             }}
           >
@@ -109,7 +111,7 @@ function GoalOption({ goal, isSelected, onPress }: GoalOptionProps) {
             },
           ]}
         >
-          {isSelected && <View style={styles.radioInner} />}
+          {isSelected && <Feather name="check" size={14} color="white" />}
         </View>
       </View>
     </AnimatedPressable>
@@ -117,24 +119,27 @@ function GoalOption({ goal, isSelected, onPress }: GoalOptionProps) {
 }
 
 const styles = StyleSheet.create({
-  optionContainer: {},
+  optionContainer: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 1,
+    elevation: 1,
+  },
   optionContent: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
   radioCircle: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     borderWidth: 2,
     alignItems: "center",
     justifyContent: "center",
-  },
-  radioInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: "white",
   },
 });
