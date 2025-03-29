@@ -5,9 +5,8 @@ import { StatusBar } from "expo-status-bar";
 import { Feather } from "@expo/vector-icons";
 import { ThemeProvider, useTheme } from "../src/context/ThemeContext";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import ErrorBoundary from "../components/error-boundary";
 
-// Create a separate TabsNavigator component that uses the theme
+// Create a separate TabsNavigator component that uses the theme hook
 function TabsNavigator() {
   const { theme, isDark } = useTheme();
 
@@ -39,7 +38,8 @@ function TabsNavigator() {
           name="calculator"
           options={{
             title: "Calculadora",
-            tabBarIcon: ({ color, size }) => <Feather name="cpu" size={size} color={color} />,
+            // Use a valid Feather icon name like "sliders"
+            tabBarIcon: ({ color, size }) => <Feather name="sliders" size={size} color={color} />,
           }}
         />
         <Tabs.Screen
@@ -61,14 +61,13 @@ function TabsNavigator() {
   );
 }
 
+// Root layout component with the theme provider
 export default function RootLayout() {
   return (
-    <ErrorBoundary>
-      <SafeAreaProvider>
-        <ThemeProvider>
-          <TabsNavigator />
-        </ThemeProvider>
-      </SafeAreaProvider>
-    </ErrorBoundary>
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <TabsNavigator />
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }

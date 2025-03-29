@@ -7,6 +7,7 @@ type ThemeContextType = {
   theme: Theme;
   isDark: boolean;
   toggleTheme: () => void;
+  isThemeReady: boolean;
 };
 
 // Create a default theme context with light theme
@@ -14,6 +15,7 @@ const defaultThemeContext: ThemeContextType = {
   theme: lightTheme,
   isDark: false,
   toggleTheme: () => {},
+  isThemeReady: false,
 };
 
 const ThemeContext = createContext<ThemeContextType>(defaultThemeContext);
@@ -21,10 +23,12 @@ const ThemeContext = createContext<ThemeContextType>(defaultThemeContext);
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const colorScheme = useColorScheme();
   const [isDark, setIsDark] = useState(colorScheme === "dark");
+  const [isThemeReady, setIsThemeReady] = useState(false);
 
-  // Update theme when system preference changes
+  // Initialize theme
   useEffect(() => {
     setIsDark(colorScheme === "dark");
+    setIsThemeReady(true);
   }, [colorScheme]);
 
   // Toggle theme manually
@@ -33,9 +37,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const theme = isDark ? darkTheme : lightTheme;
-  const contextValue = { theme, isDark, toggleTheme };
 
-  return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>;
+  return <ThemeContext.Provider value={{ theme, isDark, toggleTheme, isThemeReady }}>{children}</ThemeContext.Provider>;
 };
 
 export const useTheme = () => {

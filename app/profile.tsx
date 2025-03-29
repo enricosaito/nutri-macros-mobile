@@ -6,7 +6,7 @@ import { Feather } from "@expo/vector-icons";
 import { useTheme } from "../src/context/ThemeContext";
 import Animated, { FadeIn, FadeInRight } from "react-native-reanimated";
 
-export default function ProfileScreen() {
+function ProfileScreen() {
   const { theme, isDark, toggleTheme } = useTheme();
 
   // Resources that will be listed
@@ -151,3 +151,5 @@ export default function ProfileScreen() {
     </Screen>
   );
 }
+
+export default ProfileScreen;

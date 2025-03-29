@@ -6,7 +6,7 @@ import { Feather } from "@expo/vector-icons";
 import { useTheme } from "../src/context/ThemeContext";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 
-export default function RecipesScreen() {
+function RecipesScreen() {
   const { theme } = useTheme();
 
   // Features to expect
@@ -111,3 +111,5 @@ export default function RecipesScreen() {
     </Screen>
   );
 }
+
+export default RecipesScreen;

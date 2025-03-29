@@ -34,7 +34,7 @@ const goals: Goal[] = [
   { id: "gain_muscle", name: "Ganhar Músculo", description: "Superávit calórico para ganho muscular" },
 ];
 
-export default function CalculatorScreen() {
+function CalculatorScreen() {
   const router = useRouter();
   const { theme } = useTheme();
 
@@ -227,3 +227,5 @@ export default function CalculatorScreen() {
     </Screen>
   );
 }
+
+export default CalculatorScreen;
