@@ -16,11 +16,14 @@ import {
 } from "../components";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { colors, darkColors, spacing } from "../src/styles/globalStyles";
+import { useAnimationsEnabled } from "../src/utils/animation";
 
 function ResultsScreen() {
   const router = useRouter();
   const isDark = useColorScheme() === "dark";
   const activeColors = isDark ? darkColors : colors;
+  const animationsEnabled = useAnimationsEnabled();
+
   const params = useLocalSearchParams<{
     protein: string;
     carbs: string;
@@ -64,6 +67,8 @@ function ResultsScreen() {
     ];
   };
 
+  const AnimatedContainer = animationsEnabled ? Animated.View : View;
+
   return (
     <Screen
       title="Resultados"
@@ -77,8 +82,8 @@ function ResultsScreen() {
       }
       scroll={true}
     >
-      <Animated.View
-        entering={FadeInUp.delay(100).duration(500)}
+      <AnimatedContainer
+        entering={animationsEnabled ? FadeInUp.delay(100).duration(500) : undefined}
         style={{
           marginTop: spacing[4],
           marginBottom: spacing[4],
@@ -98,11 +103,14 @@ function ResultsScreen() {
         >
           Baseados nas suas informações e objetivos
         </Text>
-      </Animated.View>
+      </AnimatedContainer>
 
       <MacroDisplay macros={macros} calories={calories} showPercentages={true} />
 
-      <Animated.View entering={FadeInDown.delay(400).duration(500)} style={{ marginVertical: spacing[6] }}>
+      <AnimatedContainer
+        entering={animationsEnabled ? FadeInDown.delay(400).duration(500) : undefined}
+        style={{ marginVertical: spacing[6] }}
+      >
         <Card>
           <CardHeader>
             <CardTitle>Dicas de Alimentação</CardTitle>
@@ -146,9 +154,12 @@ function ResultsScreen() {
             ))}
           </CardContent>
         </Card>
-      </Animated.View>
+      </AnimatedContainer>
 
-      <Animated.View entering={FadeInDown.delay(600).duration(500)} style={{ marginBottom: spacing[6] }}>
+      <AnimatedContainer
+        entering={animationsEnabled ? FadeInDown.delay(600).duration(500) : undefined}
+        style={{ marginBottom: spacing[6] }}
+      >
         <Card>
           <CardHeader>
             <CardTitle>Próximos Passos</CardTitle>
@@ -202,7 +213,7 @@ function ResultsScreen() {
             />
           </CardFooter>
         </Card>
-      </Animated.View>
+      </AnimatedContainer>
     </Screen>
   );
 }
