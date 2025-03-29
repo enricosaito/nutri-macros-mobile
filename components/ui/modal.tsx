@@ -1,7 +1,15 @@
+// components/ui/modal.tsx
 import React from "react";
-import { Modal as RNModal, View, StyleSheet, TouchableWithoutFeedback, TouchableOpacity } from "react-native";
+import {
+  Modal as RNModal,
+  View,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  TouchableOpacity,
+  useColorScheme,
+} from "react-native";
 import { Text } from "./text";
-import { useTheme } from "../../src/context/ThemeContext";
+import { colors, darkColors, spacing, radius } from "../../src/styles/globalStyles";
 
 interface ModalProps {
   visible: boolean;
@@ -11,7 +19,8 @@ interface ModalProps {
 }
 
 export function Modal({ visible, onClose, children, style }: ModalProps) {
-  const { theme } = useTheme();
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
 
   return (
     <RNModal transparent visible={visible} animationType="fade" onRequestClose={onClose}>
@@ -22,9 +31,9 @@ export function Modal({ visible, onClose, children, style }: ModalProps) {
               style={[
                 styles.content,
                 {
-                  backgroundColor: theme.colors.card,
-                  borderColor: theme.colors.border,
-                  borderRadius: theme.radius.lg,
+                  backgroundColor: activeColors.card,
+                  borderColor: activeColors.border,
+                  borderRadius: radius.xl,
                   borderWidth: 1,
                 },
                 style,
@@ -40,16 +49,17 @@ export function Modal({ visible, onClose, children, style }: ModalProps) {
 }
 
 export function ModalHeader({ style, children }: { style?: any; children: React.ReactNode }) {
-  const { theme } = useTheme();
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
 
   return (
     <View
       style={[
         styles.header,
         {
-          padding: theme.spacing[6],
+          padding: spacing[6],
           borderBottomWidth: 1,
-          borderBottomColor: theme.colors.border,
+          borderBottomColor: activeColors.border,
         },
         style,
       ]}
@@ -60,8 +70,6 @@ export function ModalHeader({ style, children }: { style?: any; children: React.
 }
 
 export function ModalTitle({ style, children }: { style?: any; children: React.ReactNode }) {
-  const { theme } = useTheme();
-
   return (
     <Text variant="h3" style={[style]}>
       {children}
@@ -70,22 +78,21 @@ export function ModalTitle({ style, children }: { style?: any; children: React.R
 }
 
 export function ModalBody({ style, children }: { style?: any; children: React.ReactNode }) {
-  const { theme } = useTheme();
-
-  return <View style={[styles.body, { padding: theme.spacing[6] }, style]}>{children}</View>;
+  return <View style={[styles.body, { padding: spacing[6] }, style]}>{children}</View>;
 }
 
 export function ModalFooter({ style, children }: { style?: any; children: React.ReactNode }) {
-  const { theme } = useTheme();
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
 
   return (
     <View
       style={[
         styles.footer,
         {
-          padding: theme.spacing[6],
+          padding: spacing[6],
           borderTopWidth: 1,
-          borderTopColor: theme.colors.border,
+          borderTopColor: activeColors.border,
         },
         style,
       ]}
@@ -101,7 +108,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
-    padding: 16,
+    padding: spacing[4],
   },
   content: {
     width: "100%",
