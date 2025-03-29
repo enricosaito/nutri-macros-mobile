@@ -5,6 +5,7 @@ import { StatusBar } from "expo-status-bar";
 import { Feather } from "@expo/vector-icons";
 import { ThemeProvider, useTheme } from "../src/context/ThemeContext";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import ErrorBoundary from "../components/error-boundary";
 
 // Create a separate TabsNavigator component that uses the theme
 function TabsNavigator() {
@@ -62,10 +63,12 @@ function TabsNavigator() {
 
 export default function RootLayout() {
   return (
-    <SafeAreaProvider>
-      <ThemeProvider>
-        <TabsNavigator />
-      </ThemeProvider>
-    </SafeAreaProvider>
+    <ErrorBoundary>
+      <SafeAreaProvider>
+        <ThemeProvider>
+          <TabsNavigator />
+        </ThemeProvider>
+      </SafeAreaProvider>
+    </ErrorBoundary>
   );
 }
