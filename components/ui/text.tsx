@@ -1,6 +1,6 @@
 // components/ui/text.tsx
 import React from "react";
-import { Text as RNText, StyleSheet, TextStyle, TextProps as RNTextProps } from "react-native";
+import { Text as RNText, TextStyle, TextProps as RNTextProps } from "react-native";
 import { useTheme } from "../../src/context/ThemeContext";
 
 type TextVariant = "h1" | "h2" | "h3" | "h4" | "subtitle" | "body" | "caption" | "small";
