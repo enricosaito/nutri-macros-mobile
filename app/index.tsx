@@ -81,7 +81,7 @@ function HomeScreen() {
           entering={animationsEnabled ? FadeInDown.duration(800).springify() : undefined}
           style={styles.logoContainer}
         >
-          <Image source={require("../assets/images/icon.png")} style={styles.logo} resizeMode="contain" />
+          <Image source={require("../assets/images/logo.png")} style={styles.logo} resizeMode="contain" />
         </AnimatedContainer>
 
         <AnimatedContainer entering={animationsEnabled ? FadeInUp.delay(200).duration(800).springify() : undefined}>
