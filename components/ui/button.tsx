@@ -1,6 +1,8 @@
+// components/ui/button.tsx
 import React from "react";
 import { TouchableOpacity, Text, ActivityIndicator, StyleSheet, ViewStyle, TextStyle, View } from "react-native";
 import { useTheme } from "../../src/context/ThemeContext";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 type ButtonVariant = "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
 type ButtonSize = "default" | "sm" | "lg" | "icon";
@@ -18,8 +20,9 @@ interface ButtonProps {
   textStyle?: TextStyle;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
-  className?: string;
 }
+
+const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 export function Button({
   title,
@@ -34,9 +37,23 @@ export function Button({
   textStyle,
   leftIcon,
   rightIcon,
-  className,
 }: ButtonProps) {
   const { theme } = useTheme();
+  const scale = useSharedValue(1);
+
+  const handlePressIn = () => {
+    scale.value = withTiming(0.98, { duration: 100 });
+  };
+
+  const handlePressOut = () => {
+    scale.value = withTiming(1, { duration: 100 });
+  };
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+    };
+  });
 
   const getVariantStyle = (): ViewStyle => {
     switch (variant) {
@@ -87,32 +104,32 @@ export function Button({
         return {
           paddingHorizontal: theme.spacing[4],
           paddingVertical: theme.spacing[2],
-          height: 36,
-          borderRadius: theme.radius.DEFAULT,
+          height: 44, // Increased for better touch targets
+          borderRadius: theme.radius.lg,
         };
       case "sm":
         return {
           paddingHorizontal: theme.spacing[3],
           paddingVertical: theme.spacing[1],
-          height: 32,
+          height: 36,
           borderRadius: theme.radius.md,
         };
       case "lg":
         return {
           paddingHorizontal: theme.spacing[8],
           paddingVertical: theme.spacing[2],
-          height: 40,
-          borderRadius: theme.radius.md,
+          height: 48,
+          borderRadius: theme.radius.lg,
         };
       case "icon":
         return {
-          height: 36,
-          width: 36,
+          height: 44,
+          width: 44,
           paddingHorizontal: 0,
           paddingVertical: 0,
           alignItems: "center",
           justifyContent: "center",
-          borderRadius: theme.radius.md,
+          borderRadius: theme.radius.lg,
         };
       default:
         return {};
@@ -121,8 +138,8 @@ export function Button({
 
   const getTextStyle = (): TextStyle => {
     const baseStyle: TextStyle = {
-      fontSize: theme.typography.fontSize.sm,
-      fontWeight: 500,
+      fontSize: theme.typography.fontSize.base,
+      fontWeight: "500" as const,
     };
 
     switch (variant) {
@@ -131,11 +148,11 @@ export function Button({
       case "destructive":
         return { ...baseStyle, color: theme.colors.destructiveForeground };
       case "outline":
-        return { ...baseStyle, color: theme.colors.foreground };
+        return { ...baseStyle, color: theme.colors.primary };
       case "secondary":
-        return { ...baseStyle, color: theme.colors.secondaryForeground };
+        return { ...baseStyle, color: theme.colors.primary };
       case "ghost":
-        return { ...baseStyle, color: theme.colors.foreground };
+        return { ...baseStyle, color: theme.colors.primary };
       case "link":
         return {
           ...baseStyle,
@@ -163,7 +180,7 @@ export function Button({
   };
 
   const getLoaderColor = () => {
-    if (variant === "outline" || variant === "ghost" || variant === "link") {
+    if (variant === "outline" || variant === "ghost" || variant === "link" || variant === "secondary") {
       return theme.colors.primary;
     }
     return theme.colors.primaryForeground;
@@ -172,7 +189,14 @@ export function Button({
   const content = children || title;
 
   return (
-    <TouchableOpacity style={buttonStyles} onPress={onPress} disabled={disabled || loading} activeOpacity={0.7}>
+    <AnimatedTouchable
+      style={[buttonStyles, animatedStyle]}
+      onPress={onPress}
+      disabled={disabled || loading}
+      activeOpacity={0.7}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+    >
       <View style={styles.contentContainer}>
         {loading ? (
           <ActivityIndicator size="small" color={getLoaderColor()} />
@@ -184,7 +208,7 @@ export function Button({
           </>
         )}
       </View>
-    </TouchableOpacity>
+    </AnimatedTouchable>
   );
 }
 
@@ -193,6 +217,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+    elevation: 1,
   },
   contentContainer: {
     flexDirection: "row",
@@ -203,7 +232,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   iconContainer: {
-    marginHorizontal: 4,
+    marginHorizontal: 6,
   },
   text: {
     textAlign: "center",
