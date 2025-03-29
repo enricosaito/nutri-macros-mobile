@@ -2,7 +2,7 @@
 import React from "react";
 import { View, Pressable, StyleSheet } from "react-native";
 import { Text } from "./ui/text";
-import Animated, { useAnimatedStyle, useSharedValue, withTiming, FadeInDown, Easing } from "react-native-reanimated";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming, FadeInDown } from "react-native-reanimated";
 import { useTheme } from "../src/context/ThemeContext";
 import { Feather } from "@expo/vector-icons";
 
@@ -30,7 +30,7 @@ export function GoalSelector({ goals, selectedGoalId, onSelectGoal }: GoalSelect
           key={goal.id}
           entering={FadeInDown.delay(index * 100)
             .duration(400)
-            .easing(Easing.bezier(0.25, 0.1, 0.25, 1))}
+            .springify()}
         >
           <GoalOption goal={goal} isSelected={goal.id === selectedGoalId} onPress={() => onSelectGoal(goal.id)} />
         </Animated.View>
@@ -85,7 +85,7 @@ function GoalOption({ goal, isSelected, onPress }: GoalOptionProps) {
           <Text
             style={{
               fontSize: theme.typography.fontSize.base,
-              fontWeight: theme.typography.fontWeight.medium,
+              fontWeight: theme.typography.fontWeight.medium as any,
               color: isSelected ? theme.colors.primary : theme.colors.foreground,
               marginBottom: theme.spacing[1],
             }}
