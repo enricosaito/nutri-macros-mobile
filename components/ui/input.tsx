@@ -1,9 +1,9 @@
 // components/ui/input.tsx
 import React, { useState } from "react";
-import { View, TextInput, TextInputProps, StyleSheet, ViewStyle, TouchableOpacity } from "react-native";
+import { View, TextInput, TextInputProps, StyleSheet, ViewStyle, Text as RNText } from "react-native";
 import { Text } from "./text";
 import { useTheme } from "../../src/context/ThemeContext";
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming, AnimatedStyleProp } from "react-native-reanimated";
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -14,6 +14,7 @@ interface InputProps extends TextInputProps {
 }
 
 const AnimatedView = Animated.createAnimatedComponent(View);
+const AnimatedText = Animated.createAnimatedComponent(RNText);
 
 export function Input({
   label,
@@ -24,6 +25,7 @@ export function Input({
   style,
   onFocus,
   onBlur,
+  value,
   ...props
 }: InputProps) {
   const { theme } = useTheme();
@@ -46,39 +48,35 @@ export function Input({
     return {
       transform: [
         {
-          translateY: withTiming(isFocused || props.value ? -24 : 0, {
+          translateY: withTiming(isFocused || (value && value.toString().length > 0) ? -24 : 0, {
             duration: 150,
           }),
         },
         {
-          scale: withTiming(isFocused || props.value ? 0.85 : 1, {
+          scale: withTiming(isFocused || (value && value.toString().length > 0) ? 0.85 : 1, {
             duration: 150,
           }),
         },
       ],
-      color: withTiming(
-        isFocused ? theme.colors.primary : error ? theme.colors.destructive : theme.colors.mutedForeground,
-        { duration: 150 }
-      ),
-    };
+      color: isFocused ? theme.colors.primary : error ? theme.colors.destructive : theme.colors.mutedForeground,
+    } as AnimatedStyleProp<any>;
   });
 
   return (
     <View style={[styles.container, containerStyle]}>
       {label && (
-        <Animated.Text
+        <AnimatedText
           style={[
             styles.label,
             {
               left: leftIcon ? theme.spacing[9] : theme.spacing[3],
-              color: theme.colors.mutedForeground,
               fontSize: theme.typography.fontSize.sm,
             },
             labelAnimStyle,
           ]}
         >
           {label}
-        </Animated.Text>
+        </AnimatedText>
       )}
 
       <View style={styles.inputContainer}>
@@ -116,6 +114,7 @@ export function Input({
           placeholderTextColor={theme.colors.mutedForeground}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          value={value}
           {...props}
         />
 
@@ -136,15 +135,12 @@ export function Input({
 
       {error && (
         <Text
-          style={[
-            styles.errorText,
-            {
-              color: theme.colors.destructive,
-              fontSize: theme.typography.fontSize.sm,
-              marginTop: theme.spacing[1],
-              marginLeft: theme.spacing[1],
-            },
-          ]}
+          style={{
+            color: theme.colors.destructive,
+            fontSize: theme.typography.fontSize.sm,
+            marginTop: theme.spacing[1],
+            marginLeft: theme.spacing[1],
+          }}
         >
           {error}
         </Text>
@@ -183,5 +179,4 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     zIndex: 1,
   },
-  errorText: {},
 });
