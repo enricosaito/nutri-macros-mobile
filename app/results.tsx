@@ -116,7 +116,7 @@ export default function ResultsScreen() {
                 <Text
                   style={{
                     fontSize: theme.typography.fontSize.lg,
-                    fontWeight: theme.typography.fontWeight.medium,
+                    fontWeight: 500,
                     marginBottom: theme.spacing[2],
                   }}
                 >
