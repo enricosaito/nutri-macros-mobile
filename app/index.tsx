@@ -3,13 +3,16 @@ import React from "react";
 import { View, ScrollView, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { Text } from "../components/ui/text";
-import { Card } from "../components/ui/card";
+import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
+import { Screen } from "../components/ui/screen";
 import { Feather } from "@expo/vector-icons";
-import { theme } from "../src/styles/theme";
+import { useTheme } from "../src/context/ThemeContext";
+import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { theme } = useTheme();
 
   const features = [
     {
@@ -37,238 +40,258 @@ export default function HomeScreen() {
     {
       title: "Proteínas",
       tip: "Essenciais para reparação muscular e saciedade",
+      icon: "award",
+      color: theme.colors.chart3,
     },
     {
       title: "Carboidratos",
       tip: "Principal fonte de energia para o corpo e cérebro",
+      icon: "battery-charging",
+      color: theme.colors.chart1,
     },
     {
       title: "Gorduras",
       tip: "Importantes para hormônios e absorção de vitaminas",
+      icon: "droplet",
+      color: theme.colors.chart5,
     },
   ];
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>NutriMacros</Text>
-      </View>
-
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Hero Section */}
-        <View style={styles.heroContainer}>
+    <Screen showHeader={false} scroll={true} padding={false}>
+      {/* Hero Section */}
+      <View style={[styles.heroContainer, { backgroundColor: theme.colors.card }]}>
+        <Animated.View entering={FadeInDown.duration(800).springify()} style={styles.logoContainer}>
           <Image source={require("../assets/images/icon.png")} style={styles.logo} resizeMode="contain" />
-          <Text style={styles.title}>Bem-vindo ao NutriMacros</Text>
-          <Text style={styles.subtitle}>
+        </Animated.View>
+
+        <Animated.View entering={FadeInUp.delay(200).duration(800).springify()}>
+          <Text variant="h1" style={[styles.title, { color: theme.colors.foreground }]}>
+            NutriMacros
+          </Text>
+          <Text variant="body" color="muted" style={styles.subtitle}>
             Seu assistente nutricional para alcançar seus objetivos de forma saudável e equilibrada
           </Text>
-        </View>
+        </Animated.View>
+      </View>
 
+      <View style={{ padding: theme.spacing[4] }}>
         {/* Featured Card */}
-        <Card style={styles.featuredCard}>
-          <View style={styles.featuredCardContent}>
-            <Text style={styles.featuredCardTitle}>Calcule Seus Macros</Text>
-            <Text style={styles.featuredCardDescription}>
-              Descubra sua necessidade calórica ideal e distribuição de macronutrientes
-            </Text>
-            <Button
-              title="Começar Agora"
-              onPress={() => router.push("/calculator")}
-              rightIcon={<Feather name="arrow-right" size={16} color={theme.colors.primary} />}
-              style={styles.featuredCardButton}
-            />
-          </View>
-        </Card>
+        <Animated.View entering={FadeInUp.delay(400).duration(800).springify()}>
+          <Card style={styles.featuredCard}>
+            <CardContent
+              style={{
+                backgroundColor: theme.colors.primary,
+                padding: theme.spacing[6],
+                borderRadius: theme.radius.xl,
+              }}
+            >
+              <Text variant="h3" style={styles.featuredCardTitle} color="white">
+                Calcule Seus Macros
+              </Text>
+              <Text style={styles.featuredCardDescription} color="white">
+                Descubra sua necessidade calórica ideal e distribuição de macronutrientes
+              </Text>
+              <Button
+                title="Começar Agora"
+                onPress={() => router.push("/calculator")}
+                rightIcon={<Feather name="arrow-right" size={16} color={theme.colors.primary} />}
+                style={styles.featuredCardButton}
+                variant="secondary"
+              />
+            </CardContent>
+          </Card>
+        </Animated.View>
 
         {/* Features */}
-        <Text style={styles.sectionTitle}>Recursos</Text>
+        <Animated.View entering={FadeInUp.delay(600).duration(800).springify()}>
+          <Text variant="h3" style={[styles.sectionTitle, { color: theme.colors.foreground }]}>
+            Recursos
+          </Text>
 
-        <View style={styles.featuresContainer}>
-          {features.map((feature, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.featureCard}
-              onPress={() => {
-                if (feature.route && !feature.comingSoon) {
-                  router.push(feature.route as any);
-                }
-              }}
-              disabled={feature.comingSoon}
-            >
-              <View style={styles.featureIconContainer}>
-                <Feather name={feature.icon as any} size={24} color={theme.colors.primary} />
-              </View>
-              <View style={styles.featureContent}>
-                <Text style={styles.featureTitle}>{feature.title}</Text>
-                <Text style={styles.featureDescription}>{feature.description}</Text>
-              </View>
-              {feature.comingSoon ? (
-                <View style={styles.comingSoonBadge}>
-                  <Text style={styles.comingSoonText}>Em breve</Text>
+          <View style={styles.featuresContainer}>
+            {features.map((feature, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.featureCard,
+                  {
+                    backgroundColor: theme.colors.card,
+                    borderColor: theme.colors.border,
+                    borderRadius: theme.radius.lg,
+                    opacity: feature.comingSoon ? 0.7 : 1,
+                  },
+                ]}
+                onPress={() => {
+                  if (feature.route && !feature.comingSoon) {
+                    router.push(feature.route as any);
+                  }
+                }}
+                disabled={feature.comingSoon}
+                activeOpacity={feature.comingSoon ? 0.5 : 0.7}
+              >
+                <View
+                  style={[
+                    styles.featureIconContainer,
+                    {
+                      backgroundColor: `${theme.colors.primary}15`,
+                      borderRadius: theme.radius.md,
+                    },
+                  ]}
+                >
+                  <Feather name={feature.icon as any} size={24} color={theme.colors.primary} />
                 </View>
-              ) : (
-                <Feather name="chevron-right" size={20} color={theme.colors.textMuted} />
-              )}
-            </TouchableOpacity>
-          ))}
-        </View>
+                <View style={styles.featureContent}>
+                  <Text variant="subtitle" style={{ color: theme.colors.foreground }}>
+                    {feature.title}
+                  </Text>
+                  <Text variant="caption" color="muted">
+                    {feature.description}
+                  </Text>
+                </View>
+                {feature.comingSoon ? (
+                  <View
+                    style={[
+                      styles.comingSoonBadge,
+                      {
+                        backgroundColor: theme.colors.secondary,
+                        borderRadius: theme.radius.full,
+                      },
+                    ]}
+                  >
+                    <Text variant="small" style={{ color: theme.colors.primary }}>
+                      Em breve
+                    </Text>
+                  </View>
+                ) : (
+                  <Feather name="chevron-right" size={20} color={theme.colors.mutedForeground} />
+                )}
+              </TouchableOpacity>
+            ))}
+          </View>
+        </Animated.View>
 
         {/* Nutrition Tips */}
-        <Text style={styles.sectionTitle}>Dicas Nutricionais</Text>
+        <Animated.View entering={FadeInUp.delay(800).duration(800).springify()}>
+          <Text variant="h3" style={[styles.sectionTitle, { color: theme.colors.foreground }]}>
+            Dicas Nutricionais
+          </Text>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tipsContainer}>
-          {nutritionTips.map((item, index) => (
-            <Card key={index} style={styles.tipCard}>
-              <Text style={styles.tipTitle}>{item.title}</Text>
-              <Text style={styles.tipDescription}>{item.tip}</Text>
-            </Card>
-          ))}
-        </ScrollView>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tipsContainer}>
+            {nutritionTips.map((item, index) => (
+              <Card key={index} style={[styles.tipCard, { borderRadius: theme.radius.lg }]}>
+                <CardContent style={{ padding: theme.spacing[5] }}>
+                  <View
+                    style={[
+                      styles.tipIconContainer,
+                      {
+                        backgroundColor: `${item.color}20`,
+                        borderRadius: theme.radius.md,
+                      },
+                    ]}
+                  >
+                    <Feather name={item.icon as any} size={22} color={item.color} />
+                  </View>
+                  <Text variant="subtitle" style={{ marginVertical: theme.spacing[2] }}>
+                    {item.title}
+                  </Text>
+                  <Text variant="caption" color="muted">
+                    {item.tip}
+                  </Text>
+                </CardContent>
+              </Card>
+            ))}
+          </ScrollView>
+        </Animated.View>
 
         <View style={styles.spacer} />
-      </ScrollView>
-    </View>
+      </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  header: {
-    paddingTop: 50,
-    paddingHorizontal: theme.spacing.md,
-    paddingBottom: theme.spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-    backgroundColor: "white",
-  },
-  headerTitle: {
-    fontSize: theme.fontSize.lg,
-    fontWeight: "700",
-    color: theme.colors.text,
-  },
-  scrollView: {
-    flex: 1,
-  },
   heroContainer: {
     alignItems: "center",
-    paddingHorizontal: theme.spacing.md,
-    paddingTop: theme.spacing.xl,
-    paddingBottom: theme.spacing.lg,
+    paddingTop: 100,
+    paddingBottom: 40,
+    paddingHorizontal: 20,
+  },
+  logoContainer: {
+    alignItems: "center",
+    marginBottom: 24,
   },
   logo: {
     width: 120,
     height: 120,
   },
   title: {
-    fontSize: theme.fontSize.xl,
-    fontWeight: "700",
-    color: theme.colors.text,
     textAlign: "center",
-    marginTop: theme.spacing.md,
+    marginBottom: 8,
   },
   subtitle: {
-    fontSize: theme.fontSize.md,
-    color: theme.colors.textMuted,
     textAlign: "center",
-    marginTop: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.md,
+    paddingHorizontal: 20,
   },
   featuredCard: {
-    marginHorizontal: theme.spacing.md,
-    marginBottom: theme.spacing.lg,
-  },
-  featuredCardContent: {
-    backgroundColor: theme.colors.primary,
-    padding: theme.spacing.lg,
+    marginBottom: 32,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.07,
+    shadowRadius: 4,
+    elevation: 3,
   },
   featuredCardTitle: {
-    fontSize: theme.fontSize.lg,
-    fontWeight: "700",
-    color: "white",
-    marginBottom: theme.spacing.sm,
+    marginBottom: 8,
   },
   featuredCardDescription: {
-    fontSize: theme.fontSize.md,
-    color: "white",
-    marginBottom: theme.spacing.md,
+    marginBottom: 20,
   },
   featuredCardButton: {
-    backgroundColor: "white",
+    alignSelf: "flex-start",
   },
   sectionTitle: {
-    fontSize: theme.fontSize.lg,
-    fontWeight: "700",
-    color: theme.colors.text,
-    marginBottom: theme.spacing.md,
-    marginHorizontal: theme.spacing.md,
-    marginTop: theme.spacing.lg,
+    marginBottom: 16,
   },
   featuresContainer: {
-    paddingHorizontal: theme.spacing.md,
+    marginBottom: 32,
   },
   featureCard: {
     flexDirection: "row",
-    backgroundColor: "white",
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.md,
+    padding: 16,
     borderWidth: 1,
-    borderColor: theme.colors.border,
-    marginBottom: theme.spacing.md,
+    marginBottom: 12,
     alignItems: "center",
   },
   featureIconContainer: {
     height: 48,
     width: 48,
-    borderRadius: theme.borderRadius.full,
-    backgroundColor: theme.colors.secondaryLight,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: theme.spacing.md,
+    marginRight: 16,
   },
   featureContent: {
     flex: 1,
   },
-  featureTitle: {
-    fontSize: theme.fontSize.md,
-    fontWeight: "600",
-    color: theme.colors.text,
-    marginBottom: 4,
-  },
-  featureDescription: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textMuted,
-  },
   comingSoonBadge: {
-    backgroundColor: theme.colors.secondary,
-    paddingHorizontal: theme.spacing.sm,
+    paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: theme.borderRadius.full,
-  },
-  comingSoonText: {
-    fontSize: theme.fontSize.xs,
-    color: theme.colors.text,
   },
   tipsContainer: {
-    paddingHorizontal: theme.spacing.md,
-    marginBottom: theme.spacing.lg,
+    marginBottom: 32,
   },
   tipCard: {
-    width: 200,
-    padding: theme.spacing.md,
-    marginRight: theme.spacing.md,
+    width: 220,
+    marginRight: 16,
   },
-  tipTitle: {
-    fontSize: theme.fontSize.md,
-    fontWeight: "600",
-    color: theme.colors.text,
-    marginBottom: theme.spacing.sm,
-  },
-  tipDescription: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textMuted,
+  tipIconContainer: {
+    width: 44,
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center",
   },
   spacer: {
     height: 80, // Extra space at the bottom for the tab bar
