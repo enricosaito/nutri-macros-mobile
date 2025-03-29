@@ -1,18 +1,26 @@
-// app/profile.tsx
+// app/profile.tsx - Add animation toggle
 import React, { useState } from "react";
 import { View, StyleSheet, Switch, useColorScheme } from "react-native";
 import { Screen, Text, Button, Card, CardHeader, CardTitle, CardContent } from "../components";
 import { Feather } from "@expo/vector-icons";
 import { colors, darkColors, spacing } from "../src/styles/globalStyles";
 import Animated, { FadeIn, FadeInRight } from "react-native-reanimated";
+import { useAnimations } from "../src/context/AnimationContext";
+import { useAnimationsEnabled } from "../src/utils/animation";
 
 function ProfileScreen() {
   const systemIsDark = useColorScheme() === "dark";
   const [isDark, setIsDark] = useState(systemIsDark);
   const activeColors = isDark ? darkColors : colors;
+  const animationsEnabled = useAnimationsEnabled();
+  const { animationsEnabled: animPref, setAnimationsEnabled, systemReducedMotion } = useAnimations();
 
   const toggleTheme = () => {
     setIsDark(!isDark);
+  };
+
+  const toggleAnimations = () => {
+    setAnimationsEnabled(!animPref);
   };
 
   // Resources that will be listed
@@ -23,10 +31,15 @@ function ProfileScreen() {
     "Sincronização entre dispositivos",
   ];
 
+  const AnimatedContainer = animationsEnabled ? Animated.View : View;
+
   return (
     <Screen title="Perfil" showHeader={true} scroll={true}>
       <View style={{ paddingVertical: spacing[6] }}>
-        <Animated.View entering={FadeIn.duration(800)} style={{ alignItems: "center", marginBottom: spacing[6] }}>
+        <AnimatedContainer
+          entering={animationsEnabled ? FadeIn.duration(800) : undefined}
+          style={{ alignItems: "center", marginBottom: spacing[6] }}
+        >
           <View
             style={{
               width: 96,
@@ -46,20 +59,22 @@ function ProfileScreen() {
           <Text variant="caption" color="muted" style={{ textAlign: "center" }}>
             Configure seu perfil para salvar seus macros
           </Text>
-        </Animated.View>
+        </AnimatedContainer>
 
-        {/* Theme Toggle */}
-        <Animated.View entering={FadeInRight.delay(200).duration(500)}>
+        {/* App Settings Section */}
+        <AnimatedContainer entering={animationsEnabled ? FadeInRight.delay(200).duration(500) : undefined}>
           <Card style={{ marginBottom: spacing[4] }}>
             <CardHeader>
-              <CardTitle>Aparência</CardTitle>
+              <CardTitle>Aparência e Comportamento</CardTitle>
             </CardHeader>
             <CardContent>
+              {/* Theme Toggle */}
               <View
                 style={{
                   flexDirection: "row",
                   justifyContent: "space-between",
                   alignItems: "center",
+                  marginBottom: spacing[4],
                 }}
               >
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -85,11 +100,51 @@ function ProfileScreen() {
                   thumbColor={isDark ? activeColors.primary : "#f4f3f4"}
                 />
               </View>
+
+              {/* Animation Toggle */}
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <View
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 20,
+                      backgroundColor: `${activeColors.primary}15`,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginRight: spacing[3],
+                    }}
+                  >
+                    <Feather name="zap" size={20} color={activeColors.primary} />
+                  </View>
+                  <View>
+                    <Text>Animações</Text>
+                    {systemReducedMotion && (
+                      <Text variant="caption" color="muted">
+                        Desativado pelo sistema
+                      </Text>
+                    )}
+                  </View>
+                </View>
+                <Switch
+                  value={animPref}
+                  onValueChange={toggleAnimations}
+                  trackColor={{ false: "#767577", true: `${activeColors.primary}80` }}
+                  thumbColor={animPref ? activeColors.primary : "#f4f3f4"}
+                  disabled={systemReducedMotion}
+                />
+              </View>
             </CardContent>
           </Card>
-        </Animated.View>
+        </AnimatedContainer>
 
-        <Animated.View entering={FadeInRight.delay(300).duration(500)}>
+        <AnimatedContainer entering={animationsEnabled ? FadeInRight.delay(300).duration(500) : undefined}>
           <Card style={{ marginBottom: spacing[4] }}>
             <CardHeader>
               <CardTitle>Login</CardTitle>
@@ -115,9 +170,9 @@ function ProfileScreen() {
               />
             </CardContent>
           </Card>
-        </Animated.View>
+        </AnimatedContainer>
 
-        <Animated.View entering={FadeInRight.delay(400).duration(500)}>
+        <AnimatedContainer entering={animationsEnabled ? FadeInRight.delay(400).duration(500) : undefined}>
           <Card>
             <CardHeader>
               <CardTitle>Recursos da Conta</CardTitle>
@@ -152,7 +207,7 @@ function ProfileScreen() {
               </View>
             </CardContent>
           </Card>
-        </Animated.View>
+        </AnimatedContainer>
       </View>
     </Screen>
   );
