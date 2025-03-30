@@ -1,6 +1,17 @@
 import React from "react";
-import { TouchableOpacity, Text, ActivityIndicator, StyleSheet, ViewStyle, TextStyle, View } from "react-native";
-import { useTheme } from "../../src/context/ThemeContext";
+import {
+  TouchableOpacity,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+  ViewStyle,
+  TextStyle,
+  View,
+  useColorScheme,
+} from "react-native";
+import { colors, darkColors, spacing, radius, typography } from "../../src/styles/globalStyles";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { useAnimationsEnabled } from "../../src/utils/animation";
 
 type ButtonVariant = "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
 type ButtonSize = "default" | "sm" | "lg" | "icon";
@@ -18,8 +29,9 @@ interface ButtonProps {
   textStyle?: TextStyle;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
-  className?: string;
 }
+
+const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 export function Button({
   title,
@@ -34,34 +46,54 @@ export function Button({
   textStyle,
   leftIcon,
   rightIcon,
-  className,
 }: ButtonProps) {
-  const { theme } = useTheme();
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
+  const scale = useSharedValue(1);
+  const animationsEnabled = useAnimationsEnabled();
+
+  const handlePressIn = () => {
+    if (animationsEnabled) {
+      scale.value = withTiming(0.98, { duration: 100 });
+    }
+  };
+
+  const handlePressOut = () => {
+    if (animationsEnabled) {
+      scale.value = withTiming(1, { duration: 100 });
+    }
+  };
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+    };
+  });
 
   const getVariantStyle = (): ViewStyle => {
     switch (variant) {
       case "default":
         return {
-          backgroundColor: theme.colors.primary,
-          borderColor: theme.colors.primary,
+          backgroundColor: activeColors.primary,
+          borderColor: activeColors.primary,
           borderWidth: 1,
         };
       case "destructive":
         return {
-          backgroundColor: theme.colors.destructive,
-          borderColor: theme.colors.destructive,
+          backgroundColor: activeColors.error,
+          borderColor: activeColors.error,
           borderWidth: 1,
         };
       case "outline":
         return {
           backgroundColor: "transparent",
-          borderColor: theme.colors.border,
+          borderColor: activeColors.border,
           borderWidth: 1,
         };
       case "secondary":
         return {
-          backgroundColor: theme.colors.secondary,
-          borderColor: theme.colors.secondary,
+          backgroundColor: activeColors.secondary,
+          borderColor: activeColors.secondary,
           borderWidth: 1,
         };
       case "ghost":
@@ -85,34 +117,34 @@ export function Button({
     switch (size) {
       case "default":
         return {
-          paddingHorizontal: theme.spacing[4],
-          paddingVertical: theme.spacing[2],
-          height: 36,
-          borderRadius: theme.radius.DEFAULT,
+          paddingHorizontal: spacing[4],
+          paddingVertical: spacing[2],
+          height: 44,
+          borderRadius: radius.lg,
         };
       case "sm":
         return {
-          paddingHorizontal: theme.spacing[3],
-          paddingVertical: theme.spacing[1],
-          height: 32,
-          borderRadius: theme.radius.md,
+          paddingHorizontal: spacing[3],
+          paddingVertical: spacing[1],
+          height: 36,
+          borderRadius: radius.md,
         };
       case "lg":
         return {
-          paddingHorizontal: theme.spacing[8],
-          paddingVertical: theme.spacing[2],
-          height: 40,
-          borderRadius: theme.radius.md,
+          paddingHorizontal: spacing[8],
+          paddingVertical: spacing[2],
+          height: 48,
+          borderRadius: radius.lg,
         };
       case "icon":
         return {
-          height: 36,
-          width: 36,
+          height: 44,
+          width: 44,
           paddingHorizontal: 0,
           paddingVertical: 0,
           alignItems: "center",
           justifyContent: "center",
-          borderRadius: theme.radius.md,
+          borderRadius: radius.lg,
         };
       default:
         return {};
@@ -121,29 +153,30 @@ export function Button({
 
   const getTextStyle = (): TextStyle => {
     const baseStyle: TextStyle = {
-      fontSize: theme.typography.fontSize.sm,
+      fontSize: typography.fontSize.base,
       fontWeight: 500,
+      textAlign: "center",
     };
 
     switch (variant) {
       case "default":
-        return { ...baseStyle, color: theme.colors.primaryForeground };
+        return { ...baseStyle, color: "#ffffff" };
       case "destructive":
-        return { ...baseStyle, color: theme.colors.destructiveForeground };
+        return { ...baseStyle, color: "#ffffff" };
       case "outline":
-        return { ...baseStyle, color: theme.colors.foreground };
+        return { ...baseStyle, color: activeColors.primary };
       case "secondary":
-        return { ...baseStyle, color: theme.colors.secondaryForeground };
+        return { ...baseStyle, color: activeColors.primary };
       case "ghost":
-        return { ...baseStyle, color: theme.colors.foreground };
+        return { ...baseStyle, color: activeColors.primary };
       case "link":
         return {
           ...baseStyle,
-          color: theme.colors.primary,
+          color: activeColors.primary,
           textDecorationLine: "underline",
         };
       default:
-        return { ...baseStyle, color: theme.colors.primaryForeground };
+        return { ...baseStyle, color: "#ffffff" };
     }
   };
 
@@ -163,16 +196,42 @@ export function Button({
   };
 
   const getLoaderColor = () => {
-    if (variant === "outline" || variant === "ghost" || variant === "link") {
-      return theme.colors.primary;
+    if (variant === "outline" || variant === "ghost" || variant === "link" || variant === "secondary") {
+      return activeColors.primary;
     }
-    return theme.colors.primaryForeground;
+    return "#ffffff";
   };
 
   const content = children || title;
 
+  // Use regular TouchableOpacity if animations are disabled
+  if (!animationsEnabled) {
+    return (
+      <TouchableOpacity style={buttonStyles} onPress={onPress} disabled={disabled || loading} activeOpacity={0.7}>
+        <View style={styles.contentContainer}>
+          {loading ? (
+            <ActivityIndicator size="small" color={getLoaderColor()} />
+          ) : (
+            <>
+              {leftIcon && <View style={styles.iconContainer}>{leftIcon}</View>}
+              {content && (typeof content === "string" ? <Text style={finalTextStyle}>{content}</Text> : content)}
+              {rightIcon && <View style={styles.iconContainer}>{rightIcon}</View>}
+            </>
+          )}
+        </View>
+      </TouchableOpacity>
+    );
+  }
+
   return (
-    <TouchableOpacity style={buttonStyles} onPress={onPress} disabled={disabled || loading} activeOpacity={0.7}>
+    <AnimatedTouchable
+      style={[buttonStyles, animatedStyle]}
+      onPress={onPress}
+      disabled={disabled || loading}
+      activeOpacity={0.7}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+    >
       <View style={styles.contentContainer}>
         {loading ? (
           <ActivityIndicator size="small" color={getLoaderColor()} />
@@ -184,7 +243,7 @@ export function Button({
           </>
         )}
       </View>
-    </TouchableOpacity>
+    </AnimatedTouchable>
   );
 }
 
@@ -193,6 +252,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+    elevation: 1,
   },
   contentContainer: {
     flexDirection: "row",
@@ -203,7 +267,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   iconContainer: {
-    marginHorizontal: 4,
+    marginHorizontal: 6,
   },
   text: {
     textAlign: "center",

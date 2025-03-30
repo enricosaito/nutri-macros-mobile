@@ -1,6 +1,6 @@
 // app/results.tsx
 import React from "react";
-import { View, Share, ScrollView, StyleSheet } from "react-native";
+import { View, Share, StyleSheet, useColorScheme } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import {
@@ -15,11 +15,15 @@ import {
   MacroDisplay,
 } from "../components";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
-import { useTheme } from "../src/context/ThemeContext";
+import { colors, darkColors, spacing } from "../src/styles/globalStyles";
+import { useAnimationsEnabled } from "../src/utils/animation";
 
-export default function ResultsScreen() {
+function ResultsScreen() {
   const router = useRouter();
-  const { theme } = useTheme();
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
+  const animationsEnabled = useAnimationsEnabled();
+
   const params = useLocalSearchParams<{
     protein: string;
     carbs: string;
@@ -63,92 +67,66 @@ export default function ResultsScreen() {
     ];
   };
 
+  const AnimatedContainer = animationsEnabled ? Animated.View : View;
+
   return (
     <Screen
       title="Resultados"
       showHeader={true}
       headerRight={
         <Button
-          title="Compartilhar"
           variant="ghost"
           onPress={handleShare}
-          leftIcon={<Feather name="share-2" size={18} color={theme.colors.primary} />}
+          leftIcon={<Feather name="share-2" size={18} color={activeColors.primary} />}
         />
       }
       scroll={true}
     >
-      <Animated.View
-        entering={FadeInUp.delay(100).duration(500)}
+      <AnimatedContainer
+        entering={animationsEnabled ? FadeInUp.delay(100).duration(500) : undefined}
         style={{
-          marginTop: theme.spacing[4],
-          marginBottom: theme.spacing[4],
+          marginTop: spacing[4],
+          marginBottom: spacing[4],
           alignItems: "center",
         }}
       >
-        <Text variant="h2" style={{ marginBottom: theme.spacing[2], textAlign: "center" }}>
+        <Text variant="h2" style={{ marginBottom: spacing[2], textAlign: "center" }}>
           Seus Macros Diários
         </Text>
         <Text
+          variant="body"
+          color="muted"
           style={{
             textAlign: "center",
-            color: theme.colors.mutedForeground,
-            marginBottom: theme.spacing[4],
+            marginBottom: spacing[4],
           }}
         >
           Baseados nas suas informações e objetivos
         </Text>
-      </Animated.View>
+      </AnimatedContainer>
 
-      <Animated.View entering={FadeInDown.delay(300).duration(500)} style={{ marginBottom: theme.spacing[6] }}>
-        <Card>
-          <CardHeader>
-            <CardTitle>Necessidade Calórica</CardTitle>
-          </CardHeader>
-          <CardContent style={{ alignItems: "center", paddingVertical: theme.spacing[6] }}>
-            <View style={{ alignItems: "center" }}>
-              <Text
-                variant="h1"
-                style={{
-                  color: theme.colors.primary,
-                  marginBottom: theme.spacing[2],
-                }}
-              >
-                {calories}
-              </Text>
-              <Text
-                style={{
-                  fontSize: theme.typography.fontSize.lg,
-                  color: theme.colors.mutedForeground,
-                }}
-              >
-                Calorias diárias
-              </Text>
-            </View>
-          </CardContent>
-        </Card>
-      </Animated.View>
+      <MacroDisplay macros={macros} calories={calories} showPercentages={true} />
 
-      <Animated.View entering={FadeInDown.delay(500).duration(500)} style={{ marginBottom: theme.spacing[6] }}>
-        <MacroDisplay macros={macros} calories={calories} showPercentages={true} />
-      </Animated.View>
-
-      <Animated.View entering={FadeInDown.delay(700).duration(500)} style={{ marginBottom: theme.spacing[6] }}>
+      <AnimatedContainer
+        entering={animationsEnabled ? FadeInDown.delay(400).duration(500) : undefined}
+        style={{ marginVertical: spacing[6] }}
+      >
         <Card>
           <CardHeader>
             <CardTitle>Dicas de Alimentação</CardTitle>
           </CardHeader>
           <CardContent>
-            <Text style={{ marginBottom: theme.spacing[4] }}>
+            <Text style={{ marginBottom: spacing[4] }}>
               Para atingir seus macros diários, tente incluir estes alimentos na sua dieta:
             </Text>
 
             {getTips().map((category, index) => (
-              <View key={index} style={{ marginBottom: theme.spacing[4] }}>
+              <View key={`category-${index}`} style={{ marginBottom: spacing[4] }}>
                 <Text
                   style={{
-                    fontSize: theme.typography.fontSize.lg,
-                    fontWeight: theme.typography.fontWeight.medium,
-                    marginBottom: theme.spacing[2],
+                    fontSize: colors.typography?.fontSize.lg || 18,
+                    fontWeight: "500",
+                    marginBottom: spacing[2],
                   }}
                 >
                   {category.title}:
@@ -156,17 +134,19 @@ export default function ResultsScreen() {
                 <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
                   {category.items.map((item, itemIndex) => (
                     <View
-                      key={itemIndex}
+                      key={`item-${index}-${itemIndex}`}
                       style={{
-                        backgroundColor: theme.colors.secondary,
-                        borderRadius: theme.radius.full,
-                        paddingHorizontal: theme.spacing[3],
-                        paddingVertical: 4,
-                        marginRight: theme.spacing[2],
-                        marginBottom: theme.spacing[2],
+                        backgroundColor: activeColors.secondary,
+                        borderRadius: 9999,
+                        paddingHorizontal: spacing[3],
+                        paddingVertical: 8,
+                        marginRight: spacing[2],
+                        marginBottom: spacing[2],
                       }}
                     >
-                      <Text variant="caption">{item}</Text>
+                      <Text variant="caption" style={{ color: activeColors.foreground }}>
+                        {item}
+                      </Text>
                     </View>
                   ))}
                 </View>
@@ -174,15 +154,18 @@ export default function ResultsScreen() {
             ))}
           </CardContent>
         </Card>
-      </Animated.View>
+      </AnimatedContainer>
 
-      <Animated.View entering={FadeInDown.delay(900).duration(500)} style={{ marginBottom: theme.spacing[6] }}>
+      <AnimatedContainer
+        entering={animationsEnabled ? FadeInDown.delay(600).duration(500) : undefined}
+        style={{ marginBottom: spacing[6] }}
+      >
         <Card>
           <CardHeader>
             <CardTitle>Próximos Passos</CardTitle>
           </CardHeader>
           <CardContent>
-            <View style={{ marginTop: theme.spacing[2] }}>
+            <View style={{ marginTop: spacing[2] }}>
               {[
                 "Distribua suas refeições ao longo do dia",
                 "Priorize alimentos integrais e não processados",
@@ -190,22 +173,26 @@ export default function ResultsScreen() {
                 "Monitore seu progresso semanalmente",
               ].map((item, index) => (
                 <View
-                  key={index}
+                  key={`step-${index}`}
                   style={{
                     flexDirection: "row",
-                    marginBottom: theme.spacing[3],
+                    marginBottom: spacing[3],
                   }}
                 >
                   <View
                     style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: 4,
-                      backgroundColor: theme.colors.primary,
-                      marginTop: 8,
-                      marginRight: theme.spacing[2],
+                      width: 24,
+                      height: 24,
+                      borderRadius: 12,
+                      backgroundColor: activeColors.primary,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginRight: spacing[3],
+                      marginTop: 2,
                     }}
-                  />
+                  >
+                    <Feather name="check" size={14} color="white" />
+                  </View>
                   <Text style={{ flex: 1 }}>{item}</Text>
                 </View>
               ))}
@@ -216,17 +203,19 @@ export default function ResultsScreen() {
               title="Recalcular"
               variant="outline"
               onPress={() => router.back()}
-              style={{ flex: 1, marginRight: theme.spacing[2] }}
+              style={{ flex: 1, marginRight: spacing[2] }}
             />
             <Button
               title="Salvar"
               variant="default"
               onPress={() => router.push("/")}
-              style={{ flex: 1, marginLeft: theme.spacing[2] }}
+              style={{ flex: 1, marginLeft: spacing[2] }}
             />
           </CardFooter>
         </Card>
-      </Animated.View>
+      </AnimatedContainer>
     </Screen>
   );
 }
+
+export default ResultsScreen;

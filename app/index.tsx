@@ -1,276 +1,328 @@
 // app/index.tsx
 import React from "react";
-import { View, ScrollView, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { View, ScrollView, Image, StyleSheet, TouchableOpacity, useColorScheme } from "react-native";
 import { useRouter } from "expo-router";
 import { Text } from "../components/ui/text";
-import { Card } from "../components/ui/card";
+import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
+import { Screen } from "../components/ui/screen";
 import { Feather } from "@expo/vector-icons";
-import { theme } from "../src/styles/theme";
+import { colors, darkColors, spacing, radius } from "../src/styles/globalStyles";
+import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
+import { useAnimationsEnabled } from "../src/utils/animation";
 
-export default function HomeScreen() {
+// Define Icon type to address the type issues
+type FeatherIconName = React.ComponentProps<typeof Feather>["name"];
+
+function HomeScreen() {
   const router = useRouter();
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
+  const animationsEnabled = useAnimationsEnabled();
 
+  // Type-safe feature objects
   const features = [
     {
       title: "Calculadora de Macros",
       description: "Calcule suas necessidades diárias de macronutrientes",
-      icon: "calculator",
+      icon: "sliders" as FeatherIconName,
       route: "/calculator",
     },
     {
       title: "Receitas Personalizadas",
       description: "Encontre receitas que se encaixam nos seus macros",
-      icon: "book-open",
+      icon: "book-open" as FeatherIconName,
       route: "/recipes",
     },
     {
       title: "Acompanhamento Diário",
       description: "Registre suas refeições e acompanhe seu progresso",
-      icon: "bar-chart-2",
+      icon: "bar-chart-2" as FeatherIconName,
       route: "/tracker",
       comingSoon: true,
     },
   ];
 
+  // Type-safe tip objects
   const nutritionTips = [
     {
       title: "Proteínas",
       tip: "Essenciais para reparação muscular e saciedade",
+      icon: "award" as FeatherIconName,
+      color: activeColors.chart3,
     },
     {
       title: "Carboidratos",
       tip: "Principal fonte de energia para o corpo e cérebro",
+      icon: "battery-charging" as FeatherIconName,
+      color: activeColors.chart1,
     },
     {
       title: "Gorduras",
       tip: "Importantes para hormônios e absorção de vitaminas",
+      icon: "droplet" as FeatherIconName,
+      color: activeColors.chart5,
     },
   ];
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>NutriMacros</Text>
-      </View>
+  const AnimatedContainer = animationsEnabled ? Animated.View : View;
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Hero Section */}
-        <View style={styles.heroContainer}>
-          <Image source={require("../assets/images/icon.png")} style={styles.logo} resizeMode="contain" />
-          <Text style={styles.title}>Bem-vindo ao NutriMacros</Text>
-          <Text style={styles.subtitle}>
+  // Safe navigation function
+  const navigateTo = (path: string) => {
+    // Using the router.push method with type assertion
+    router.push(path as any);
+  };
+
+  return (
+    <Screen showHeader={false} scroll={true} padding={false}>
+      {/* Hero Section */}
+      <View style={[styles.heroContainer, { backgroundColor: activeColors.card }]}>
+        <AnimatedContainer
+          entering={animationsEnabled ? FadeInDown.duration(800).springify() : undefined}
+          style={styles.logoContainer}
+        >
+          <Image source={require("../assets/images/logo.png")} style={styles.logo} resizeMode="contain" />
+        </AnimatedContainer>
+
+        <AnimatedContainer entering={animationsEnabled ? FadeInUp.delay(200).duration(800).springify() : undefined}>
+          <Text variant="h1" style={styles.title}>
+            NutriMacros
+          </Text>
+          <Text variant="body" color="muted" style={styles.subtitle}>
             Seu assistente nutricional para alcançar seus objetivos de forma saudável e equilibrada
           </Text>
-        </View>
+        </AnimatedContainer>
+      </View>
 
+      <View style={styles.contentContainer}>
         {/* Featured Card */}
-        <Card style={styles.featuredCard}>
-          <View style={styles.featuredCardContent}>
-            <Text style={styles.featuredCardTitle}>Calcule Seus Macros</Text>
-            <Text style={styles.featuredCardDescription}>
-              Descubra sua necessidade calórica ideal e distribuição de macronutrientes
-            </Text>
-            <Button
-              title="Começar Agora"
-              onPress={() => router.push("/calculator")}
-              rightIcon={<Feather name="arrow-right" size={16} color={theme.colors.primary} />}
-              style={styles.featuredCardButton}
-            />
-          </View>
-        </Card>
+        <AnimatedContainer entering={animationsEnabled ? FadeInUp.delay(400).duration(800).springify() : undefined}>
+          <Card style={styles.featuredCard}>
+            <CardContent style={styles.featuredCardContent}>
+              <Text variant="h3" style={styles.featuredCardTitle} color="white">
+                Calcule Seus Macros
+              </Text>
+              <Text style={styles.featuredCardDescription} color="white">
+                Descubra sua necessidade calórica ideal e distribuição de macronutrientes
+              </Text>
+              <Button
+                title="Começar Agora"
+                onPress={() => navigateTo("/calculator")}
+                rightIcon={<Feather name={"arrow-right" as FeatherIconName} size={16} color={activeColors.primary} />}
+                style={styles.featuredCardButton}
+                variant="secondary"
+              />
+            </CardContent>
+          </Card>
+        </AnimatedContainer>
 
         {/* Features */}
-        <Text style={styles.sectionTitle}>Recursos</Text>
+        <AnimatedContainer entering={animationsEnabled ? FadeInUp.delay(600).duration(800).springify() : undefined}>
+          <Text variant="h3" style={styles.sectionTitle}>
+            Recursos
+          </Text>
 
-        <View style={styles.featuresContainer}>
-          {features.map((feature, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.featureCard}
-              onPress={() => {
-                if (feature.route && !feature.comingSoon) {
-                  router.push(feature.route as any);
-                }
-              }}
-              disabled={feature.comingSoon}
-            >
-              <View style={styles.featureIconContainer}>
-                <Feather name={feature.icon as any} size={24} color={theme.colors.primary} />
-              </View>
-              <View style={styles.featureContent}>
-                <Text style={styles.featureTitle}>{feature.title}</Text>
-                <Text style={styles.featureDescription}>{feature.description}</Text>
-              </View>
-              {feature.comingSoon ? (
-                <View style={styles.comingSoonBadge}>
-                  <Text style={styles.comingSoonText}>Em breve</Text>
+          <View style={styles.featuresContainer}>
+            {features.map((feature, index) => (
+              <TouchableOpacity
+                key={`feature-${index}`}
+                style={[
+                  styles.featureCard,
+                  {
+                    backgroundColor: activeColors.card,
+                    borderColor: activeColors.border,
+                    opacity: feature.comingSoon ? 0.7 : 1,
+                  },
+                ]}
+                onPress={() => {
+                  if (feature.route && !feature.comingSoon) {
+                    navigateTo(feature.route);
+                  }
+                }}
+                disabled={feature.comingSoon}
+                activeOpacity={feature.comingSoon ? 0.5 : 0.7}
+              >
+                <View
+                  style={[
+                    styles.featureIconContainer,
+                    {
+                      backgroundColor: `${activeColors.primary}15`,
+                    },
+                  ]}
+                >
+                  <Feather name={feature.icon} size={24} color={activeColors.primary} />
                 </View>
-              ) : (
-                <Feather name="chevron-right" size={20} color={theme.colors.textMuted} />
-              )}
-            </TouchableOpacity>
-          ))}
-        </View>
+                <View style={styles.featureContent}>
+                  <Text variant="subtitle">{feature.title}</Text>
+                  <Text variant="caption" color="muted">
+                    {feature.description}
+                  </Text>
+                </View>
+                {feature.comingSoon ? (
+                  <View
+                    style={[
+                      styles.comingSoonBadge,
+                      {
+                        backgroundColor: activeColors.secondary,
+                      },
+                    ]}
+                  >
+                    <Text variant="small" style={{ color: activeColors.primary }}>
+                      Em breve
+                    </Text>
+                  </View>
+                ) : (
+                  <Feather name={"chevron-right" as FeatherIconName} size={20} color={activeColors.textMuted} />
+                )}
+              </TouchableOpacity>
+            ))}
+          </View>
+        </AnimatedContainer>
 
         {/* Nutrition Tips */}
-        <Text style={styles.sectionTitle}>Dicas Nutricionais</Text>
+        <AnimatedContainer entering={animationsEnabled ? FadeInUp.delay(800).duration(800).springify() : undefined}>
+          <Text variant="h3" style={styles.sectionTitle}>
+            Dicas Nutricionais
+          </Text>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tipsContainer}>
-          {nutritionTips.map((item, index) => (
-            <Card key={index} style={styles.tipCard}>
-              <Text style={styles.tipTitle}>{item.title}</Text>
-              <Text style={styles.tipDescription}>{item.tip}</Text>
-            </Card>
-          ))}
-        </ScrollView>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tipsContainer}>
+            {nutritionTips.map((item, index) => (
+              <Card key={`tip-${index}`} style={styles.tipCard}>
+                <CardContent style={styles.tipCardContent}>
+                  <View
+                    style={[
+                      styles.tipIconContainer,
+                      {
+                        backgroundColor: `${item.color}20`,
+                      },
+                    ]}
+                  >
+                    <Feather name={item.icon} size={22} color={item.color} />
+                  </View>
+                  <Text variant="subtitle" style={styles.tipTitle}>
+                    {item.title}
+                  </Text>
+                  <Text variant="caption" color="muted">
+                    {item.tip}
+                  </Text>
+                </CardContent>
+              </Card>
+            ))}
+          </ScrollView>
+        </AnimatedContainer>
 
         <View style={styles.spacer} />
-      </ScrollView>
-    </View>
+      </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  header: {
-    paddingTop: 50,
-    paddingHorizontal: theme.spacing.md,
-    paddingBottom: theme.spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-    backgroundColor: "white",
-  },
-  headerTitle: {
-    fontSize: theme.fontSize.lg,
-    fontWeight: "700",
-    color: theme.colors.text,
-  },
-  scrollView: {
-    flex: 1,
-  },
   heroContainer: {
     alignItems: "center",
-    paddingHorizontal: theme.spacing.md,
-    paddingTop: theme.spacing.xl,
-    paddingBottom: theme.spacing.lg,
+    paddingTop: 100,
+    paddingBottom: 40,
+    paddingHorizontal: 20,
+  },
+  logoContainer: {
+    alignItems: "center",
+    marginBottom: 24,
   },
   logo: {
     width: 120,
     height: 120,
   },
   title: {
-    fontSize: theme.fontSize.xl,
-    fontWeight: "700",
-    color: theme.colors.text,
     textAlign: "center",
-    marginTop: theme.spacing.md,
+    marginBottom: 8,
   },
   subtitle: {
-    fontSize: theme.fontSize.md,
-    color: theme.colors.textMuted,
     textAlign: "center",
-    marginTop: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.md,
+    paddingHorizontal: 20,
+  },
+  contentContainer: {
+    padding: 16,
   },
   featuredCard: {
-    marginHorizontal: theme.spacing.md,
-    marginBottom: theme.spacing.lg,
+    marginBottom: 32,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.07,
+    shadowRadius: 4,
+    elevation: 3,
   },
   featuredCardContent: {
-    backgroundColor: theme.colors.primary,
-    padding: theme.spacing.lg,
+    backgroundColor: "#22c069", // Primary green color
+    padding: 24,
+    borderRadius: 16,
   },
   featuredCardTitle: {
-    fontSize: theme.fontSize.lg,
-    fontWeight: "700",
-    color: "white",
-    marginBottom: theme.spacing.sm,
+    marginBottom: 8,
   },
   featuredCardDescription: {
-    fontSize: theme.fontSize.md,
-    color: "white",
-    marginBottom: theme.spacing.md,
+    marginBottom: 20,
   },
   featuredCardButton: {
-    backgroundColor: "white",
+    alignSelf: "flex-start",
   },
   sectionTitle: {
-    fontSize: theme.fontSize.lg,
-    fontWeight: "700",
-    color: theme.colors.text,
-    marginBottom: theme.spacing.md,
-    marginHorizontal: theme.spacing.md,
-    marginTop: theme.spacing.lg,
+    marginBottom: 16,
   },
   featuresContainer: {
-    paddingHorizontal: theme.spacing.md,
+    marginBottom: 32,
   },
   featureCard: {
     flexDirection: "row",
-    backgroundColor: "white",
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.md,
+    padding: 16,
     borderWidth: 1,
-    borderColor: theme.colors.border,
-    marginBottom: theme.spacing.md,
+    marginBottom: 12,
     alignItems: "center",
+    borderRadius: 12,
   },
   featureIconContainer: {
     height: 48,
     width: 48,
-    borderRadius: theme.borderRadius.full,
-    backgroundColor: theme.colors.secondaryLight,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: theme.spacing.md,
+    marginRight: 16,
+    borderRadius: 8,
   },
   featureContent: {
     flex: 1,
   },
-  featureTitle: {
-    fontSize: theme.fontSize.md,
-    fontWeight: "600",
-    color: theme.colors.text,
-    marginBottom: 4,
-  },
-  featureDescription: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textMuted,
-  },
   comingSoonBadge: {
-    backgroundColor: theme.colors.secondary,
-    paddingHorizontal: theme.spacing.sm,
+    paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: theme.borderRadius.full,
-  },
-  comingSoonText: {
-    fontSize: theme.fontSize.xs,
-    color: theme.colors.text,
+    borderRadius: 99,
   },
   tipsContainer: {
-    paddingHorizontal: theme.spacing.md,
-    marginBottom: theme.spacing.lg,
+    marginBottom: 32,
   },
   tipCard: {
-    width: 200,
-    padding: theme.spacing.md,
-    marginRight: theme.spacing.md,
+    width: 220,
+    marginRight: 16,
+    borderRadius: 12,
+  },
+  tipCardContent: {
+    padding: 20,
+  },
+  tipIconContainer: {
+    width: 44,
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    marginBottom: 8,
   },
   tipTitle: {
-    fontSize: theme.fontSize.md,
-    fontWeight: "600",
-    color: theme.colors.text,
-    marginBottom: theme.spacing.sm,
-  },
-  tipDescription: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textMuted,
+    marginVertical: 8,
   },
   spacer: {
     height: 80, // Extra space at the bottom for the tab bar
   },
 });
+
+export default HomeScreen;

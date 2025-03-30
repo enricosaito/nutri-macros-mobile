@@ -1,8 +1,8 @@
-// src/components/ui/input.tsx
-import React from "react";
-import { View, TextInput, TextInputProps, StyleSheet, ViewStyle } from "react-native";
+// components/ui/input.tsx
+import React, { useState } from "react";
+import { View, TextInput, TextInputProps, StyleSheet, ViewStyle, useColorScheme } from "react-native";
 import { Text } from "./text";
-import { useTheme } from "../../src/context/ThemeContext";
+import { colors, darkColors, spacing, radius, typography } from "../../src/styles/globalStyles";
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -10,7 +10,6 @@ interface InputProps extends TextInputProps {
   containerStyle?: ViewStyle;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
-  className?: string;
 }
 
 export function Input({
@@ -19,66 +18,109 @@ export function Input({
   containerStyle,
   leftIcon,
   rightIcon,
-  className = "",
   style,
+  onFocus,
+  onBlur,
+  value,
   ...props
 }: InputProps) {
-  const { theme } = useTheme();
+  const isDark = useColorScheme() === "dark";
+  const activeColors = isDark ? darkColors : colors;
+  const [isFocused, setIsFocused] = useState(false);
+
+  const handleFocus = (e: any) => {
+    setIsFocused(true);
+    onFocus && onFocus(e);
+  };
+
+  const handleBlur = (e: any) => {
+    setIsFocused(false);
+    onBlur && onBlur(e);
+  };
 
   return (
     <View style={[styles.container, containerStyle]}>
       {label && (
         <Text
-          style={[
-            styles.label,
-            {
-              color: theme.colors.foreground,
-              fontSize: theme.typography.fontSize.sm,
-              marginBottom: theme.spacing[1],
-            },
-          ]}
+          style={{
+            position: "absolute",
+            top: isFocused || (value && value.toString().length > 0) ? 8 : 16,
+            left: leftIcon ? spacing[9] : spacing[3],
+            fontSize:
+              isFocused || (value && value.toString().length > 0) ? typography.fontSize.xs : typography.fontSize.sm,
+            color: isFocused ? activeColors.primary : error ? activeColors.error : activeColors.textMuted,
+            zIndex: 1,
+          }}
         >
           {label}
         </Text>
       )}
 
       <View style={styles.inputContainer}>
-        {leftIcon && <View style={[styles.leftIconContainer, { left: theme.spacing[3] }]}>{leftIcon}</View>}
+        {leftIcon && (
+          <View
+            style={{
+              position: "absolute",
+              left: spacing[3],
+              height: "100%",
+              justifyContent: "center",
+              opacity: isFocused ? 1 : 0.7,
+              zIndex: 1,
+            }}
+          >
+            {leftIcon}
+          </View>
+        )}
 
         <TextInput
           style={[
-            styles.input,
             {
-              color: theme.colors.foreground,
+              color: activeColors.text,
               backgroundColor: "transparent",
-              borderColor: error ? theme.colors.destructive : theme.colors.input,
-              borderRadius: theme.radius.md,
-              paddingLeft: leftIcon ? theme.spacing[9] : theme.spacing[3],
-              paddingRight: rightIcon ? theme.spacing[9] : theme.spacing[3],
-              height: 36,
-              fontSize: theme.typography.fontSize.base,
-              paddingVertical: theme.spacing[1],
+              borderColor: error ? activeColors.error : isFocused ? activeColors.primary : activeColors.border,
+              borderRadius: radius.md,
+              paddingLeft: leftIcon ? spacing[9] : spacing[3],
+              paddingRight: rightIcon ? spacing[9] : spacing[3],
+              paddingTop: label ? spacing[3] : spacing[2],
+              paddingBottom: spacing[2],
+              height: label ? 56 : 44,
+              fontSize: typography.fontSize.base,
+              borderWidth: 1,
+              width: "100%",
             },
-            error && { borderColor: theme.colors.destructive },
             style,
           ]}
-          placeholderTextColor={theme.colors.mutedForeground}
+          placeholderTextColor={activeColors.textMuted}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          value={value}
           {...props}
         />
 
-        {rightIcon && <View style={[styles.rightIconContainer, { right: theme.spacing[3] }]}>{rightIcon}</View>}
+        {rightIcon && (
+          <View
+            style={{
+              position: "absolute",
+              right: spacing[3],
+              height: "100%",
+              justifyContent: "center",
+              opacity: isFocused ? 1 : 0.7,
+              zIndex: 1,
+            }}
+          >
+            {rightIcon}
+          </View>
+        )}
       </View>
 
       {error && (
         <Text
-          style={[
-            styles.errorText,
-            {
-              color: theme.colors.destructive,
-              fontSize: theme.typography.fontSize.sm,
-              marginTop: theme.spacing[1],
-            },
-          ]}
+          variant="caption"
+          color="error"
+          style={{
+            marginTop: spacing[1],
+            marginLeft: spacing[1],
+          }}
         >
           {error}
         </Text>
@@ -92,29 +134,7 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 16,
   },
-  label: {
-    marginLeft: 4,
-  },
   inputContainer: {
     position: "relative",
-  },
-  input: {
-    borderWidth: 1,
-    width: "100%",
-  },
-  leftIconContainer: {
-    position: "absolute",
-    height: "100%",
-    justifyContent: "center",
-    zIndex: 1,
-  },
-  rightIconContainer: {
-    position: "absolute",
-    height: "100%",
-    justifyContent: "center",
-    zIndex: 1,
-  },
-  errorText: {
-    marginLeft: 4,
   },
 });
