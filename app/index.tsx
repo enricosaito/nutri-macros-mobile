@@ -1,4 +1,3 @@
-// app/index.tsx
 import React from "react";
 import { View, ScrollView, Image, StyleSheet, TouchableOpacity, useColorScheme } from "react-native";
 import { useRouter } from "expo-router";
@@ -9,13 +8,15 @@ import { Screen } from "../components/ui/screen";
 import { Feather } from "@expo/vector-icons";
 import { colors, darkColors, spacing, radius } from "../src/styles/globalStyles";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
-import { useUser } from "../src/context/UserContext";
+import { useUserData } from "../src/context/UserDataContext";
+import { useAuth } from "../src/context/AuthContext";
 
 function HomeScreen() {
   const router = useRouter();
   const isDark = useColorScheme() === "dark";
   const activeColors = isDark ? darkColors : colors;
-  const { calculations, isAuthenticated } = useUser();
+  const { calculations, loading: calculationsLoading } = useUserData();
+  const { user } = useAuth();
 
   const features = [
     {
@@ -74,6 +75,16 @@ function HomeScreen() {
     }
   };
 
+  // Format date from ISO string
+  const formatDate = (isoString) => {
+    const date = new Date(isoString);
+    return date.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    });
+  };
+
   return (
     <Screen showHeader={false} scroll={true} padding={false}>
       {/* Hero Section */}
@@ -127,11 +138,11 @@ function HomeScreen() {
               Seus Cálculos Recentes
             </Text>
 
-            {calculations.map((calc, index) => (
+            {calculations.map((calc) => (
               <Card key={calc.id} style={styles.calculationCard}>
                 <CardContent>
                   <View style={styles.calculationHeader}>
-                    <Text variant="subtitle">{new Date(calc.date).toLocaleDateString("pt-BR")}</Text>
+                    <Text variant="subtitle">{formatDate(calc.date)}</Text>
                     <Text variant="caption" color="primary">
                       {getGoalText(calc.goal)}
                     </Text>
@@ -176,7 +187,7 @@ function HomeScreen() {
               </Card>
             ))}
 
-            {!isAuthenticated && calculations.length >= 3 && (
+            {!user && calculations.length >= 3 && (
               <Card style={styles.premiumPrompt}>
                 <CardContent>
                   <Text variant="subtitle" style={{ textAlign: "center", marginBottom: spacing[2] }}>
