@@ -15,6 +15,8 @@ import {
 } from "../components";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { colors, darkColors, spacing } from "../src/styles/globalStyles";
+import { useUserData } from "../src/context/UserDataContext";
+import { useAuth } from "../src/context/AuthContext";
 
 function ResultsScreen() {
   const router = useRouter();
@@ -27,6 +29,9 @@ function ResultsScreen() {
     calories: string;
     goal: string;
   }>();
+
+  const { addCalculation, loading: savingCalculation } = useUserData();
+  const { user } = useAuth();
 
   const macros = {
     protein: parseInt(params.protein || "0", 10),
@@ -47,19 +52,17 @@ function ResultsScreen() {
     }
   };
 
-  const handleSave = () => {
-    const calculationResult = {
-      id: Date.now().toString(),
+  const handleSave = async () => {
+    await addCalculation({
       date: new Date().toISOString(),
       calories,
       protein: macros.protein,
       carbs: macros.carbs,
       fat: macros.fat,
       goal,
-    };
+    });
 
-    // When you have the UserContext set up:
-    // await addCalculation(calculationResult);
+    // Navigate back to home page after saving
     router.push("/");
   };
 
@@ -79,6 +82,19 @@ function ResultsScreen() {
         items: ["Abacate", "Azeite de oliva", "Castanhas", "Sementes", "Salmão", "Ovos"],
       },
     ];
+  };
+
+  const getGoalTitle = () => {
+    switch (goal) {
+      case "lose_weight":
+        return "Perder Peso";
+      case "maintain":
+        return "Manter Peso";
+      case "gain_muscle":
+        return "Ganhar Músculo";
+      default:
+        return "";
+    }
   };
 
   return (
@@ -113,7 +129,7 @@ function ResultsScreen() {
             marginBottom: spacing[4],
           }}
         >
-          Baseados nas suas informações e objetivos
+          Baseados nas suas informações e objetivo: <Text color="primary">{getGoalTitle()}</Text>
         </Text>
       </Animated.View>
 
@@ -211,7 +227,13 @@ function ResultsScreen() {
               onPress={() => router.back()}
               style={{ flex: 1, marginRight: spacing[2] }}
             />
-            <Button title="Salvar" variant="default" onPress={handleSave} style={{ flex: 1, marginLeft: spacing[2] }} />
+            <Button
+              title="Salvar"
+              variant="default"
+              onPress={handleSave}
+              loading={savingCalculation}
+              style={{ flex: 1, marginLeft: spacing[2] }}
+            />
           </CardFooter>
         </Card>
       </Animated.View>
