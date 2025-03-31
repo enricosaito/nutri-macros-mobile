@@ -1,20 +1,8 @@
-// components/ui/numeric-input.tsx
 import React, { useState, useEffect } from "react";
 import { View, TextInput, Pressable, StyleSheet, useColorScheme } from "react-native";
 import { Text } from "./text";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-  withRepeat,
-  withSequence,
-} from "react-native-reanimated";
-import { colors, darkColors, spacing, radius, typography } from "../../src/styles/globalStyles";
+import { colors, darkColors, spacing, radius } from "../../src/styles/globalStyles";
 import { Feather } from "@expo/vector-icons";
-import { useAnimationsEnabled } from "../../src/utils/animation";
-
-const AnimatedView = Animated.createAnimatedComponent(View);
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 interface NumericInputProps {
   label?: string;
@@ -42,10 +30,6 @@ export function NumericInput({
   const isDark = useColorScheme() === "dark";
   const activeColors = isDark ? darkColors : colors;
   const [inputValue, setInputValue] = useState(value.toString());
-  const buttonScale = useSharedValue(1);
-  const errorAnim = useSharedValue(0);
-  const [isFocused, setIsFocused] = useState(false);
-  const animationsEnabled = useAnimationsEnabled();
 
   // Update input value when prop changes
   useEffect(() => {
@@ -82,15 +66,6 @@ export function NumericInput({
     if (clampedValue !== value) {
       onChange(clampedValue);
     }
-
-    // Add error animation if value is clamped
-    if (clampedValue !== newValue && animationsEnabled) {
-      errorAnim.value = withSequence(
-        withTiming(10, { duration: 100 }),
-        withRepeat(withTiming(-10, { duration: 100 }), 3, true),
-        withTiming(0, { duration: 100 })
-      );
-    }
   };
 
   const increment = () => {
@@ -107,137 +82,8 @@ export function NumericInput({
     }
   };
 
-  const handleButtonPressIn = () => {
-    if (animationsEnabled) {
-      buttonScale.value = withTiming(0.95, { duration: 100 });
-    }
-  };
-
-  const handleButtonPressOut = () => {
-    if (animationsEnabled) {
-      buttonScale.value = withTiming(1, { duration: 100 });
-    }
-  };
-
-  const buttonAnimStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: buttonScale.value }],
-    };
-  });
-
-  const containerAnimStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: errorAnim.value }],
-    };
-  });
-
-  // If animations are disabled, use regular components
-  if (!animationsEnabled) {
-    return (
-      <View style={styles.container}>
-        {label && (
-          <Text
-            style={[
-              styles.label,
-              {
-                color: activeColors.text,
-                marginBottom: spacing[2],
-              },
-            ]}
-          >
-            {label}
-          </Text>
-        )}
-
-        <View style={styles.inputRow}>
-          <Pressable
-            style={[
-              styles.button,
-              styles.decrementButton,
-              {
-                backgroundColor: activeColors.secondary,
-                borderColor: activeColors.border,
-                borderTopLeftRadius: radius.md,
-                borderBottomLeftRadius: radius.md,
-              },
-            ]}
-            onPress={decrement}
-          >
-            <Feather name="minus" size={20} color={activeColors.text} />
-          </Pressable>
-
-          <View
-            style={[
-              styles.inputContainer,
-              {
-                borderColor: isFocused ? activeColors.primary : activeColors.border,
-                borderTopWidth: 1,
-                borderBottomWidth: 1,
-              },
-            ]}
-          >
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  color: activeColors.text,
-                  backgroundColor: activeColors.card,
-                },
-              ]}
-              value={inputValue}
-              onChangeText={handleInputChange}
-              keyboardType={allowDecimal ? "decimal-pad" : "number-pad"}
-              returnKeyType="done"
-              selectTextOnFocus
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
-            />
-
-            {unit && (
-              <View
-                style={[
-                  styles.unitContainer,
-                  {
-                    backgroundColor: activeColors.secondary,
-                    borderColor: activeColors.border,
-                  },
-                ]}
-              >
-                <Text variant="caption" color="muted">
-                  {unit}
-                </Text>
-              </View>
-            )}
-          </View>
-
-          <Pressable
-            style={[
-              styles.button,
-              styles.incrementButton,
-              {
-                backgroundColor: activeColors.secondary,
-                borderColor: activeColors.border,
-                borderTopRightRadius: radius.md,
-                borderBottomRightRadius: radius.md,
-              },
-            ]}
-            onPress={increment}
-          >
-            <Feather name="plus" size={20} color={activeColors.text} />
-          </Pressable>
-        </View>
-
-        {error && (
-          <Text variant="caption" color="error" style={{ marginTop: spacing[2] }}>
-            {error}
-          </Text>
-        )}
-      </View>
-    );
-  }
-
   return (
-    <AnimatedView style={[containerAnimStyle, styles.container]}>
+    <View style={styles.container}>
       {label && (
         <Text
           style={[
@@ -253,9 +99,8 @@ export function NumericInput({
       )}
 
       <View style={styles.inputRow}>
-        <AnimatedPressable
+        <Pressable
           style={[
-            buttonAnimStyle,
             styles.button,
             styles.decrementButton,
             {
@@ -265,18 +110,16 @@ export function NumericInput({
               borderBottomLeftRadius: radius.md,
             },
           ]}
-          onPressIn={handleButtonPressIn}
-          onPressOut={handleButtonPressOut}
           onPress={decrement}
         >
           <Feather name="minus" size={20} color={activeColors.text} />
-        </AnimatedPressable>
+        </Pressable>
 
         <View
           style={[
             styles.inputContainer,
             {
-              borderColor: isFocused ? activeColors.primary : activeColors.border,
+              borderColor: activeColors.border,
               borderTopWidth: 1,
               borderBottomWidth: 1,
             },
@@ -295,8 +138,6 @@ export function NumericInput({
             keyboardType={allowDecimal ? "decimal-pad" : "number-pad"}
             returnKeyType="done"
             selectTextOnFocus
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
           />
 
           {unit && (
@@ -316,9 +157,8 @@ export function NumericInput({
           )}
         </View>
 
-        <AnimatedPressable
+        <Pressable
           style={[
-            buttonAnimStyle,
             styles.button,
             styles.incrementButton,
             {
@@ -328,12 +168,10 @@ export function NumericInput({
               borderBottomRightRadius: radius.md,
             },
           ]}
-          onPressIn={handleButtonPressIn}
-          onPressOut={handleButtonPressOut}
           onPress={increment}
         >
           <Feather name="plus" size={20} color={activeColors.text} />
-        </AnimatedPressable>
+        </Pressable>
       </View>
 
       {error && (
@@ -341,7 +179,7 @@ export function NumericInput({
           {error}
         </Text>
       )}
-    </AnimatedView>
+    </View>
   );
 }
 
