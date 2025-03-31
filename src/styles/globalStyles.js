@@ -23,19 +23,20 @@ export const colors = {
 export const darkColors = {
   primary: "#2ac46e",
   secondary: "#1e231e",
-  background: "#0f120f",
-  card: "#1a1f1a",
-  text: "#f8faf8",
-  textMuted: "#9ca29d",
-  border: "#2a332a",
+  background: "#000000", // True black background
+  card: "#121212", // Very dark card
+  text: "#ffffff", // White text
+  textMuted: "#9ca29d", // Light gray for muted text
+  border: "#333333", // Darker border
   error: "#9b1f1f",
   success: "#16b465",
   warning: "#f0ad4e",
-  chart1: "#2ac46e",
-  chart2: "#1fc177",
+  chart1: "#2ac46e", // Green (for proteins)
+  chart2: "#2ac46e", // Green (for carbs)
   chart3: "#1fb7c1",
   chart4: "#1da1d7",
-  chart5: "#4d8df6",
+  chart5: "#4d8df6", // Blue (for fats)
+  foreground: "#ffffff", // Make sure foreground is white in dark mode
 };
 
 export const spacing = {

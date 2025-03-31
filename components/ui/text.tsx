@@ -1,4 +1,3 @@
-// components/ui/text.tsx
 import React from "react";
 import { Text as RNText, StyleSheet, TextStyle, TextProps, useColorScheme } from "react-native";
 import { colors, darkColors, typography } from "../../src/styles/globalStyles";
@@ -30,7 +29,7 @@ export function Text({
   // Build the base style
   const baseStyle: TextStyle = {
     fontFamily: typography.fontFamily,
-    color: activeColors.text,
+    color: activeColors.text, // Always default to theme text color
   };
 
   // Add variant styles
@@ -68,7 +67,7 @@ export function Text({
       break;
   }
 
-  // Add color styles
+  // Add color styles - fixed to ensure proper dark mode coloring
   switch (color) {
     case "primary":
       baseStyle.color = activeColors.primary;
@@ -92,7 +91,7 @@ export function Text({
       baseStyle.color = activeColors.error;
       break;
     case "white":
-      baseStyle.color = "#ffffff";
+      baseStyle.color = "#ffffff"; // Always white
       break;
   }
 

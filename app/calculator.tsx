@@ -1,20 +1,12 @@
 import React, { useState } from "react";
-import { View, ScrollView, useColorScheme } from "react-native";
-import { useRouter } from "expo-router";
-import {
-  Screen,
-  Text,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  NumericInput,
-  GoalSelector,
-  Goal,
-} from "../components";
-import { colors, darkColors, spacing } from "../src/styles/globalStyles";
+import { View, StyleSheet, useColorScheme, ScrollView } from "react-native";
+import { router } from "expo-router";
+import { Text, Button, Card, CardContent, CardHeader, CardTitle, NumericInput } from "../components";
+import { GoalSelector } from "../components/goal-selector";
 import { Feather } from "@expo/vector-icons";
+import { colors, darkColors, spacing, radius } from "../src/styles/globalStyles";
+import { TabBar } from "../components/TabBar";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { FadeInUp, FadeInDown } from "react-native-reanimated";
 
 // Define activity levels
@@ -27,14 +19,14 @@ const activityLevels = [
 ];
 
 // Define goals
-const goals: Goal[] = [
+const goals = [
   { id: "lose_weight", name: "Perder Peso", description: "Déficit calórico para perda de peso" },
   { id: "maintain", name: "Manter Peso", description: "Manutenção do peso atual" },
   { id: "gain_muscle", name: "Ganhar Músculo", description: "Superávit calórico para ganho muscular" },
 ];
 
 function CalculatorScreen() {
-  const router = useRouter();
+  const insets = useSafeAreaInsets();
   const isDark = useColorScheme() === "dark";
   const activeColors = isDark ? darkColors : colors;
 
@@ -118,117 +110,148 @@ function CalculatorScreen() {
     router.push({
       pathname: "/results",
       params: {
-        protein: results.protein,
-        carbs: results.carbs,
-        fat: results.fat,
-        calories: results.calories,
+        protein: results.protein.toString(),
+        carbs: results.carbs.toString(),
+        fat: results.fat.toString(),
+        calories: results.calories.toString(),
+        goal: goal,
       },
     });
   };
 
   return (
-    <Screen title="Calculadora" showHeader={true} scroll={true}>
-      {/* Introduction */}
-      <Animated.View entering={FadeInDown.duration(600).springify()} style={{ marginBottom: spacing[6] }}>
-        <Text variant="h3" style={{ textAlign: "center", marginBottom: spacing[2] }}>
-          Calculadora de Macros
+    <View style={[styles.container, { backgroundColor: activeColors.background }]}>
+      <View style={[styles.header, { backgroundColor: activeColors.card }]}>
+        <Text variant="h3" style={{ color: activeColors.text, textAlign: "center" }}>
+          Calculadora
         </Text>
-        <Text variant="body" color="muted" style={{ textAlign: "center" }}>
-          Preencha suas informações para calcular suas necessidades diárias de macronutrientes.
-        </Text>
-      </Animated.View>
+      </View>
 
-      {/* Gender Selection */}
-      <Animated.View entering={FadeInUp.delay(100).duration(600).springify()}>
-        <Card style={{ marginBottom: spacing[4] }}>
-          <CardHeader>
-            <CardTitle>Sexo Biológico</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <View style={{ flexDirection: "row", gap: spacing[4] }}>
-              <Button
-                title="Masculino"
-                variant={gender === "male" ? "default" : "outline"}
-                onPress={() => setGender("male")}
-                leftIcon={<Feather name="user" size={18} color={gender === "male" ? "white" : activeColors.primary} />}
-                style={{ flex: 1 }}
-              />
-              <Button
-                title="Feminino"
-                variant={gender === "female" ? "default" : "outline"}
-                onPress={() => setGender("female")}
-                leftIcon={
-                  <Feather name="user" size={18} color={gender === "female" ? "white" : activeColors.primary} />
-                }
-                style={{ flex: 1 }}
-              />
-            </View>
-          </CardContent>
-        </Card>
-      </Animated.View>
+      <ScrollView style={styles.scrollView} contentContainerStyle={{ padding: spacing[4] }}>
+        {/* Introduction */}
+        <Animated.View entering={FadeInDown.duration(600).springify()} style={{ marginBottom: spacing[6] }}>
+          <Text variant="h3" style={{ textAlign: "center", marginBottom: spacing[2], color: activeColors.text }}>
+            Calculadora de Macros
+          </Text>
+          <Text variant="body" color="muted" style={{ textAlign: "center" }}>
+            Preencha suas informações para calcular suas necessidades diárias de macronutrientes.
+          </Text>
+        </Animated.View>
 
-      {/* Basic Info */}
-      <Animated.View entering={FadeInUp.delay(200).duration(600).springify()}>
-        <Card style={{ marginBottom: spacing[4] }}>
-          <CardHeader>
-            <CardTitle>Informações Básicas</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <View style={{ gap: spacing[4] }}>
-              <NumericInput label="Idade" value={age} onChange={setAge} min={15} max={100} unit="anos" />
-              <NumericInput
-                label="Peso"
-                value={weight}
-                onChange={setWeight}
-                min={30}
-                max={250}
-                unit="kg"
-                allowDecimal={true}
-                step={0.5}
-              />
-              <NumericInput label="Altura" value={height} onChange={setHeight} min={100} max={250} unit="cm" />
-            </View>
-          </CardContent>
-        </Card>
-      </Animated.View>
+        {/* Gender Selection */}
+        <Animated.View entering={FadeInUp.delay(100).duration(600).springify()}>
+          <Card style={{ marginBottom: spacing[4], backgroundColor: activeColors.card }}>
+            <CardHeader>
+              <CardTitle>Sexo Biológico</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <View style={{ flexDirection: "row", gap: spacing[4] }}>
+                <Button
+                  title="Masculino"
+                  variant={gender === "male" ? "default" : "outline"}
+                  onPress={() => setGender("male")}
+                  leftIcon={
+                    <Feather name="user" size={18} color={gender === "male" ? "white" : activeColors.primary} />
+                  }
+                  style={{ flex: 1 }}
+                />
+                <Button
+                  title="Feminino"
+                  variant={gender === "female" ? "default" : "outline"}
+                  onPress={() => setGender("female")}
+                  leftIcon={
+                    <Feather name="user" size={18} color={gender === "female" ? "white" : activeColors.primary} />
+                  }
+                  style={{ flex: 1 }}
+                />
+              </View>
+            </CardContent>
+          </Card>
+        </Animated.View>
 
-      {/* Activity Level */}
-      <Animated.View entering={FadeInUp.delay(300).duration(600).springify()}>
-        <Card style={{ marginBottom: spacing[4] }}>
-          <CardHeader>
-            <CardTitle>Nível de Atividade</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <GoalSelector goals={activityLevels} selectedGoalId={activityLevel} onSelectGoal={setActivityLevel} />
-          </CardContent>
-        </Card>
-      </Animated.View>
+        {/* Basic Info */}
+        <Animated.View entering={FadeInUp.delay(200).duration(600).springify()}>
+          <Card style={{ marginBottom: spacing[4], backgroundColor: activeColors.card }}>
+            <CardHeader>
+              <CardTitle>Informações Básicas</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <View style={{ gap: spacing[4] }}>
+                <NumericInput label="Idade" value={age} onChange={setAge} min={15} max={100} unit="anos" />
+                <NumericInput
+                  label="Peso"
+                  value={weight}
+                  onChange={setWeight}
+                  min={30}
+                  max={250}
+                  unit="kg"
+                  allowDecimal={true}
+                  step={0.5}
+                />
+                <NumericInput label="Altura" value={height} onChange={setHeight} min={100} max={250} unit="cm" />
+              </View>
+            </CardContent>
+          </Card>
+        </Animated.View>
 
-      {/* Goal */}
-      <Animated.View entering={FadeInUp.delay(400).duration(600).springify()}>
-        <Card style={{ marginBottom: spacing[6] }}>
-          <CardHeader>
-            <CardTitle>Objetivo</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <GoalSelector goals={goals} selectedGoalId={goal} onSelectGoal={setGoal} />
-          </CardContent>
-        </Card>
-      </Animated.View>
+        {/* Activity Level */}
+        <Animated.View entering={FadeInUp.delay(300).duration(600).springify()}>
+          <Card style={{ marginBottom: spacing[4], backgroundColor: activeColors.card }}>
+            <CardHeader>
+              <CardTitle>Nível de Atividade</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <GoalSelector goals={activityLevels} selectedGoalId={activityLevel} onSelectGoal={setActivityLevel} />
+            </CardContent>
+          </Card>
+        </Animated.View>
 
-      {/* Calculate Button */}
-      <Animated.View entering={FadeInUp.delay(500).duration(600).springify()}>
-        <Button
-          title="Calcular Macros"
-          size="lg"
-          onPress={handleCalculate}
-          style={{ marginBottom: spacing[6] }}
-          rightIcon={<Feather name="arrow-right" size={18} color="white" />}
-          fullWidth
-        />
-      </Animated.View>
-    </Screen>
+        {/* Goal */}
+        <Animated.View entering={FadeInUp.delay(400).duration(600).springify()}>
+          <Card style={{ marginBottom: spacing[6], backgroundColor: activeColors.card }}>
+            <CardHeader>
+              <CardTitle>Objetivo</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <GoalSelector goals={goals} selectedGoalId={goal} onSelectGoal={setGoal} />
+            </CardContent>
+          </Card>
+        </Animated.View>
+
+        {/* Calculate Button */}
+        <Animated.View entering={FadeInUp.delay(500).duration(600).springify()}>
+          <Button
+            title="Calcular Macros"
+            size="lg"
+            onPress={handleCalculate}
+            style={{ marginBottom: spacing[6] }}
+            rightIcon={<Feather name="arrow-right" size={18} color="white" />}
+            fullWidth
+          />
+        </Animated.View>
+
+        {/* Extra space at the bottom for the tab bar */}
+        <View style={{ height: 80 }} />
+      </ScrollView>
+
+      <TabBar insets={insets} />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  header: {
+    paddingVertical: 16,
+    paddingTop: 50,
+    borderBottomWidth: 1,
+    borderBottomColor: "#333333",
+  },
+  scrollView: {
+    flex: 1,
+  },
+});
 
 export default CalculatorScreen;
