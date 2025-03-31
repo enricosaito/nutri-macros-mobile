@@ -9,96 +9,100 @@ import { Screen } from "../components/ui/screen";
 import { Feather } from "@expo/vector-icons";
 import { colors, darkColors, spacing, radius } from "../src/styles/globalStyles";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
-import { useAnimationsEnabled } from "../src/utils/animation";
-
-// Define Icon type to address the type issues
-type FeatherIconName = React.ComponentProps<typeof Feather>["name"];
+import { useUser } from "../src/context/UserContext";
 
 function HomeScreen() {
   const router = useRouter();
   const isDark = useColorScheme() === "dark";
   const activeColors = isDark ? darkColors : colors;
-  const animationsEnabled = useAnimationsEnabled();
+  const { calculations, isAuthenticated } = useUser();
 
-  // Type-safe feature objects
   const features = [
     {
       title: "Calculadora de Macros",
       description: "Calcule suas necessidades diárias de macronutrientes",
-      icon: "sliders" as FeatherIconName,
+      icon: "sliders",
       route: "/calculator",
     },
     {
       title: "Receitas Personalizadas",
       description: "Encontre receitas que se encaixam nos seus macros",
-      icon: "book-open" as FeatherIconName,
+      icon: "book-open",
       route: "/recipes",
     },
     {
       title: "Acompanhamento Diário",
       description: "Registre suas refeições e acompanhe seu progresso",
-      icon: "bar-chart-2" as FeatherIconName,
+      icon: "bar-chart-2",
       route: "/tracker",
       comingSoon: true,
     },
   ];
 
-  // Type-safe tip objects
   const nutritionTips = [
     {
       title: "Proteínas",
       tip: "Essenciais para reparação muscular e saciedade",
-      icon: "award" as FeatherIconName,
+      icon: "award",
       color: activeColors.chart3,
     },
     {
       title: "Carboidratos",
       tip: "Principal fonte de energia para o corpo e cérebro",
-      icon: "battery-charging" as FeatherIconName,
+      icon: "battery-charging",
       color: activeColors.chart1,
     },
     {
       title: "Gorduras",
       tip: "Importantes para hormônios e absorção de vitaminas",
-      icon: "droplet" as FeatherIconName,
+      icon: "droplet",
       color: activeColors.chart5,
     },
   ];
 
-  const AnimatedContainer = animationsEnabled ? Animated.View : View;
-
-  // Safe navigation function
-  const navigateTo = (path: string) => {
-    // Using the router.push method with type assertion
-    router.push(path as any);
+  // Function to get goal display text
+  const getGoalText = (goalId) => {
+    switch (goalId) {
+      case "lose_weight":
+        return "Perder Peso";
+      case "maintain":
+        return "Manter Peso";
+      case "gain_muscle":
+        return "Ganhar Músculo";
+      default:
+        return "Objetivo";
+    }
   };
 
   return (
     <Screen showHeader={false} scroll={true} padding={false}>
       {/* Hero Section */}
       <View style={[styles.heroContainer, { backgroundColor: activeColors.card }]}>
-        <AnimatedContainer
-          entering={animationsEnabled ? FadeInDown.duration(800).springify() : undefined}
-          style={styles.logoContainer}
-        >
-          <Image source={require("../assets/images/logo.png")} style={styles.logo} resizeMode="contain" />
-        </AnimatedContainer>
+        <Animated.View entering={FadeInDown.duration(800).springify()} style={styles.logoContainer}>
+          <Image source={require("../assets/images/icon.png")} style={styles.logo} resizeMode="contain" />
+        </Animated.View>
 
-        <AnimatedContainer entering={animationsEnabled ? FadeInUp.delay(200).duration(800).springify() : undefined}>
-          <Text variant="h1" style={styles.title}>
+        <Animated.View entering={FadeInUp.delay(200).duration(800).springify()}>
+          <Text variant="h1" style={[styles.title, { color: activeColors.foreground }]}>
             NutriMacros
           </Text>
           <Text variant="body" color="muted" style={styles.subtitle}>
             Seu assistente nutricional para alcançar seus objetivos de forma saudável e equilibrada
           </Text>
-        </AnimatedContainer>
+        </Animated.View>
       </View>
 
-      <View style={styles.contentContainer}>
+      <View style={{ padding: spacing[4] }}>
         {/* Featured Card */}
-        <AnimatedContainer entering={animationsEnabled ? FadeInUp.delay(400).duration(800).springify() : undefined}>
+        <Animated.View entering={FadeInUp.delay(400).duration(800).springify()}>
           <Card style={styles.featuredCard}>
-            <CardContent style={styles.featuredCardContent}>
+            <CardContent
+              style={{
+                backgroundColor: activeColors.primary,
+                padding: spacing[6],
+                borderRadius: radius.xl,
+              }}
+            >
               <Text variant="h3" style={styles.featuredCardTitle} color="white">
                 Calcule Seus Macros
               </Text>
@@ -107,18 +111,92 @@ function HomeScreen() {
               </Text>
               <Button
                 title="Começar Agora"
-                onPress={() => navigateTo("/calculator")}
-                rightIcon={<Feather name={"arrow-right" as FeatherIconName} size={16} color={activeColors.primary} />}
+                onPress={() => router.push("/calculator")}
+                rightIcon={<Feather name="arrow-right" size={16} color={activeColors.primary} />}
                 style={styles.featuredCardButton}
                 variant="secondary"
               />
             </CardContent>
           </Card>
-        </AnimatedContainer>
+        </Animated.View>
+
+        {/* Recent Calculations Section */}
+        {calculations.length > 0 && (
+          <Animated.View entering={FadeInUp.delay(400).duration(800).springify()}>
+            <Text variant="h3" style={[styles.sectionTitle, { color: activeColors.foreground }]}>
+              Seus Cálculos Recentes
+            </Text>
+
+            {calculations.map((calc, index) => (
+              <Card key={calc.id} style={styles.calculationCard}>
+                <CardContent>
+                  <View style={styles.calculationHeader}>
+                    <Text variant="subtitle">{new Date(calc.date).toLocaleDateString("pt-BR")}</Text>
+                    <Text variant="caption" color="primary">
+                      {getGoalText(calc.goal)}
+                    </Text>
+                  </View>
+
+                  <View style={styles.macroRow}>
+                    <Text variant="h3" color="primary">
+                      {calc.calories} kcal
+                    </Text>
+                    <View style={styles.macroValues}>
+                      <Text>
+                        <Text style={{ fontWeight: "600" }}>P:</Text> {calc.protein}g
+                      </Text>
+                      <Text>
+                        <Text style={{ fontWeight: "600" }}>C:</Text> {calc.carbs}g
+                      </Text>
+                      <Text>
+                        <Text style={{ fontWeight: "600" }}>G:</Text> {calc.fat}g
+                      </Text>
+                    </View>
+                  </View>
+
+                  <Button
+                    title="Ver Detalhes"
+                    variant="outline"
+                    size="sm"
+                    onPress={() =>
+                      router.push({
+                        pathname: "/results",
+                        params: {
+                          protein: calc.protein,
+                          carbs: calc.carbs,
+                          fat: calc.fat,
+                          calories: calc.calories,
+                          goal: calc.goal,
+                        },
+                      })
+                    }
+                    rightIcon={<Feather name="chevron-right" size={16} color={activeColors.primary} />}
+                  />
+                </CardContent>
+              </Card>
+            ))}
+
+            {!isAuthenticated && calculations.length >= 3 && (
+              <Card style={styles.premiumPrompt}>
+                <CardContent>
+                  <Text variant="subtitle" style={{ textAlign: "center", marginBottom: spacing[2] }}>
+                    Crie uma conta para salvar mais cálculos
+                  </Text>
+                  <Button
+                    title="Criar Conta"
+                    variant="default"
+                    onPress={() => router.push("/profile")}
+                    leftIcon={<Feather name="user-plus" size={16} color="white" />}
+                  />
+                </CardContent>
+              </Card>
+            )}
+          </Animated.View>
+        )}
 
         {/* Features */}
-        <AnimatedContainer entering={animationsEnabled ? FadeInUp.delay(600).duration(800).springify() : undefined}>
-          <Text variant="h3" style={styles.sectionTitle}>
+        <Animated.View entering={FadeInUp.delay(600).duration(800).springify()}>
+          <Text variant="h3" style={[styles.sectionTitle, { color: activeColors.foreground }]}>
             Recursos
           </Text>
 
@@ -131,12 +209,13 @@ function HomeScreen() {
                   {
                     backgroundColor: activeColors.card,
                     borderColor: activeColors.border,
+                    borderRadius: radius.lg,
                     opacity: feature.comingSoon ? 0.7 : 1,
                   },
                 ]}
                 onPress={() => {
                   if (feature.route && !feature.comingSoon) {
-                    navigateTo(feature.route);
+                    router.push(feature.route as any);
                   }
                 }}
                 disabled={feature.comingSoon}
@@ -147,13 +226,16 @@ function HomeScreen() {
                     styles.featureIconContainer,
                     {
                       backgroundColor: `${activeColors.primary}15`,
+                      borderRadius: radius.md,
                     },
                   ]}
                 >
-                  <Feather name={feature.icon} size={24} color={activeColors.primary} />
+                  <Feather name={feature.icon as any} size={24} color={activeColors.primary} />
                 </View>
                 <View style={styles.featureContent}>
-                  <Text variant="subtitle">{feature.title}</Text>
+                  <Text variant="subtitle" style={{ color: activeColors.foreground }}>
+                    {feature.title}
+                  </Text>
                   <Text variant="caption" color="muted">
                     {feature.description}
                   </Text>
@@ -164,6 +246,7 @@ function HomeScreen() {
                       styles.comingSoonBadge,
                       {
                         backgroundColor: activeColors.secondary,
+                        borderRadius: radius.full,
                       },
                     ]}
                   >
@@ -172,34 +255,35 @@ function HomeScreen() {
                     </Text>
                   </View>
                 ) : (
-                  <Feather name={"chevron-right" as FeatherIconName} size={20} color={activeColors.textMuted} />
+                  <Feather name="chevron-right" size={20} color={activeColors.mutedForeground} />
                 )}
               </TouchableOpacity>
             ))}
           </View>
-        </AnimatedContainer>
+        </Animated.View>
 
         {/* Nutrition Tips */}
-        <AnimatedContainer entering={animationsEnabled ? FadeInUp.delay(800).duration(800).springify() : undefined}>
-          <Text variant="h3" style={styles.sectionTitle}>
+        <Animated.View entering={FadeInUp.delay(800).duration(800).springify()}>
+          <Text variant="h3" style={[styles.sectionTitle, { color: activeColors.foreground }]}>
             Dicas Nutricionais
           </Text>
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tipsContainer}>
             {nutritionTips.map((item, index) => (
-              <Card key={`tip-${index}`} style={styles.tipCard}>
-                <CardContent style={styles.tipCardContent}>
+              <Card key={`tip-${index}`} style={{ ...styles.tipCard, borderRadius: radius.lg }}>
+                <CardContent style={{ padding: spacing[5] }}>
                   <View
                     style={[
                       styles.tipIconContainer,
                       {
                         backgroundColor: `${item.color}20`,
+                        borderRadius: radius.md,
                       },
                     ]}
                   >
-                    <Feather name={item.icon} size={22} color={item.color} />
+                    <Feather name={item.icon as any} size={22} color={item.color} />
                   </View>
-                  <Text variant="subtitle" style={styles.tipTitle}>
+                  <Text variant="subtitle" style={{ marginVertical: spacing[2] }}>
                     {item.title}
                   </Text>
                   <Text variant="caption" color="muted">
@@ -209,7 +293,7 @@ function HomeScreen() {
               </Card>
             ))}
           </ScrollView>
-        </AnimatedContainer>
+        </Animated.View>
 
         <View style={styles.spacer} />
       </View>
@@ -240,9 +324,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     paddingHorizontal: 20,
   },
-  contentContainer: {
-    padding: 16,
-  },
   featuredCard: {
     marginBottom: 32,
     shadowColor: "#000",
@@ -253,11 +334,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.07,
     shadowRadius: 4,
     elevation: 3,
-  },
-  featuredCardContent: {
-    backgroundColor: "#22c069", // Primary green color
-    padding: 24,
-    borderRadius: 16,
   },
   featuredCardTitle: {
     marginBottom: 8,
@@ -280,7 +356,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 12,
     alignItems: "center",
-    borderRadius: 12,
   },
   featureIconContainer: {
     height: 48,
@@ -288,7 +363,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 16,
-    borderRadius: 8,
   },
   featureContent: {
     flex: 1,
@@ -296,7 +370,6 @@ const styles = StyleSheet.create({
   comingSoonBadge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 99,
   },
   tipsContainer: {
     marginBottom: 32,
@@ -304,24 +377,42 @@ const styles = StyleSheet.create({
   tipCard: {
     width: 220,
     marginRight: 16,
-    borderRadius: 12,
-  },
-  tipCardContent: {
-    padding: 20,
   },
   tipIconContainer: {
     width: 44,
     height: 44,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 8,
-    marginBottom: 8,
-  },
-  tipTitle: {
-    marginVertical: 8,
   },
   spacer: {
     height: 80, // Extra space at the bottom for the tab bar
+  },
+  // New styles for calculations
+  calculationCard: {
+    marginBottom: 12,
+  },
+  calculationHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  macroRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  macroValues: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  premiumPrompt: {
+    marginTop: 8,
+    marginBottom: 24,
+    borderStyle: "dashed",
+    borderWidth: 1,
+    backgroundColor: `${colors.primary}05`,
   },
 });
 

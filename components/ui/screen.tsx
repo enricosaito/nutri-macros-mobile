@@ -1,11 +1,18 @@
-// components/ui/screen.tsx
 import React from "react";
-import { View, ScrollView, StyleSheet, ViewStyle, StatusBar, useColorScheme, Platform } from "react-native";
+import {
+  View,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  ViewStyle,
+  StatusBar,
+  useColorScheme,
+  Platform,
+} from "react-native";
 import { Text } from "./text";
 import { colors, darkColors, spacing } from "../../src/styles/globalStyles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { FadeIn } from "react-native-reanimated";
-import { useAnimationsEnabled } from "../../src/utils/animation";
 
 interface ScreenProps {
   children: React.ReactNode;
@@ -36,16 +43,12 @@ export function Screen({
   const isDark = useColorScheme() === "dark";
   const activeColors = isDark ? darkColors : colors;
   const insets = useSafeAreaInsets();
-  const animationsEnabled = useAnimationsEnabled();
-
-  // Only use animations if explicitly requested AND animations are enabled
-  const shouldAnimate = animate && animationsEnabled;
 
   const renderContent = () => {
     const contentStyle = [
       styles.content,
       {
-        paddingTop: showHeader ? 0 : insets.top + (Platform.OS === "ios" ? 0 : StatusBar.currentHeight || 0),
+        paddingTop: showHeader ? 0 : insets.top,
         paddingBottom: insets.bottom,
         ...(padding && {
           paddingHorizontal: spacing[4],
@@ -55,38 +58,36 @@ export function Screen({
     ];
 
     if (scroll) {
-      return shouldAnimate ? (
+      return (
         <AnimatedScrollView
           style={[styles.scrollView, { backgroundColor: activeColors.background }]}
           contentContainerStyle={contentStyle}
           showsVerticalScrollIndicator={false}
-          entering={FadeIn.delay(50).duration(300)}
+          entering={animate ? FadeIn.delay(50).duration(300) : undefined}
         >
           {children}
         </AnimatedScrollView>
-      ) : (
-        <ScrollView
-          style={[styles.scrollView, { backgroundColor: activeColors.background }]}
-          contentContainerStyle={contentStyle}
-          showsVerticalScrollIndicator={false}
-        >
-          {children}
-        </ScrollView>
       );
     }
 
-    return shouldAnimate ? (
-      <AnimatedView style={[styles.contentContainer, contentStyle, style]} entering={FadeIn.delay(50).duration(300)}>
-        {children}
-      </AnimatedView>
-    ) : (
-      <View style={[styles.contentContainer, contentStyle, style]}>{children}</View>
-    );
+    if (animate) {
+      return (
+        <AnimatedView style={[styles.contentContainer, contentStyle, style]} entering={FadeIn.delay(50).duration(300)}>
+          {children}
+        </AnimatedView>
+      );
+    }
+
+    return <View style={[styles.contentContainer, contentStyle, style]}>{children}</View>;
   };
 
   return (
     <View style={[styles.container, { backgroundColor: activeColors.background }]}>
-      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={activeColors.background} />
+      <StatusBar
+        barStyle={isDark ? "light-content" : "dark-content"}
+        backgroundColor={activeColors.background}
+        translucent={true}
+      />
 
       {showHeader && (
         <View
@@ -95,9 +96,10 @@ export function Screen({
             {
               backgroundColor: activeColors.card,
               borderBottomColor: activeColors.border,
-              paddingTop: insets.top + (Platform.OS === "ios" ? 0 : StatusBar.currentHeight || 0),
+              paddingTop: insets.top + (Platform.OS === "ios" ? 0 : spacing[2]),
               paddingBottom: spacing[2],
               paddingHorizontal: spacing[4],
+              height: insets.top + spacing[12],
             },
           ]}
         >

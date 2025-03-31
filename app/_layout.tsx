@@ -7,6 +7,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { colors, darkColors } from "../src/styles/globalStyles";
 import ErrorBoundary from "../components/error-boundary";
 import { AnimationProvider } from "../src/context/AnimationContext";
+import { UserProvider } from "../src/context/UserContext";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -18,60 +19,65 @@ export default function RootLayout() {
   return (
     <ErrorBoundary>
       <AnimationProvider>
-        <SafeAreaProvider>
-          <View style={[styles.container, { backgroundColor: activeColors.background }]}>
-            <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={activeColors.background} />
-            <Tabs
-              screenOptions={{
-                tabBarActiveTintColor: activeColors.primary,
-                tabBarInactiveTintColor: activeColors.textMuted,
-                tabBarStyle: {
-                  borderTopWidth: 1,
-                  borderTopColor: activeColors.border,
-                  backgroundColor: activeColors.card,
-                  height: 60,
-                  paddingBottom: 10,
-                },
-                headerShown: false,
-              }}
-            >
-              <Tabs.Screen
-                name="index"
-                options={{
-                  title: "Início",
-                  tabBarIcon: ({ color, size }) => <Feather name="home" size={size} color={color} />,
-                }}
+        <UserProvider>
+          <SafeAreaProvider>
+            <View style={[styles.container, { backgroundColor: activeColors.background }]}>
+              <StatusBar
+                barStyle={isDark ? "light-content" : "dark-content"}
+                backgroundColor={activeColors.background}
               />
-              <Tabs.Screen
-                name="calculator"
-                options={{
-                  title: "Calculadora",
-                  tabBarIcon: ({ color, size }) => <Feather name="sliders" size={size} color={color} />,
+              <Tabs
+                screenOptions={{
+                  tabBarActiveTintColor: activeColors.primary,
+                  tabBarInactiveTintColor: activeColors.textMuted,
+                  tabBarStyle: {
+                    borderTopWidth: 1,
+                    borderTopColor: activeColors.border,
+                    backgroundColor: activeColors.card,
+                    height: 60,
+                    paddingBottom: 10,
+                  },
+                  headerShown: false,
                 }}
-              />
-              <Tabs.Screen
-                name="recipes"
-                options={{
-                  title: "Receitas",
-                  tabBarIcon: ({ color, size }) => <Feather name="book-open" size={size} color={color} />,
-                }}
-              />
-              <Tabs.Screen
-                name="profile"
-                options={{
-                  title: "Perfil",
-                  tabBarIcon: ({ color, size }) => <Feather name="user" size={size} color={color} />,
-                }}
-              />
-              <Tabs.Screen
-                name="results"
-                options={{
-                  href: null,
-                }}
-              />
-            </Tabs>
-          </View>
-        </SafeAreaProvider>
+              >
+                <Tabs.Screen
+                  name="index"
+                  options={{
+                    title: "Início",
+                    tabBarIcon: ({ color, size }) => <Feather name="home" size={size} color={color} />,
+                  }}
+                />
+                <Tabs.Screen
+                  name="calculator"
+                  options={{
+                    title: "Calculadora",
+                    tabBarIcon: ({ color, size }) => <Feather name="sliders" size={size} color={color} />,
+                  }}
+                />
+                <Tabs.Screen
+                  name="recipes"
+                  options={{
+                    title: "Receitas",
+                    tabBarIcon: ({ color, size }) => <Feather name="book-open" size={size} color={color} />,
+                  }}
+                />
+                <Tabs.Screen
+                  name="profile"
+                  options={{
+                    title: "Perfil",
+                    tabBarIcon: ({ color, size }) => <Feather name="user" size={size} color={color} />,
+                  }}
+                />
+                <Tabs.Screen
+                  name="results"
+                  options={{
+                    href: null,
+                  }}
+                />
+              </Tabs>
+            </View>
+          </SafeAreaProvider>
+        </UserProvider>
       </AnimationProvider>
     </ErrorBoundary>
   );
