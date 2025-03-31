@@ -49,7 +49,7 @@ export function Screen({
       styles.content,
       {
         paddingTop: showHeader ? 0 : insets.top,
-        paddingBottom: insets.bottom,
+        // Remove paddingBottom to not add extra space
         ...(padding && {
           paddingHorizontal: spacing[4],
         }),

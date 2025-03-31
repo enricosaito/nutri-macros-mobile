@@ -1,13 +1,12 @@
 import React from "react";
 import { View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar, useColorScheme } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AuthProvider } from "../src/context/AuthContext";
 import { UserDataProvider } from "../src/context/UserDataContext";
 import { colors, darkColors } from "../src/styles/globalStyles";
 
-// Import for custom navigation
+// Import for simple stack navigation
 import { Slot } from "expo-router";
 
 export default function RootLayout() {
