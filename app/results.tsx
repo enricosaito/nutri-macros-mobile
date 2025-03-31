@@ -1,4 +1,3 @@
-// app/results.tsx
 import React from "react";
 import { View, Share, StyleSheet, useColorScheme } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -16,19 +15,17 @@ import {
 } from "../components";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { colors, darkColors, spacing } from "../src/styles/globalStyles";
-import { useAnimationsEnabled } from "../src/utils/animation";
 
 function ResultsScreen() {
   const router = useRouter();
   const isDark = useColorScheme() === "dark";
   const activeColors = isDark ? darkColors : colors;
-  const animationsEnabled = useAnimationsEnabled();
-
   const params = useLocalSearchParams<{
     protein: string;
     carbs: string;
     fat: string;
     calories: string;
+    goal: string;
   }>();
 
   const macros = {
@@ -38,6 +35,7 @@ function ResultsScreen() {
   };
 
   const calories = parseInt(params.calories || "0", 10);
+  const goal = params.goal || "maintain";
 
   const handleShare = async () => {
     try {
@@ -47,6 +45,22 @@ function ResultsScreen() {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleSave = () => {
+    const calculationResult = {
+      id: Date.now().toString(),
+      date: new Date().toISOString(),
+      calories,
+      protein: macros.protein,
+      carbs: macros.carbs,
+      fat: macros.fat,
+      goal,
+    };
+
+    // When you have the UserContext set up:
+    // await addCalculation(calculationResult);
+    router.push("/");
   };
 
   const getTips = () => {
@@ -67,8 +81,6 @@ function ResultsScreen() {
     ];
   };
 
-  const AnimatedContainer = animationsEnabled ? Animated.View : View;
-
   return (
     <Screen
       title="Resultados"
@@ -82,8 +94,8 @@ function ResultsScreen() {
       }
       scroll={true}
     >
-      <AnimatedContainer
-        entering={animationsEnabled ? FadeInUp.delay(100).duration(500) : undefined}
+      <Animated.View
+        entering={FadeInUp.delay(100).duration(500)}
         style={{
           marginTop: spacing[4],
           marginBottom: spacing[4],
@@ -103,14 +115,11 @@ function ResultsScreen() {
         >
           Baseados nas suas informações e objetivos
         </Text>
-      </AnimatedContainer>
+      </Animated.View>
 
       <MacroDisplay macros={macros} calories={calories} showPercentages={true} />
 
-      <AnimatedContainer
-        entering={animationsEnabled ? FadeInDown.delay(400).duration(500) : undefined}
-        style={{ marginVertical: spacing[6] }}
-      >
+      <Animated.View entering={FadeInDown.delay(400).duration(500)} style={{ marginVertical: spacing[6] }}>
         <Card>
           <CardHeader>
             <CardTitle>Dicas de Alimentação</CardTitle>
@@ -154,12 +163,9 @@ function ResultsScreen() {
             ))}
           </CardContent>
         </Card>
-      </AnimatedContainer>
+      </Animated.View>
 
-      <AnimatedContainer
-        entering={animationsEnabled ? FadeInDown.delay(600).duration(500) : undefined}
-        style={{ marginBottom: spacing[6] }}
-      >
+      <Animated.View entering={FadeInDown.delay(600).duration(500)} style={{ marginBottom: spacing[6] }}>
         <Card>
           <CardHeader>
             <CardTitle>Próximos Passos</CardTitle>
@@ -205,15 +211,10 @@ function ResultsScreen() {
               onPress={() => router.back()}
               style={{ flex: 1, marginRight: spacing[2] }}
             />
-            <Button
-              title="Salvar"
-              variant="default"
-              onPress={() => router.push("/")}
-              style={{ flex: 1, marginLeft: spacing[2] }}
-            />
+            <Button title="Salvar" variant="default" onPress={handleSave} style={{ flex: 1, marginLeft: spacing[2] }} />
           </CardFooter>
         </Card>
-      </AnimatedContainer>
+      </Animated.View>
     </Screen>
   );
 }
