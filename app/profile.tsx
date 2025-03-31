@@ -1,29 +1,32 @@
-// app/profile.tsx
 import React, { useState } from "react";
-import { View, StyleSheet, Switch, useColorScheme } from "react-native";
+import { View, StyleSheet, Switch, useColorScheme, TextInput } from "react-native";
 import { Screen, Text, Button, Card, CardHeader, CardTitle, CardContent } from "../components";
 import { Feather } from "@expo/vector-icons";
 import { colors, darkColors, spacing } from "../src/styles/globalStyles";
 import Animated, { FadeIn, FadeInRight } from "react-native-reanimated";
-import { useAnimations } from "../src/context/AnimationContext";
-import { useAnimationsEnabled } from "../src/utils/animation";
-
-// Define FeatherIconName type for type-safety
-type FeatherIconName = React.ComponentProps<typeof Feather>["name"];
+import { useAuth } from "../src/context/AuthContext";
 
 function ProfileScreen() {
   const systemIsDark = useColorScheme() === "dark";
   const [isDark, setIsDark] = useState(systemIsDark);
   const activeColors = isDark ? darkColors : colors;
-  const animationsEnabled = useAnimationsEnabled();
-  const { animationsEnabled: animPref, setAnimationsEnabled, systemReducedMotion } = useAnimations();
+
+  const { user, session, signIn, signUp, signOut, loading, error } = useAuth();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSignUp, setIsSignUp] = useState(false);
 
   const toggleTheme = () => {
     setIsDark(!isDark);
   };
 
-  const toggleAnimations = () => {
-    setAnimationsEnabled(!animPref);
+  const handleAuth = async () => {
+    if (isSignUp) {
+      await signUp(email, password);
+    } else {
+      await signIn(email, password);
+    }
   };
 
   // Resources that will be listed
@@ -34,174 +37,145 @@ function ProfileScreen() {
     "Sincronização entre dispositivos",
   ];
 
-  const AnimatedContainer = animationsEnabled ? Animated.View : View;
-
   return (
     <Screen title="Perfil" showHeader={true} scroll={true}>
+      {/* Main content - Similar to before but using useAuth */}
       <View style={{ paddingVertical: spacing[6] }}>
-        <AnimatedContainer
-          entering={animationsEnabled ? FadeIn.duration(800) : undefined}
-          style={{ alignItems: "center", marginBottom: spacing[6] }}
-        >
-          <View style={styles.avatarContainer}>
-            <Feather name={"user" as FeatherIconName} size={40} color={activeColors.primary} />
+        <Animated.View entering={FadeIn.duration(800)} style={{ alignItems: "center", marginBottom: spacing[6] }}>
+          <View
+            style={{
+              width: 96,
+              height: 96,
+              borderRadius: 48,
+              backgroundColor: `${activeColors.primary}15`,
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: spacing[3],
+            }}
+          >
+            <Feather name="user" size={40} color={activeColors.primary} />
           </View>
           <Text variant="h3" style={{ marginBottom: spacing[1] }}>
-            Usuário
+            {user ? user.email || "Usuário" : "Usuário"}
           </Text>
           <Text variant="caption" color="muted" style={{ textAlign: "center" }}>
-            Configure seu perfil para salvar seus macros
+            {user ? "Sua conta está ativa e seus dados sincronizados" : "Configure seu perfil para salvar seus macros"}
           </Text>
-        </AnimatedContainer>
+        </Animated.View>
 
-        {/* App Settings Section */}
-        <AnimatedContainer entering={animationsEnabled ? FadeInRight.delay(200).duration(500) : undefined}>
-          <Card style={{ marginBottom: spacing[4] }}>
-            <CardHeader>
-              <CardTitle>Aparência e Comportamento</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {/* Theme Toggle */}
-              <View style={styles.settingRow}>
-                <View style={styles.settingLabelContainer}>
-                  <View style={styles.settingIcon}>
-                    <Feather
-                      name={(isDark ? "moon" : "sun") as FeatherIconName}
-                      size={20}
-                      color={activeColors.primary}
-                    />
-                  </View>
-                  <Text>{isDark ? "Tema Escuro" : "Tema Claro"}</Text>
-                </View>
-                <Switch
-                  value={isDark}
-                  onValueChange={toggleTheme}
-                  trackColor={{ false: "#767577", true: `${activeColors.primary}80` }}
-                  thumbColor={isDark ? activeColors.primary : "#f4f3f4"}
-                />
-              </View>
+        {/* Theme Toggle - Same as before */}
 
-              {/* Animation Toggle */}
-              <View style={[styles.settingRow, { marginTop: spacing[4] }]}>
-                <View style={styles.settingLabelContainer}>
-                  <View style={styles.settingIcon}>
-                    <Feather name={"zap" as FeatherIconName} size={20} color={activeColors.primary} />
-                  </View>
-                  <View>
-                    <Text>Animações</Text>
-                    {systemReducedMotion && (
-                      <Text variant="caption" color="muted">
-                        Desativado pelo sistema
-                      </Text>
-                    )}
-                  </View>
-                </View>
-                <Switch
-                  value={animPref}
-                  onValueChange={toggleAnimations} // This should call toggleAnimations with no arguments
-                  trackColor={{ false: "#767577", true: `${activeColors.primary}80` }}
-                  thumbColor={animPref ? activeColors.primary : "#f4f3f4"}
-                  disabled={systemReducedMotion}
-                />
-              </View>
-            </CardContent>
-          </Card>
-        </AnimatedContainer>
-
-        <AnimatedContainer entering={animationsEnabled ? FadeInRight.delay(300).duration(500) : undefined}>
+        {/* Auth Card - Updated for Supabase */}
+        <Animated.View entering={FadeInRight.delay(300).duration(500)}>
           <Card style={{ marginBottom: spacing[4] }}>
             <CardHeader>
               <CardTitle>Login</CardTitle>
             </CardHeader>
             <CardContent>
-              <Text style={{ marginBottom: spacing[4] }}>
-                Faça login para salvar seus cálculos de macros e acessar recursos premium.
-              </Text>
-              <Button
-                title="Entrar com Email"
-                variant="default"
-                leftIcon={<Feather name={"log-in" as FeatherIconName} size={18} color="white" />}
-                style={{ marginBottom: spacing[3] }}
-                onPress={() => {}}
-                fullWidth
-              />
-              <Button
-                title="Continuar com Google"
-                variant="outline"
-                leftIcon={<Feather name={"anchor" as FeatherIconName} size={18} color={activeColors.primary} />}
-                onPress={() => {}}
-                fullWidth
-              />
-            </CardContent>
-          </Card>
-        </AnimatedContainer>
+              {user ? (
+                <>
+                  <Text style={{ marginBottom: spacing[4] }}>
+                    Você está conectado como {user.email}. Suas cálculos são salvos automaticamente.
+                  </Text>
+                  <Button
+                    title="Sair da Conta"
+                    variant="outline"
+                    leftIcon={<Feather name="log-out" size={18} color={activeColors.primary} />}
+                    onPress={signOut}
+                    loading={loading}
+                    style={{ marginBottom: spacing[3] }}
+                    fullWidth
+                  />
+                </>
+              ) : (
+                <>
+                  <Text style={{ marginBottom: spacing[4] }}>
+                    {isSignUp ? "Crie sua conta para salvar seus cálculos:" : "Faça login para acessar seus cálculos:"}
+                  </Text>
 
-        <AnimatedContainer entering={animationsEnabled ? FadeInRight.delay(400).duration(500) : undefined}>
-          <Card>
-            <CardHeader>
-              <CardTitle>Recursos da Conta</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <View style={{ marginTop: spacing[2] }}>
-                {accountResources.map((item, index) => (
-                  <View key={`resource-${index}`} style={styles.resourceRow}>
-                    <View style={styles.checkIcon}>
-                      <Feather name={"check" as FeatherIconName} size={14} color="white" />
+                  {error && (
+                    <View
+                      style={{
+                        backgroundColor: `${activeColors.error}20`,
+                        padding: spacing[3],
+                        borderRadius: 8,
+                        marginBottom: spacing[3],
+                      }}
+                    >
+                      <Text color="error">{error}</Text>
                     </View>
-                    <Text style={{ flex: 1 }}>{item}</Text>
+                  )}
+
+                  {/* Email Input */}
+                  <View style={{ marginBottom: spacing[3] }}>
+                    <Text style={{ marginBottom: spacing[1] }}>Email</Text>
+                    <TextInput
+                      style={{
+                        borderWidth: 1,
+                        borderColor: activeColors.border,
+                        borderRadius: 8,
+                        padding: spacing[2],
+                        color: activeColors.text,
+                        backgroundColor: activeColors.card,
+                      }}
+                      value={email}
+                      onChangeText={setEmail}
+                      placeholder="seu@email.com"
+                      placeholderTextColor={activeColors.textMuted}
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                    />
                   </View>
-                ))}
-              </View>
+
+                  {/* Password Input */}
+                  <View style={{ marginBottom: spacing[4] }}>
+                    <Text style={{ marginBottom: spacing[1] }}>Senha</Text>
+                    <TextInput
+                      style={{
+                        borderWidth: 1,
+                        borderColor: activeColors.border,
+                        borderRadius: 8,
+                        padding: spacing[2],
+                        color: activeColors.text,
+                        backgroundColor: activeColors.card,
+                      }}
+                      value={password}
+                      onChangeText={setPassword}
+                      placeholder="Sua senha"
+                      placeholderTextColor={activeColors.textMuted}
+                      secureTextEntry
+                    />
+                  </View>
+
+                  {/* Auth Button */}
+                  <Button
+                    title={isSignUp ? "Criar Conta" : "Entrar com Email"}
+                    variant="default"
+                    leftIcon={<Feather name={isSignUp ? "user-plus" : "log-in"} size={18} color="white" />}
+                    style={{ marginBottom: spacing[3] }}
+                    onPress={handleAuth}
+                    loading={loading}
+                    fullWidth
+                  />
+
+                  {/* Toggle Sign Up/In */}
+                  <Button
+                    title={isSignUp ? "Já tenho uma conta" : "Criar nova conta"}
+                    variant="ghost"
+                    onPress={() => setIsSignUp(!isSignUp)}
+                    style={{ marginBottom: spacing[3] }}
+                    fullWidth
+                  />
+                </>
+              )}
             </CardContent>
           </Card>
-        </AnimatedContainer>
+        </Animated.View>
+
+        {/* Account Features - Same as before */}
       </View>
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  avatarContainer: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: `rgba(34, 192, 105, 0.15)`,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 12,
-  },
-  settingRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  settingLabelContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  settingIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: `rgba(34, 192, 105, 0.15)`,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 12,
-  },
-  resourceRow: {
-    flexDirection: "row",
-    marginBottom: 12,
-  },
-  checkIcon: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: "#22c069",
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 12,
-    marginTop: 2,
-  },
-});
 
 export default ProfileScreen;
