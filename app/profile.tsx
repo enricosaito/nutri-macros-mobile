@@ -1,6 +1,5 @@
-// app/profile.tsx
 import React, { useState } from "react";
-import { View, StyleSheet, Switch, useColorScheme, ScrollView } from "react-native";
+import { View, StyleSheet, Switch, useColorScheme, ScrollView, TextInput, Alert } from "react-native";
 import { Text, Button, Card, CardHeader, CardTitle, CardContent } from "../components";
 import { Feather } from "@expo/vector-icons";
 import { colors, darkColors, spacing } from "../src/styles/globalStyles";
@@ -14,10 +13,30 @@ function ProfileScreen() {
   const systemIsDark = useColorScheme() === "dark";
   const [isDark, setIsDark] = useState(systemIsDark);
   const activeColors = isDark ? darkColors : colors;
-  const { user, signOut } = useAuth();
+
+  // Use the Supabase Auth Context
+  const { user, session, signIn, signUp, signOut, error, loading } = useAuth();
+
+  // Local state for form inputs
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSignUp, setIsSignUp] = useState(false);
 
   const toggleTheme = () => {
     setIsDark(!isDark);
+  };
+
+  const handleAuth = async () => {
+    if (!email || !password) {
+      Alert.alert("Campos obrigatórios", "Por favor, preencha email e senha.");
+      return;
+    }
+
+    if (isSignUp) {
+      await signUp(email, password);
+    } else {
+      await signIn(email, password);
+    }
   };
 
   // Resources that will be listed
@@ -103,7 +122,7 @@ function ProfileScreen() {
             </Card>
           </Animated.View>
 
-          {/* Other profile content */}
+          {/* Auth Card */}
           <Animated.View entering={FadeInRight.delay(300).duration(500)}>
             <Card style={{ marginBottom: spacing[4], backgroundColor: activeColors.card }}>
               <CardHeader>
@@ -120,6 +139,7 @@ function ProfileScreen() {
                       variant="outline"
                       leftIcon={<Feather name="log-out" size={18} color={activeColors.primary} />}
                       onPress={signOut}
+                      loading={loading}
                       style={{ marginBottom: spacing[3] }}
                       fullWidth
                     />
@@ -127,21 +147,82 @@ function ProfileScreen() {
                 ) : (
                   <>
                     <Text style={{ marginBottom: spacing[4], color: activeColors.text }}>
-                      Faça login para salvar seus cálculos de macros e acessar recursos premium.
+                      {isSignUp
+                        ? "Crie sua conta para salvar seus cálculos:"
+                        : "Faça login para acessar seus cálculos:"}
                     </Text>
+
+                    {error && (
+                      <View
+                        style={{
+                          backgroundColor: `${activeColors.error}20`,
+                          padding: spacing[3],
+                          borderRadius: 8,
+                          marginBottom: spacing[3],
+                        }}
+                      >
+                        <Text color="error">{error}</Text>
+                      </View>
+                    )}
+
+                    {/* Email Input */}
+                    <View style={{ marginBottom: spacing[3] }}>
+                      <Text style={{ marginBottom: spacing[1], color: activeColors.text }}>Email</Text>
+                      <TextInput
+                        style={{
+                          borderWidth: 1,
+                          borderColor: activeColors.border,
+                          borderRadius: 8,
+                          padding: spacing[2],
+                          color: activeColors.text,
+                          backgroundColor: activeColors.card,
+                        }}
+                        value={email}
+                        onChangeText={setEmail}
+                        placeholder="seu@email.com"
+                        placeholderTextColor={activeColors.textMuted}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                      />
+                    </View>
+
+                    {/* Password Input */}
+                    <View style={{ marginBottom: spacing[4] }}>
+                      <Text style={{ marginBottom: spacing[1], color: activeColors.text }}>Senha</Text>
+                      <TextInput
+                        style={{
+                          borderWidth: 1,
+                          borderColor: activeColors.border,
+                          borderRadius: 8,
+                          padding: spacing[2],
+                          color: activeColors.text,
+                          backgroundColor: activeColors.card,
+                        }}
+                        value={password}
+                        onChangeText={setPassword}
+                        placeholder="Sua senha"
+                        placeholderTextColor={activeColors.textMuted}
+                        secureTextEntry
+                      />
+                    </View>
+
+                    {/* Auth Button */}
                     <Button
-                      title="Entrar com Email"
+                      title={isSignUp ? "Criar Conta" : "Entrar com Email"}
                       variant="default"
-                      leftIcon={<Feather name="log-in" size={18} color="white" />}
+                      leftIcon={<Feather name={isSignUp ? "user-plus" : "log-in"} size={18} color="white" />}
                       style={{ marginBottom: spacing[3] }}
-                      onPress={() => {}}
+                      onPress={handleAuth}
+                      loading={loading}
                       fullWidth
                     />
+
+                    {/* Toggle Sign Up/In */}
                     <Button
-                      title="Continuar com Google"
-                      variant="outline"
-                      leftIcon={<Feather name="chrome" size={18} color={activeColors.primary} />}
-                      onPress={() => {}}
+                      title={isSignUp ? "Já tenho uma conta" : "Criar nova conta"}
+                      variant="ghost"
+                      onPress={() => setIsSignUp(!isSignUp)}
+                      style={{ marginBottom: spacing[3] }}
                       fullWidth
                     />
                   </>
