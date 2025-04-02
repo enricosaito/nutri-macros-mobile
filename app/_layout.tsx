@@ -1,3 +1,4 @@
+// app/_layout.tsx
 import React from "react";
 import { View } from "react-native";
 import { StatusBar, useColorScheme } from "react-native";
@@ -21,7 +22,6 @@ export default function RootLayout() {
             backgroundColor={isDark ? "#000000" : "#f5f9f7"}
           />
           <View className={`flex-1 ${isDark ? "bg-black" : "bg-[#f5f9f7]"}`}>
-            {/* Use Slot instead of Tabs */}
             <Slot />
           </View>
         </SafeAreaProvider>

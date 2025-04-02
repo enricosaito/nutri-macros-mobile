@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { View, TextInput, Pressable, StyleSheet, useColorScheme } from "react-native";
+import { View, TextInput, Pressable, useColorScheme } from "react-native";
 import { Text } from "./text";
-import { colors, darkColors, spacing, radius } from "../../src/styles/globalStyles";
 import { Feather } from "@expo/vector-icons";
 
 interface NumericInputProps {
@@ -14,6 +13,7 @@ interface NumericInputProps {
   unit?: string;
   error?: string;
   allowDecimal?: boolean;
+  className?: string;
 }
 
 export function NumericInput({
@@ -26,9 +26,9 @@ export function NumericInput({
   unit,
   error,
   allowDecimal = false,
+  className = "",
 }: NumericInputProps) {
   const isDark = useColorScheme() === "dark";
-  const activeColors = isDark ? darkColors : colors;
   const [inputValue, setInputValue] = useState(value.toString());
 
   // Update input value when prop changes
@@ -83,56 +83,22 @@ export function NumericInput({
   };
 
   return (
-    <View style={styles.container}>
-      {label && (
-        <Text
-          style={[
-            styles.label,
-            {
-              color: activeColors.text,
-              marginBottom: spacing[2],
-            },
-          ]}
-        >
-          {label}
-        </Text>
-      )}
+    <View className={`w-full mb-4 ${className}`}>
+      {label && <Text className={`mb-2 ${isDark ? "text-white" : "text-[#151915]"}`}>{label}</Text>}
 
-      <View style={styles.inputRow}>
+      <View className="flex-row items-center">
         <Pressable
-          style={[
-            styles.button,
-            styles.decrementButton,
-            {
-              backgroundColor: activeColors.secondary,
-              borderColor: activeColors.border,
-              borderTopLeftRadius: radius.md,
-              borderBottomLeftRadius: radius.md,
-            },
-          ]}
+          className={`w-11 h-11 items-center justify-center border rounded-l-md ${
+            isDark ? "bg-[#1e231e] border-[#333333]" : "bg-[#edf4ee] border-[#dfe5df]"
+          }`}
           onPress={decrement}
         >
-          <Feather name="minus" size={20} color={activeColors.text} />
+          <Feather name="minus" size={20} color={isDark ? "#ffffff" : "#151915"} />
         </Pressable>
 
-        <View
-          style={[
-            styles.inputContainer,
-            {
-              borderColor: activeColors.border,
-              borderTopWidth: 1,
-              borderBottomWidth: 1,
-            },
-          ]}
-        >
+        <View className={`flex-1 flex-row h-11 border-t border-b ${isDark ? "border-[#333333]" : "border-[#dfe5df]"}`}>
           <TextInput
-            style={[
-              styles.input,
-              {
-                color: activeColors.text,
-                backgroundColor: activeColors.card,
-              },
-            ]}
+            className={`flex-1 text-center px-2 ${isDark ? "text-white bg-[#121212]" : "text-[#151915] bg-white"}`}
             value={inputValue}
             onChangeText={handleInputChange}
             keyboardType={allowDecimal ? "decimal-pad" : "number-pad"}
@@ -142,13 +108,9 @@ export function NumericInput({
 
           {unit && (
             <View
-              style={[
-                styles.unitContainer,
-                {
-                  backgroundColor: activeColors.secondary,
-                  borderColor: activeColors.border,
-                },
-              ]}
+              className={`px-2 justify-center border-t border-b border-r min-w-10 ${
+                isDark ? "bg-[#1e231e] border-[#333333]" : "bg-[#edf4ee] border-[#dfe5df]"
+              }`}
             >
               <Text variant="caption" color="muted">
                 {unit}
@@ -158,69 +120,20 @@ export function NumericInput({
         </View>
 
         <Pressable
-          style={[
-            styles.button,
-            styles.incrementButton,
-            {
-              backgroundColor: activeColors.secondary,
-              borderColor: activeColors.border,
-              borderTopRightRadius: radius.md,
-              borderBottomRightRadius: radius.md,
-            },
-          ]}
+          className={`w-11 h-11 items-center justify-center border rounded-r-md ${
+            isDark ? "bg-[#1e231e] border-[#333333]" : "bg-[#edf4ee] border-[#dfe5df]"
+          }`}
           onPress={increment}
         >
-          <Feather name="plus" size={20} color={activeColors.text} />
+          <Feather name="plus" size={20} color={isDark ? "#ffffff" : "#151915"} />
         </Pressable>
       </View>
 
       {error && (
-        <Text variant="caption" color="error" style={{ marginTop: spacing[2] }}>
+        <Text variant="caption" color="error" className="mt-2">
           {error}
         </Text>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 14,
-    marginBottom: 4,
-  },
-  inputRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  button: {
-    width: 44,
-    height: 44,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-  },
-  decrementButton: {},
-  incrementButton: {},
-  inputContainer: {
-    flex: 1,
-    flexDirection: "row",
-    height: 44,
-  },
-  input: {
-    flex: 1,
-    textAlign: "center",
-    paddingHorizontal: 8,
-  },
-  unitContainer: {
-    paddingHorizontal: 8,
-    justifyContent: "center",
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderRightWidth: 1,
-    minWidth: 40,
-  },
-});

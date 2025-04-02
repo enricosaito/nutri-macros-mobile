@@ -1,15 +1,5 @@
 import React from "react";
-import {
-  TouchableOpacity,
-  Text,
-  ActivityIndicator,
-  StyleSheet,
-  ViewStyle,
-  TextStyle,
-  View,
-  useColorScheme,
-} from "react-native";
-import { colors, darkColors, spacing, radius, typography } from "../../src/styles/globalStyles";
+import { TouchableOpacity, Text, ActivityIndicator, View, useColorScheme } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { useAnimationsEnabled } from "../../src/utils/animation";
 
@@ -25,8 +15,8 @@ interface ButtonProps {
   loading?: boolean;
   disabled?: boolean;
   fullWidth?: boolean;
-  style?: ViewStyle;
-  textStyle?: TextStyle;
+  className?: string;
+  textClassName?: string;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
 }
@@ -42,13 +32,12 @@ export function Button({
   loading = false,
   disabled = false,
   fullWidth = false,
-  style,
-  textStyle,
+  className = "",
+  textClassName = "",
   leftIcon,
   rightIcon,
 }: ButtonProps) {
   const isDark = useColorScheme() === "dark";
-  const activeColors = isDark ? darkColors : colors;
   const scale = useSharedValue(1);
   const animationsEnabled = useAnimationsEnabled();
 
@@ -70,134 +59,85 @@ export function Button({
     };
   });
 
-  const getVariantStyle = (): ViewStyle => {
-    switch (variant) {
-      case "default":
-        return {
-          backgroundColor: activeColors.primary,
-          borderColor: activeColors.primary,
-          borderWidth: 1,
-        };
-      case "destructive":
-        return {
-          backgroundColor: activeColors.error,
-          borderColor: activeColors.error,
-          borderWidth: 1,
-        };
-      case "outline":
-        return {
-          backgroundColor: "transparent",
-          borderColor: activeColors.border,
-          borderWidth: 1,
-        };
-      case "secondary":
-        return {
-          backgroundColor: activeColors.secondary,
-          borderColor: activeColors.secondary,
-          borderWidth: 1,
-        };
-      case "ghost":
-        return {
-          backgroundColor: "transparent",
-          borderWidth: 0,
-        };
-      case "link":
-        return {
-          backgroundColor: "transparent",
-          borderWidth: 0,
-          paddingHorizontal: 0,
-          paddingVertical: 0,
-        };
-      default:
-        return {};
-    }
-  };
+  // Generate variant-specific class names
+  let buttonClasses = "flex-row justify-center items-center shadow-sm shadow-black/10 ";
 
-  const getSizeStyle = (): ViewStyle => {
-    switch (size) {
-      case "default":
-        return {
-          paddingHorizontal: spacing[4],
-          paddingVertical: spacing[2],
-          height: 44,
-          borderRadius: radius.lg,
-        };
-      case "sm":
-        return {
-          paddingHorizontal: spacing[3],
-          paddingVertical: spacing[1],
-          height: 36,
-          borderRadius: radius.md,
-        };
-      case "lg":
-        return {
-          paddingHorizontal: spacing[8],
-          paddingVertical: spacing[2],
-          height: 48,
-          borderRadius: radius.lg,
-        };
-      case "icon":
-        return {
-          height: 44,
-          width: 44,
-          paddingHorizontal: 0,
-          paddingVertical: 0,
-          alignItems: "center",
-          justifyContent: "center",
-          borderRadius: radius.lg,
-        };
-      default:
-        return {};
-    }
-  };
+  switch (variant) {
+    case "default":
+      buttonClasses += isDark ? "bg-[#2ac46e] border border-[#2ac46e] " : "bg-[#22c069] border border-[#22c069] ";
+      break;
+    case "destructive":
+      buttonClasses += isDark ? "bg-[#9b1f1f] border border-[#9b1f1f] " : "bg-[#e92c2c] border border-[#e92c2c] ";
+      break;
+    case "outline":
+      buttonClasses += isDark ? "bg-transparent border border-[#333333] " : "bg-transparent border border-[#dfe5df] ";
+      break;
+    case "secondary":
+      buttonClasses += isDark ? "bg-[#1e231e] border border-[#1e231e] " : "bg-[#edf4ee] border border-[#edf4ee] ";
+      break;
+    case "ghost":
+      buttonClasses += "bg-transparent border-0 ";
+      break;
+    case "link":
+      buttonClasses += "bg-transparent border-0 p-0 ";
+      break;
+  }
 
-  const getTextStyle = (): TextStyle => {
-    const baseStyle: TextStyle = {
-      fontSize: typography.fontSize.base,
-      fontWeight: 500,
-      textAlign: "center",
-    };
+  // Generate size-specific class names
+  switch (size) {
+    case "default":
+      buttonClasses += "px-4 py-2 h-11 rounded-lg ";
+      break;
+    case "sm":
+      buttonClasses += "px-3 py-1 h-9 rounded-md ";
+      break;
+    case "lg":
+      buttonClasses += "px-8 py-2 h-12 rounded-lg ";
+      break;
+    case "icon":
+      buttonClasses += "h-11 w-11 p-0 items-center justify-center rounded-lg ";
+      break;
+  }
 
-    switch (variant) {
-      case "default":
-        return { ...baseStyle, color: "#ffffff" };
-      case "destructive":
-        return { ...baseStyle, color: "#ffffff" };
-      case "outline":
-        return { ...baseStyle, color: activeColors.primary };
-      case "secondary":
-        return { ...baseStyle, color: activeColors.primary };
-      case "ghost":
-        return { ...baseStyle, color: activeColors.primary };
-      case "link":
-        return {
-          ...baseStyle,
-          color: activeColors.primary,
-          textDecorationLine: "underline",
-        };
-      default:
-        return { ...baseStyle, color: "#ffffff" };
-    }
-  };
+  // Add disabled styles
+  if (disabled) {
+    buttonClasses += "opacity-50 ";
+  }
 
-  const buttonStyles: ViewStyle = {
-    ...styles.button,
-    ...getVariantStyle(),
-    ...getSizeStyle(),
-    ...(disabled && styles.disabled),
-    ...(fullWidth && { width: "100%" }),
-    ...(style || {}),
-  };
+  // Add full width style
+  if (fullWidth) {
+    buttonClasses += "w-full ";
+  }
 
-  const finalTextStyle: TextStyle = {
-    ...styles.text,
-    ...getTextStyle(),
-    ...(textStyle || {}),
-  };
+  // Add custom classes
+  buttonClasses += className;
 
+  // Text styles based on variant
+  let textClasses = "text-center text-base font-medium ";
+  switch (variant) {
+    case "default":
+    case "destructive":
+      textClasses += "text-white ";
+      break;
+    case "outline":
+    case "ghost":
+      textClasses += isDark ? "text-[#2ac46e] " : "text-[#22c069] ";
+      break;
+    case "secondary":
+      textClasses += isDark ? "text-[#2ac46e] " : "text-[#22c069] ";
+      break;
+    case "link":
+      textClasses += isDark ? "text-[#2ac46e] underline " : "text-[#22c069] underline ";
+      break;
+  }
+
+  // Add custom text classes
+  textClasses += textClassName;
+
+  // Get loader color based on variant
   const getLoaderColor = () => {
     if (variant === "outline" || variant === "ghost" || variant === "link" || variant === "secondary") {
-      return activeColors.primary;
+      return isDark ? "#2ac46e" : "#22c069";
     }
     return "#ffffff";
   };
@@ -207,15 +147,15 @@ export function Button({
   // Use regular TouchableOpacity if animations are disabled
   if (!animationsEnabled) {
     return (
-      <TouchableOpacity style={buttonStyles} onPress={onPress} disabled={disabled || loading} activeOpacity={0.7}>
-        <View style={styles.contentContainer}>
+      <TouchableOpacity className={buttonClasses} onPress={onPress} disabled={disabled || loading} activeOpacity={0.7}>
+        <View className="flex-row items-center justify-center">
           {loading ? (
             <ActivityIndicator size="small" color={getLoaderColor()} />
           ) : (
             <>
-              {leftIcon && <View style={styles.iconContainer}>{leftIcon}</View>}
-              {content && (typeof content === "string" ? <Text style={finalTextStyle}>{content}</Text> : content)}
-              {rightIcon && <View style={styles.iconContainer}>{rightIcon}</View>}
+              {leftIcon && <View className="mx-1.5">{leftIcon}</View>}
+              {content && (typeof content === "string" ? <Text className={textClasses}>{content}</Text> : content)}
+              {rightIcon && <View className="mx-1.5">{rightIcon}</View>}
             </>
           )}
         </View>
@@ -225,51 +165,25 @@ export function Button({
 
   return (
     <AnimatedTouchable
-      style={[buttonStyles, animatedStyle]}
+      className={buttonClasses}
+      style={animatedStyle}
       onPress={onPress}
       disabled={disabled || loading}
       activeOpacity={0.7}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
     >
-      <View style={styles.contentContainer}>
+      <View className="flex-row items-center justify-center">
         {loading ? (
           <ActivityIndicator size="small" color={getLoaderColor()} />
         ) : (
           <>
-            {leftIcon && <View style={styles.iconContainer}>{leftIcon}</View>}
-            {content && (typeof content === "string" ? <Text style={finalTextStyle}>{content}</Text> : content)}
-            {rightIcon && <View style={styles.iconContainer}>{rightIcon}</View>}
+            {leftIcon && <View className="mx-1.5">{leftIcon}</View>}
+            {content && (typeof content === "string" ? <Text className={textClasses}>{content}</Text> : content)}
+            {rightIcon && <View className="mx-1.5">{rightIcon}</View>}
           </>
         )}
       </View>
     </AnimatedTouchable>
   );
 }
-
-const styles = StyleSheet.create({
-  button: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
-    elevation: 1,
-  },
-  contentContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-  iconContainer: {
-    marginHorizontal: 6,
-  },
-  text: {
-    textAlign: "center",
-  },
-});

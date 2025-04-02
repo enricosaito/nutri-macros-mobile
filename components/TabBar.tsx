@@ -1,10 +1,8 @@
-// components/TabBar.tsx
 import React from "react";
-import { View, TouchableOpacity, StyleSheet, useColorScheme } from "react-native";
+import { View, TouchableOpacity, useColorScheme } from "react-native";
 import { usePathname } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { Text } from "./ui/text";
-import { colors, darkColors } from "../src/styles/globalStyles";
 
 interface TabBarProps {
   insets?: { bottom: number };
@@ -13,7 +11,6 @@ interface TabBarProps {
 export function TabBar({ insets }: TabBarProps) {
   const pathname = usePathname();
   const isDark = useColorScheme() === "dark";
-  const activeColors = isDark ? darkColors : colors;
 
   const tabItems = [
     {
@@ -58,14 +55,10 @@ export function TabBar({ insets }: TabBarProps) {
 
   return (
     <View
-      style={[
-        styles.tabBar,
-        {
-          paddingBottom: insets?.bottom ? insets.bottom : 10,
-          backgroundColor: activeColors.card,
-          borderTopColor: "#333333",
-        },
-      ]}
+      className={`flex-row border-t h-[60px] ${isDark ? "bg-[#121212] border-[#333333]" : "bg-white border-[#dfe5df]"}`}
+      style={{
+        paddingBottom: insets?.bottom ? insets.bottom : 10,
+      }}
     >
       {tabItems.map((item) => {
         // Check if current route matches this tab
@@ -74,21 +67,23 @@ export function TabBar({ insets }: TabBarProps) {
         return (
           <TouchableOpacity
             key={item.id}
-            style={[
-              styles.tabItem,
-              item.primary && styles.tabPrimaryItem,
-              item.primary && { backgroundColor: activeColors.primary },
-            ]}
+            className={`flex-1 items-center justify-center ${
+              item.primary ? "w-[60px] h-[60px] rounded-full -mt-[30px]" : ""
+            } ${item.primary && isDark ? "bg-[#2ac46e]" : item.primary ? "bg-[#22c069]" : ""}`}
             onPress={() => !item.comingSoon && handleNavigation(item.route)}
             disabled={item.comingSoon}
           >
             <Feather
               name={item.icon}
               size={item.primary ? 24 : 22}
-              color={isActive ? activeColors.primary : item.primary ? "#ffffff" : "#888888"}
+              color={isActive ? (isDark ? "#2ac46e" : "#22c069") : item.primary ? "#ffffff" : "#888888"}
             />
             {!item.primary && (
-              <Text style={[styles.tabLabel, { color: isActive ? activeColors.primary : "#888888" }]}>
+              <Text
+                className={`text-xs mt-0.5 ${
+                  isActive ? (isDark ? "text-[#2ac46e]" : "text-[#22c069]") : "text-[#888888]"
+                }`}
+              >
                 {item.label}
               </Text>
             )}
@@ -98,28 +93,3 @@ export function TabBar({ insets }: TabBarProps) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  tabBar: {
-    flexDirection: "row",
-    borderTopWidth: 1,
-    height: 60,
-  },
-  tabItem: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  tabPrimaryItem: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: -30,
-  },
-  tabLabel: {
-    fontSize: 12,
-    marginTop: 2,
-  },
-});

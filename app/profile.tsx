@@ -1,8 +1,8 @@
+// app/profile.tsx
 import React, { useState } from "react";
-import { View, StyleSheet, Switch, useColorScheme, ScrollView, TextInput, Alert } from "react-native";
+import { View, Switch, useColorScheme, ScrollView, TextInput, Alert } from "react-native";
 import { Text, Button, Card, CardHeader, CardTitle, CardContent } from "../components";
 import { Feather } from "@expo/vector-icons";
-import { colors, darkColors, spacing } from "../src/styles/globalStyles";
 import Animated, { FadeIn, FadeInRight } from "react-native-reanimated";
 import { useAuth } from "../src/context/AuthContext";
 import { TabBar } from "../components/TabBar";
@@ -12,10 +12,9 @@ function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const systemIsDark = useColorScheme() === "dark";
   const [isDark, setIsDark] = useState(systemIsDark);
-  const activeColors = isDark ? darkColors : colors;
 
   // Use the Supabase Auth Context
-  const { user, session, signIn, signUp, signOut, error, loading } = useAuth();
+  const { user, signIn, signUp, signOut, error, loading } = useAuth();
 
   // Local state for form inputs
   const [email, setEmail] = useState("");
@@ -48,33 +47,29 @@ function ProfileScreen() {
   ];
 
   return (
-    <View style={[styles.container, { backgroundColor: activeColors.background }]}>
-      <View style={[styles.header, { backgroundColor: activeColors.card }]}>
-        <Text variant="h3" style={{ color: activeColors.text, textAlign: "center" }}>
+    <View className={`flex-1 ${isDark ? "bg-black" : "bg-[#f5f9f7]"}`}>
+      <View
+        className={`py-4 pt-[50px] border-b ${isDark ? "bg-[#121212] border-[#333333]" : "bg-white border-[#dfe5df]"}`}
+      >
+        <Text variant="h3" className="text-center">
           Perfil
         </Text>
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={{ padding: spacing[4] }}>
-        <View style={{ paddingVertical: spacing[4] }}>
-          <Animated.View entering={FadeIn.duration(800)} style={{ alignItems: "center", marginBottom: spacing[6] }}>
+      <ScrollView className="flex-1" contentContainerStyle={{ padding: 16 }}>
+        <View className="py-4">
+          <Animated.View entering={FadeIn.duration(800)} className="items-center mb-6">
             <View
-              style={{
-                width: 96,
-                height: 96,
-                borderRadius: 48,
-                backgroundColor: `${activeColors.primary}15`,
-                alignItems: "center",
-                justifyContent: "center",
-                marginBottom: spacing[3],
-              }}
+              className={`w-24 h-24 rounded-full items-center justify-center mb-3 ${
+                isDark ? "bg-[#2ac46e]/15" : "bg-[#22c069]/15"
+              }`}
             >
-              <Feather name="user" size={40} color={activeColors.primary} />
+              <Feather name="user" size={40} color={isDark ? "#2ac46e" : "#22c069"} />
             </View>
-            <Text variant="h3" style={{ marginBottom: spacing[1], color: activeColors.text }}>
+            <Text variant="h3" className="mb-1">
               {user ? user.email : "Usuário"}
             </Text>
-            <Text variant="caption" color="muted" style={{ textAlign: "center" }}>
+            <Text variant="caption" color="muted" className="text-center">
               {user
                 ? "Sua conta está ativa e seus dados sincronizados"
                 : "Configure seu perfil para salvar seus macros"}
@@ -83,39 +78,30 @@ function ProfileScreen() {
 
           {/* Theme Toggle */}
           <Animated.View entering={FadeInRight.delay(200).duration(500)}>
-            <Card style={{ marginBottom: spacing[4], backgroundColor: activeColors.card }}>
+            <Card className="mb-4">
               <CardHeader>
                 <CardTitle>Aparência</CardTitle>
               </CardHeader>
               <CardContent>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <View className="flex-row justify-between items-center">
+                  <View className="flex-row items-center">
                     <View
-                      style={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: 20,
-                        backgroundColor: `${activeColors.primary}15`,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        marginRight: spacing[3],
-                      }}
+                      className={`w-10 h-10 rounded-full items-center justify-center mr-3 ${
+                        isDark ? "bg-[#2ac46e]/15" : "bg-[#22c069]/15"
+                      }`}
                     >
-                      <Feather name={isDark ? "moon" : "sun"} size={20} color={activeColors.primary} />
+                      <Feather name={isDark ? "moon" : "sun"} size={20} color={isDark ? "#2ac46e" : "#22c069"} />
                     </View>
-                    <Text style={{ color: activeColors.text }}>{isDark ? "Tema Escuro" : "Tema Claro"}</Text>
+                    <Text>{isDark ? "Tema Escuro" : "Tema Claro"}</Text>
                   </View>
                   <Switch
                     value={isDark}
                     onValueChange={toggleTheme}
-                    trackColor={{ false: "#767577", true: `${activeColors.primary}80` }}
-                    thumbColor={isDark ? activeColors.primary : "#f4f3f4"}
+                    trackColor={{
+                      false: "#767577",
+                      true: isDark ? "rgba(42, 196, 110, 0.5)" : "rgba(34, 192, 105, 0.5)",
+                    }}
+                    thumbColor={isDark ? "#2ac46e" : "#f4f3f4"}
                   />
                 </View>
               </CardContent>
@@ -124,84 +110,71 @@ function ProfileScreen() {
 
           {/* Auth Card */}
           <Animated.View entering={FadeInRight.delay(300).duration(500)}>
-            <Card style={{ marginBottom: spacing[4], backgroundColor: activeColors.card }}>
+            <Card className="mb-4">
               <CardHeader>
                 <CardTitle>Login</CardTitle>
               </CardHeader>
               <CardContent>
                 {user ? (
                   <>
-                    <Text style={{ marginBottom: spacing[4], color: activeColors.text }}>
+                    <Text className="mb-4">
                       Você está conectado como {user.email}. Seus cálculos são salvos automaticamente.
                     </Text>
                     <Button
                       title="Sair da Conta"
                       variant="outline"
-                      leftIcon={<Feather name="log-out" size={18} color={activeColors.primary} />}
+                      leftIcon={<Feather name="log-out" size={18} color={isDark ? "#2ac46e" : "#22c069"} />}
                       onPress={signOut}
                       loading={loading}
-                      style={{ marginBottom: spacing[3] }}
+                      className="mb-3"
                       fullWidth
                     />
                   </>
                 ) : (
                   <>
-                    <Text style={{ marginBottom: spacing[4], color: activeColors.text }}>
+                    <Text className="mb-4">
                       {isSignUp
                         ? "Crie sua conta para salvar seus cálculos:"
                         : "Faça login para acessar seus cálculos:"}
                     </Text>
 
                     {error && (
-                      <View
-                        style={{
-                          backgroundColor: `${activeColors.error}20`,
-                          padding: spacing[3],
-                          borderRadius: 8,
-                          marginBottom: spacing[3],
-                        }}
-                      >
+                      <View className={`${isDark ? "bg-[#9b1f1f]/20" : "bg-[#e92c2c]/20"} p-3 rounded-lg mb-3`}>
                         <Text color="error">{error}</Text>
                       </View>
                     )}
 
                     {/* Email Input */}
-                    <View style={{ marginBottom: spacing[3] }}>
-                      <Text style={{ marginBottom: spacing[1], color: activeColors.text }}>Email</Text>
+                    <View className="mb-3">
+                      <Text className="mb-1">Email</Text>
                       <TextInput
-                        style={{
-                          borderWidth: 1,
-                          borderColor: activeColors.border,
-                          borderRadius: 8,
-                          padding: spacing[2],
-                          color: activeColors.text,
-                          backgroundColor: activeColors.card,
-                        }}
+                        className={`border rounded-lg p-2 ${
+                          isDark
+                            ? "border-[#333333] bg-[#121212] text-white"
+                            : "border-[#dfe5df] bg-white text-[#151915]"
+                        }`}
                         value={email}
                         onChangeText={setEmail}
                         placeholder="seu@email.com"
-                        placeholderTextColor={activeColors.textMuted}
+                        placeholderTextColor={isDark ? "#9ca29d" : "#6a706b"}
                         keyboardType="email-address"
                         autoCapitalize="none"
                       />
                     </View>
 
                     {/* Password Input */}
-                    <View style={{ marginBottom: spacing[4] }}>
-                      <Text style={{ marginBottom: spacing[1], color: activeColors.text }}>Senha</Text>
+                    <View className="mb-4">
+                      <Text className="mb-1">Senha</Text>
                       <TextInput
-                        style={{
-                          borderWidth: 1,
-                          borderColor: activeColors.border,
-                          borderRadius: 8,
-                          padding: spacing[2],
-                          color: activeColors.text,
-                          backgroundColor: activeColors.card,
-                        }}
+                        className={`border rounded-lg p-2 ${
+                          isDark
+                            ? "border-[#333333] bg-[#121212] text-white"
+                            : "border-[#dfe5df] bg-white text-[#151915]"
+                        }`}
                         value={password}
                         onChangeText={setPassword}
                         placeholder="Sua senha"
-                        placeholderTextColor={activeColors.textMuted}
+                        placeholderTextColor={isDark ? "#9ca29d" : "#6a706b"}
                         secureTextEntry
                       />
                     </View>
@@ -211,7 +184,7 @@ function ProfileScreen() {
                       title={isSignUp ? "Criar Conta" : "Entrar com Email"}
                       variant="default"
                       leftIcon={<Feather name={isSignUp ? "user-plus" : "log-in"} size={18} color="white" />}
-                      style={{ marginBottom: spacing[3] }}
+                      className="mb-3"
                       onPress={handleAuth}
                       loading={loading}
                       fullWidth
@@ -222,7 +195,7 @@ function ProfileScreen() {
                       title={isSignUp ? "Já tenho uma conta" : "Criar nova conta"}
                       variant="ghost"
                       onPress={() => setIsSignUp(!isSignUp)}
-                      style={{ marginBottom: spacing[3] }}
+                      className="mb-3"
                       fullWidth
                     />
                   </>
@@ -232,35 +205,22 @@ function ProfileScreen() {
           </Animated.View>
 
           <Animated.View entering={FadeInRight.delay(400).duration(500)}>
-            <Card style={{ backgroundColor: activeColors.card }}>
+            <Card>
               <CardHeader>
                 <CardTitle>Recursos da Conta</CardTitle>
               </CardHeader>
               <CardContent>
-                <View style={{ marginTop: spacing[2] }}>
+                <View className="mt-2">
                   {accountResources.map((item, index) => (
-                    <View
-                      key={`resource-${index}`}
-                      style={{
-                        flexDirection: "row",
-                        marginBottom: spacing[3],
-                      }}
-                    >
+                    <View key={`resource-${index}`} className="flex-row mb-3">
                       <View
-                        style={{
-                          width: 24,
-                          height: 24,
-                          borderRadius: 12,
-                          backgroundColor: activeColors.primary,
-                          alignItems: "center",
-                          justifyContent: "center",
-                          marginRight: spacing[3],
-                          marginTop: 2,
-                        }}
+                        className={`w-6 h-6 rounded-full ${
+                          isDark ? "bg-[#2ac46e]" : "bg-[#22c069]"
+                        } items-center justify-center mr-3 mt-0.5`}
                       >
                         <Feather name="check" size={14} color="white" />
                       </View>
-                      <Text style={{ flex: 1, color: activeColors.text }}>{item}</Text>
+                      <Text className="flex-1">{item}</Text>
                     </View>
                   ))}
                 </View>
@@ -270,27 +230,12 @@ function ProfileScreen() {
         </View>
 
         {/* Extra space at the bottom for the tab bar */}
-        <View style={{ height: 80 }} />
+        <View className="h-20" />
       </ScrollView>
 
       <TabBar insets={insets} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    paddingVertical: 16,
-    paddingTop: 50,
-    borderBottomWidth: 1,
-    borderBottomColor: "#333333",
-  },
-  scrollView: {
-    flex: 1,
-  },
-});
 
 export default ProfileScreen;

@@ -1,10 +1,10 @@
+// app/calculator.tsx
 import React, { useState } from "react";
 import { View, StyleSheet, useColorScheme, ScrollView } from "react-native";
 import { router } from "expo-router";
 import { Text, Button, Card, CardContent, CardHeader, CardTitle, NumericInput } from "../components";
 import { GoalSelector } from "../components/goal-selector";
 import { Feather } from "@expo/vector-icons";
-import { colors, darkColors, spacing, radius } from "../src/styles/globalStyles";
 import { TabBar } from "../components/TabBar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { FadeInUp, FadeInDown } from "react-native-reanimated";
@@ -28,7 +28,6 @@ const goals = [
 function CalculatorScreen() {
   const insets = useSafeAreaInsets();
   const isDark = useColorScheme() === "dark";
-  const activeColors = isDark ? darkColors : colors;
 
   // State for user inputs
   const [gender, setGender] = useState<"male" | "female">("male");
@@ -120,49 +119,59 @@ function CalculatorScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: activeColors.background }]}>
-      <View style={[styles.header, { backgroundColor: activeColors.card }]}>
-        <Text variant="h3" style={{ color: activeColors.text, textAlign: "center" }}>
+    <View className={`flex-1 ${isDark ? "bg-black" : "bg-[#f5f9f7]"}`}>
+      <View
+        className={`py-4 pt-[50px] border-b ${isDark ? "bg-[#121212] border-[#333333]" : "bg-white border-[#dfe5df]"}`}
+      >
+        <Text variant="h3" className="text-center">
           Calculadora
         </Text>
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={{ padding: spacing[4] }}>
+      <ScrollView className="flex-1 px-4">
         {/* Introduction */}
-        <Animated.View entering={FadeInDown.duration(600).springify()} style={{ marginBottom: spacing[6] }}>
-          <Text variant="h3" style={{ textAlign: "center", marginBottom: spacing[2], color: activeColors.text }}>
+        <Animated.View entering={FadeInDown.duration(600).springify()} className="mb-6 mt-4">
+          <Text variant="h3" className="text-center mb-2">
             Calculadora de Macros
           </Text>
-          <Text variant="body" color="muted" style={{ textAlign: "center" }}>
+          <Text variant="body" color="muted" className="text-center">
             Preencha suas informações para calcular suas necessidades diárias de macronutrientes.
           </Text>
         </Animated.View>
 
         {/* Gender Selection */}
         <Animated.View entering={FadeInUp.delay(100).duration(600).springify()}>
-          <Card style={{ marginBottom: spacing[4], backgroundColor: activeColors.card }}>
+          <Card className="mb-4">
             <CardHeader>
               <CardTitle>Sexo Biológico</CardTitle>
             </CardHeader>
             <CardContent>
-              <View style={{ flexDirection: "row", gap: spacing[4] }}>
+              <View className="flex-row gap-4">
                 <Button
                   title="Masculino"
                   variant={gender === "male" ? "default" : "outline"}
                   onPress={() => setGender("male")}
                   leftIcon={
-                    <Feather name="user" size={18} color={gender === "male" ? "white" : activeColors.primary} />
+                    <Feather
+                      name="user"
+                      size={18}
+                      color={gender === "male" ? "white" : isDark ? "#2ac46e" : "#22c069"}
+                    />
                   }
-                  style={{ flex: 1 }}
+                  className="flex-1"
                 />
                 <Button
                   title="Feminino"
                   variant={gender === "female" ? "default" : "outline"}
                   onPress={() => setGender("female")}
                   leftIcon={
-                    <Feather name="user" size={18} color={gender === "female" ? "white" : activeColors.primary} />
+                    <Feather
+                      name="user"
+                      size={18}
+                      color={gender === "female" ? "white" : isDark ? "#2ac46e" : "#22c069"}
+                    />
                   }
-                  style={{ flex: 1 }}
+                  className="flex-1"
                 />
               </View>
             </CardContent>
@@ -171,12 +180,12 @@ function CalculatorScreen() {
 
         {/* Basic Info */}
         <Animated.View entering={FadeInUp.delay(200).duration(600).springify()}>
-          <Card style={{ marginBottom: spacing[4], backgroundColor: activeColors.card }}>
+          <Card className="mb-4">
             <CardHeader>
               <CardTitle>Informações Básicas</CardTitle>
             </CardHeader>
             <CardContent>
-              <View style={{ gap: spacing[4] }}>
+              <View className="gap-4">
                 <NumericInput label="Idade" value={age} onChange={setAge} min={15} max={100} unit="anos" />
                 <NumericInput
                   label="Peso"
@@ -196,7 +205,7 @@ function CalculatorScreen() {
 
         {/* Activity Level */}
         <Animated.View entering={FadeInUp.delay(300).duration(600).springify()}>
-          <Card style={{ marginBottom: spacing[4], backgroundColor: activeColors.card }}>
+          <Card className="mb-4">
             <CardHeader>
               <CardTitle>Nível de Atividade</CardTitle>
             </CardHeader>
@@ -208,7 +217,7 @@ function CalculatorScreen() {
 
         {/* Goal */}
         <Animated.View entering={FadeInUp.delay(400).duration(600).springify()}>
-          <Card style={{ marginBottom: spacing[6], backgroundColor: activeColors.card }}>
+          <Card className="mb-6">
             <CardHeader>
               <CardTitle>Objetivo</CardTitle>
             </CardHeader>
@@ -224,34 +233,19 @@ function CalculatorScreen() {
             title="Calcular Macros"
             size="lg"
             onPress={handleCalculate}
-            style={{ marginBottom: spacing[6] }}
+            className="mb-6"
             rightIcon={<Feather name="arrow-right" size={18} color="white" />}
             fullWidth
           />
         </Animated.View>
 
         {/* Extra space at the bottom for the tab bar */}
-        <View style={{ height: 80 }} />
+        <View className="h-20" />
       </ScrollView>
 
       <TabBar insets={insets} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    paddingVertical: 16,
-    paddingTop: 50,
-    borderBottomWidth: 1,
-    borderBottomColor: "#333333",
-  },
-  scrollView: {
-    flex: 1,
-  },
-});
 
 export default CalculatorScreen;

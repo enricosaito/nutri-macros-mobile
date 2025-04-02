@@ -1,10 +1,9 @@
 // components/macro-display.tsx
 import React, { useEffect } from "react";
-import { View, StyleSheet, ViewStyle, useColorScheme, TextStyle } from "react-native";
+import { View, useColorScheme } from "react-native";
 import { Text } from "./ui/text";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, FadeIn, SlideInRight } from "react-native-reanimated";
-import { colors, darkColors, spacing } from "../src/styles/globalStyles";
 import { Feather } from "@expo/vector-icons";
 import { useAnimationsEnabled } from "../src/utils/animation";
 
@@ -20,12 +19,11 @@ interface MacroDisplayProps {
   macros: MacroData;
   calories: number;
   showPercentages?: boolean;
-  style?: ViewStyle;
+  className?: string;
 }
 
-export function MacroDisplay({ macros, calories, showPercentages = true, style }: MacroDisplayProps) {
+export function MacroDisplay({ macros, calories, showPercentages = true, className = "" }: MacroDisplayProps) {
   const isDark = useColorScheme() === "dark";
-  const activeColors = isDark ? darkColors : colors;
   const animationsEnabled = useAnimationsEnabled();
 
   // Animated values for each macro
@@ -77,9 +75,9 @@ export function MacroDisplay({ macros, calories, showPercentages = true, style }
   });
 
   // Use chart colors
-  const proteinColor = activeColors.chart3;
-  const carbsColor = activeColors.chart1;
-  const fatColor = activeColors.chart5;
+  const proteinColor = isDark ? "#1fb7c1" : "#14a9b8"; // chart3
+  const carbsColor = isDark ? "#2ac46e" : "#22c069"; // chart1
+  const fatColor = isDark ? "#4d8df6" : "#1a66ff"; // chart5
 
   // Define the macro rows
   const macroRows = [
@@ -118,33 +116,20 @@ export function MacroDisplay({ macros, calories, showPercentages = true, style }
   const AnimatedContainer = animationsEnabled ? Animated.View : View;
 
   return (
-    <Card style={style}>
+    <Card className={className}>
       <CardHeader>
         <CardTitle>Distribuição de Macronutrientes</CardTitle>
       </CardHeader>
       <CardContent>
         <AnimatedContainer entering={animationsEnabled ? FadeIn.delay(300).duration(500) : undefined}>
-          <Text
-            variant="h2"
-            color="primary"
-            style={{
-              textAlign: "center",
-              marginBottom: spacing[4],
-            }}
-          >
+          <Text variant="h2" color="primary" className="text-center mb-4">
             {calories} kcal
           </Text>
 
           {/* Progress bar */}
           <View
-            style={{
-              flexDirection: "row",
-              overflow: "hidden",
-              borderRadius: 8,
-              backgroundColor: activeColors.muted,
-              height: 16,
-              marginVertical: spacing[4],
-            }}
+            className="flex-row overflow-hidden rounded-lg h-4 my-4"
+            style={{ backgroundColor: isDark ? "#1c211c" : "#f1f5f2" }} // muted color
           >
             <AnimatedView style={[{ height: "100%" }, proteinAnimStyle, { backgroundColor: proteinColor }]} />
             <AnimatedView style={[{ height: "100%" }, carbsAnimStyle, { backgroundColor: carbsColor }]} />
@@ -152,7 +137,7 @@ export function MacroDisplay({ macros, calories, showPercentages = true, style }
           </View>
 
           {/* Macros detail */}
-          <View style={{ marginTop: spacing[4] }}>
+          <View className="mt-4">
             {macroRows.map((row) => (
               <MacroRow
                 key={row.key}
@@ -185,76 +170,25 @@ interface MacroRowProps {
 }
 
 function MacroRow({ label, grams, calories, percent, showPercent, color, icon, delay }: MacroRowProps) {
-  const isDark = useColorScheme() === "dark";
-  const activeColors = isDark ? darkColors : colors;
   const animationsEnabled = useAnimationsEnabled();
-
   const AnimatedContainer = animationsEnabled ? Animated.View : View;
 
   return (
     <AnimatedContainer
-      style={{
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: spacing[3],
-      }}
+      className="flex-row items-center mb-3"
       entering={animationsEnabled ? SlideInRight.delay(delay).springify() : undefined}
     >
-      <View
-        style={{
-          width: 24,
-          height: 24,
-          borderRadius: 12,
-          backgroundColor: color,
-          alignItems: "center",
-          justifyContent: "center",
-          marginRight: spacing[2],
-        }}
-      >
+      <View className="w-6 h-6 rounded-full items-center justify-center mr-2" style={{ backgroundColor: color }}>
         <Feather name={icon as any} size={12} color="white" />
       </View>
-      <Text
-        style={{
-          flex: 1,
-          fontSize: 16,
-          fontWeight: "500" as TextStyle["fontWeight"],
-        }}
-      >
-        {label}
-      </Text>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 16,
-            fontWeight: "600" as TextStyle["fontWeight"],
-            marginRight: spacing[2],
-          }}
-        >
-          {grams}g
-        </Text>
-        <Text
-          variant="caption"
-          color="muted"
-          style={{
-            marginRight: spacing[2],
-          }}
-        >
+      <Text className="flex-1 text-base font-medium">{label}</Text>
+      <View className="flex-row items-center">
+        <Text className="text-base font-semibold mr-2">{grams}g</Text>
+        <Text variant="caption" color="muted" className="mr-2">
           {calories} kcal
         </Text>
         {showPercent && (
-          <Text
-            variant="caption"
-            color="muted"
-            style={{
-              minWidth: 40,
-              textAlign: "right",
-            }}
-          >
+          <Text variant="caption" color="muted" className="min-w-10 text-right">
             {Math.round(percent)}%
           </Text>
         )}
