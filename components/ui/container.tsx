@@ -1,3 +1,4 @@
+// components/ui/container.tsx
 import React from "react";
 import { View, SafeAreaView, ScrollView, ViewProps } from "react-native";
 
@@ -19,9 +20,12 @@ export function Container({
   className = "",
   ...props
 }: ContainerProps) {
-  const paddingClass = padding ? "px-4" : "";
-  const centeredClass = centered ? "items-center justify-center" : "";
-  const containerClass = `flex-1 ${paddingClass} ${centeredClass} ${className}`;
+  const baseClasses = `
+    flex-1 
+    ${padding ? "px-4" : ""} 
+    ${centered ? "items-center justify-center" : ""} 
+    ${className}
+  `;
 
   // If scrollable container
   if (scroll) {
@@ -30,7 +34,7 @@ export function Container({
     return (
       <Wrapper className="flex-1" {...props}>
         <ScrollView
-          className={containerClass}
+          className={baseClasses}
           contentContainerStyle={centered ? { flexGrow: 1, justifyContent: "center" } : undefined}
           showsVerticalScrollIndicator={false}
         >
@@ -43,14 +47,14 @@ export function Container({
   // Non-scrollable container
   if (useSafeArea) {
     return (
-      <SafeAreaView className={`${containerClass}`} {...props}>
+      <SafeAreaView className={baseClasses} {...props}>
         {children}
       </SafeAreaView>
     );
   }
 
   return (
-    <View className={`${containerClass}`} {...props}>
+    <View className={baseClasses} {...props}>
       {children}
     </View>
   );

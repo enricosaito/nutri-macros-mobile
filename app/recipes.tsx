@@ -1,8 +1,8 @@
+// app/recipes.tsx
 import React from "react";
-import { View, StyleSheet, useColorScheme, ScrollView } from "react-native";
+import { View, useColorScheme, ScrollView } from "react-native";
 import { Text, Card, CardHeader, CardTitle, CardContent, Button } from "../components";
 import { Feather } from "@expo/vector-icons";
-import { colors, darkColors, spacing } from "../src/styles/globalStyles";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
 import { TabBar } from "../components/TabBar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -10,7 +10,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 function RecipesScreen() {
   const insets = useSafeAreaInsets();
   const isDark = useColorScheme() === "dark";
-  const activeColors = isDark ? darkColors : colors;
 
   // Features to expect
   const expectedFeatures = [
@@ -21,126 +20,74 @@ function RecipesScreen() {
   ];
 
   return (
-    <View style={[styles.container, { backgroundColor: activeColors.background }]}>
-      <View style={[styles.header, { backgroundColor: activeColors.card }]}>
-        <Text variant="h3" style={{ color: activeColors.text, textAlign: "center" }}>
+    <View className={`flex-1 ${isDark ? "bg-black" : "bg-[#f5f9f7]"}`}>
+      <View
+        className={`py-4 pt-[50px] border-b ${isDark ? "bg-[#121212] border-[#333333]" : "bg-white border-[#dfe5df]"}`}
+      >
+        <Text variant="h3" className="text-center">
           Receitas
         </Text>
       </View>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={{ padding: spacing[4] }}>
-        <Animated.View
-          entering={FadeIn.duration(800)}
-          style={{
-            paddingVertical: spacing[4],
-            alignItems: "center",
-          }}
-        >
-          <View
-            style={{
-              width: 80,
-              height: 80,
-              borderRadius: 40,
-              backgroundColor: `${activeColors.primary}15`,
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: spacing[4],
-            }}
-          >
-            <Feather name="book-open" size={32} color={activeColors.primary} />
-          </View>
+      <ScrollView className="flex-1 px-4">
+        <View className="py-4">
+          <Animated.View entering={FadeIn.duration(800)} className="items-center">
+            <View
+              className={`w-20 h-20 rounded-full ${
+                isDark ? "bg-[#2ac46e]/15" : "bg-[#22c069]/15"
+              } items-center justify-center mb-4`}
+            >
+              <Feather name="book-open" size={32} color={isDark ? "#2ac46e" : "#22c069"} />
+            </View>
 
-          <Text
-            variant="h2"
-            style={{
-              textAlign: "center",
-              marginBottom: spacing[2],
-              color: activeColors.text,
-            }}
-          >
-            Receitas em Breve
-          </Text>
+            <Text variant="h2" className="text-center mb-2">
+              Receitas em Breve
+            </Text>
 
-          <Text
-            variant="body"
-            color="muted"
-            style={{
-              textAlign: "center",
-              marginBottom: spacing[6],
-              paddingHorizontal: spacing[4],
-            }}
-          >
-            Estamos trabalhando para trazer receitas personalizadas baseadas nos seus macros. Fique ligado!
-          </Text>
+            <Text variant="body" color="muted" className="text-center mb-6 px-4">
+              Estamos trabalhando para trazer receitas personalizadas baseadas nos seus macros. Fique ligado!
+            </Text>
 
-          <Animated.View entering={FadeInDown.delay(300).duration(500)} style={{ width: "100%" }}>
-            <Card style={{ backgroundColor: activeColors.card }}>
-              <CardHeader>
-                <CardTitle>O que esperar</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <View style={{ marginTop: spacing[2] }}>
-                  {expectedFeatures.map((item, index) => (
-                    <View
-                      key={`feature-${index}`}
-                      style={{
-                        flexDirection: "row",
-                        marginBottom: spacing[3],
-                        alignItems: "center",
-                      }}
-                    >
-                      <View
-                        style={{
-                          width: 24,
-                          height: 24,
-                          borderRadius: 12,
-                          backgroundColor: activeColors.primary,
-                          alignItems: "center",
-                          justifyContent: "center",
-                          marginRight: spacing[3],
-                        }}
-                      >
-                        <Feather name="check" size={14} color="white" />
+            <Animated.View entering={FadeInDown.delay(300).duration(500)} className="w-full">
+              <Card>
+                <CardHeader>
+                  <CardTitle>O que esperar</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <View className="mt-2">
+                    {expectedFeatures.map((item, index) => (
+                      <View key={`feature-${index}`} className="flex-row mb-3 items-center">
+                        <View
+                          className={`w-6 h-6 rounded-full ${
+                            isDark ? "bg-[#2ac46e]" : "bg-[#22c069]"
+                          } items-center justify-center mr-3`}
+                        >
+                          <Feather name="check" size={14} color="white" />
+                        </View>
+                        <Text className="flex-1">{item}</Text>
                       </View>
-                      <Text style={{ flex: 1, color: activeColors.text }}>{item}</Text>
-                    </View>
-                  ))}
-                </View>
+                    ))}
+                  </View>
 
-                <Button
-                  title="Inscreva-se para notificações"
-                  variant="outline"
-                  leftIcon={<Feather name="bell" size={18} color={activeColors.primary} />}
-                  style={{ marginTop: spacing[4] }}
-                  onPress={() => {}}
-                />
-              </CardContent>
-            </Card>
+                  <Button
+                    title="Inscreva-se para notificações"
+                    variant="outline"
+                    leftIcon={<Feather name="bell" size={18} color={isDark ? "#2ac46e" : "#22c069"} />}
+                    className="mt-4"
+                  />
+                </CardContent>
+              </Card>
+            </Animated.View>
           </Animated.View>
-        </Animated.View>
+        </View>
 
         {/* Extra space at the bottom for the tab bar */}
-        <View style={{ height: 80 }} />
+        <View className="h-20" />
       </ScrollView>
 
       <TabBar insets={insets} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    paddingVertical: 16,
-    paddingTop: 50,
-    borderBottomWidth: 1,
-    borderBottomColor: "#333333",
-  },
-  scrollView: {
-    flex: 1,
-  },
-});
 
 export default RecipesScreen;

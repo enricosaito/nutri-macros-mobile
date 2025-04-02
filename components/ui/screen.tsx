@@ -1,16 +1,7 @@
+// components/ui/screen.tsx
 import React from "react";
-import {
-  View,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  ViewStyle,
-  StatusBar,
-  useColorScheme,
-  Platform,
-} from "react-native";
+import { View, ScrollView, StatusBar, useColorScheme } from "react-native";
 import { Text } from "./text";
-import { colors, darkColors, spacing } from "../../src/styles/globalStyles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { FadeIn } from "react-native-reanimated";
 
@@ -21,8 +12,8 @@ interface ScreenProps {
   showHeader?: boolean;
   scroll?: boolean;
   padding?: boolean;
-  style?: ViewStyle;
-  contentContainerStyle?: ViewStyle;
+  className?: string;
+  contentClassName?: string;
   animate?: boolean;
 }
 
@@ -36,32 +27,25 @@ export function Screen({
   showHeader = true,
   scroll = true,
   padding = true,
-  style,
-  contentContainerStyle,
+  className = "",
+  contentClassName = "",
   animate = true,
 }: ScreenProps) {
   const isDark = useColorScheme() === "dark";
-  const activeColors = isDark ? darkColors : colors;
   const insets = useSafeAreaInsets();
 
   const renderContent = () => {
-    const contentStyle = [
-      styles.content,
-      {
-        paddingTop: showHeader ? 0 : insets.top,
-        // Remove paddingBottom to not add extra space
-        ...(padding && {
-          paddingHorizontal: spacing[4],
-        }),
-      },
-      contentContainerStyle,
-    ];
+    const contentBaseClasses = `
+      ${showHeader ? "" : `pt-[${insets.top}px]`}
+      ${padding ? "px-4" : ""}
+      ${contentClassName}
+    `;
 
     if (scroll) {
       return (
         <AnimatedScrollView
-          style={[styles.scrollView, { backgroundColor: activeColors.background }]}
-          contentContainerStyle={contentStyle}
+          className={`flex-1 ${isDark ? "bg-black" : "bg-[#f5f9f7]"}`}
+          contentContainerClassName={contentBaseClasses}
           showsVerticalScrollIndicator={false}
           entering={animate ? FadeIn.delay(50).duration(300) : undefined}
         >
@@ -72,39 +56,37 @@ export function Screen({
 
     if (animate) {
       return (
-        <AnimatedView style={[styles.contentContainer, contentStyle, style]} entering={FadeIn.delay(50).duration(300)}>
+        <AnimatedView className={`flex-1 ${contentBaseClasses}`} entering={FadeIn.delay(50).duration(300)}>
           {children}
         </AnimatedView>
       );
     }
 
-    return <View style={[styles.contentContainer, contentStyle, style]}>{children}</View>;
+    return <View className={`flex-1 ${contentBaseClasses}`}>{children}</View>;
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: activeColors.background }]}>
+    <View className={`flex-1 ${isDark ? "bg-black" : "bg-[#f5f9f7]"} ${className}`}>
       <StatusBar
         barStyle={isDark ? "light-content" : "dark-content"}
-        backgroundColor={activeColors.background}
+        backgroundColor={isDark ? "#000000" : "#f5f9f7"}
         translucent={true}
       />
 
       {showHeader && (
         <View
-          style={[
-            styles.header,
-            {
-              backgroundColor: activeColors.card,
-              borderBottomColor: activeColors.border,
-              paddingTop: insets.top + (Platform.OS === "ios" ? 0 : spacing[2]),
-              paddingBottom: spacing[2],
-              paddingHorizontal: spacing[4],
-              height: insets.top + spacing[12],
-            },
-          ]}
+          className={`
+            flex-row items-end justify-between
+            ${isDark ? "bg-[#121212] border-[#333333]" : "bg-white border-[#dfe5df]"}
+            border-b px-4 pb-2
+          `}
+          style={{
+            paddingTop: insets.top,
+            height: insets.top + 48,
+          }}
         >
           {title ? (
-            <Text variant="h3" style={{ color: activeColors.text }}>
+            <Text variant="h3" className={isDark ? "text-white" : "text-[#151915]"}>
               {title}
             </Text>
           ) : (
@@ -118,24 +100,3 @@ export function Screen({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "space-between",
-    borderBottomWidth: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  contentContainer: {
-    flex: 1,
-  },
-  content: {
-    flexGrow: 1,
-  },
-});

@@ -1,43 +1,27 @@
 // components/ui/modal.tsx
 import React from "react";
-import {
-  Modal as RNModal,
-  View,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  TouchableOpacity,
-  useColorScheme,
-} from "react-native";
+import { Modal as RNModal, View, TouchableWithoutFeedback, useColorScheme } from "react-native";
 import { Text } from "./text";
-import { colors, darkColors, spacing, radius } from "../../src/styles/globalStyles";
 
 interface ModalProps {
   visible: boolean;
   onClose: () => void;
   children: React.ReactNode;
-  style?: any;
+  className?: string;
 }
 
-export function Modal({ visible, onClose, children, style }: ModalProps) {
+export function Modal({ visible, onClose, children, className = "" }: ModalProps) {
   const isDark = useColorScheme() === "dark";
-  const activeColors = isDark ? darkColors : colors;
 
   return (
     <RNModal transparent visible={visible} animationType="fade" onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.overlay}>
+        <View className="flex-1 justify-center items-center bg-black/50 p-4">
           <TouchableWithoutFeedback>
             <View
-              style={[
-                styles.content,
-                {
-                  backgroundColor: activeColors.card,
-                  borderColor: activeColors.border,
-                  borderRadius: radius.xl,
-                  borderWidth: 1,
-                },
-                style,
-              ]}
+              className={`w-full max-w-[500px] rounded-xl border ${
+                isDark ? "bg-[#121212] border-[#333333]" : "bg-white border-[#dfe5df]"
+              } shadow-lg max-h-[80%] ${className}`}
             >
               {children}
             </View>
@@ -48,86 +32,36 @@ export function Modal({ visible, onClose, children, style }: ModalProps) {
   );
 }
 
-export function ModalHeader({ style, children }: { style?: any; children: React.ReactNode }) {
+export function ModalHeader({ className = "", children }: { className?: string; children: React.ReactNode }) {
   const isDark = useColorScheme() === "dark";
-  const activeColors = isDark ? darkColors : colors;
 
   return (
-    <View
-      style={[
-        styles.header,
-        {
-          padding: spacing[6],
-          borderBottomWidth: 1,
-          borderBottomColor: activeColors.border,
-        },
-        style,
-      ]}
-    >
-      {children}
-    </View>
+    <View className={`p-6 border-b ${isDark ? "border-[#333333]" : "border-[#dfe5df]"} ${className}`}>{children}</View>
   );
 }
 
-export function ModalTitle({ style, children }: { style?: any; children: React.ReactNode }) {
+export function ModalTitle({ className = "", children }: { className?: string; children: React.ReactNode }) {
   return (
-    <Text variant="h3" style={[style]}>
+    <Text variant="h3" className={className}>
       {children}
     </Text>
   );
 }
 
-export function ModalBody({ style, children }: { style?: any; children: React.ReactNode }) {
-  return <View style={[styles.body, { padding: spacing[6] }, style]}>{children}</View>;
+export function ModalBody({ className = "", children }: { className?: string; children: React.ReactNode }) {
+  return <View className={`p-6 ${className}`}>{children}</View>;
 }
 
-export function ModalFooter({ style, children }: { style?: any; children: React.ReactNode }) {
+export function ModalFooter({ className = "", children }: { className?: string; children: React.ReactNode }) {
   const isDark = useColorScheme() === "dark";
-  const activeColors = isDark ? darkColors : colors;
 
   return (
     <View
-      style={[
-        styles.footer,
-        {
-          padding: spacing[6],
-          borderTopWidth: 1,
-          borderTopColor: activeColors.border,
-        },
-        style,
-      ]}
+      className={`p-6 border-t ${
+        isDark ? "border-[#333333]" : "border-[#dfe5df]"
+      } flex-row justify-end items-center ${className}`}
     >
       {children}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    padding: spacing[4],
-  },
-  content: {
-    width: "100%",
-    maxWidth: 500,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    maxHeight: "80%",
-  },
-  header: {},
-  body: {},
-  footer: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-});

@@ -1,17 +1,16 @@
 // components/ui/progress.tsx
-import React from "react";
-import { View, StyleSheet, ViewStyle, useColorScheme } from "react-native";
-import { colors, darkColors, radius } from "../../src/styles/globalStyles";
+import React, { useEffect } from "react";
+import { View, useColorScheme } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
-import { useEffect } from "react";
+import { useAnimationsEnabled } from "../../src/utils/animation";
 
 interface ProgressProps {
   value: number;
   max?: number;
-  style?: ViewStyle;
-  indicatorStyle?: ViewStyle;
   color?: string;
   animated?: boolean;
+  className?: string;
+  indicatorClassName?: string;
 }
 
 const AnimatedView = Animated.createAnimatedComponent(View);
@@ -19,25 +18,24 @@ const AnimatedView = Animated.createAnimatedComponent(View);
 export function Progress({
   value = 0,
   max = 100,
-  style,
-  indicatorStyle,
   color,
   animated = true,
-  ...props
+  className = "",
+  indicatorClassName = "",
 }: ProgressProps) {
   const isDark = useColorScheme() === "dark";
-  const activeColors = isDark ? darkColors : colors;
   const percentage = Math.min(100, Math.max(0, (value / max) * 100));
+  const animationsEnabled = useAnimationsEnabled();
 
-  const width = useSharedValue(animated ? 0 : percentage);
+  const width = useSharedValue(animated && animationsEnabled ? 0 : percentage);
 
   useEffect(() => {
-    if (animated) {
+    if (animated && animationsEnabled) {
       width.value = withTiming(percentage, { duration: 800 });
     } else {
       width.value = percentage;
     }
-  }, [percentage, animated, width]);
+  }, [percentage, animated, animationsEnabled, width]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -45,39 +43,18 @@ export function Progress({
     };
   });
 
+  const progressColor = color || (isDark ? "#2ac46e" : "#22c069");
+
   return (
     <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: `${activeColors.primary}20`,
-          borderRadius: radius.full,
-          height: 8,
-        },
-        style,
-      ]}
-      {...props}
+      className={`overflow-hidden w-full h-2 rounded-full ${
+        isDark ? "bg-[#2ac46e]/20" : "bg-[#22c069]/20"
+      } ${className}`}
     >
       <AnimatedView
-        style={[
-          styles.indicator,
-          animatedStyle,
-          {
-            backgroundColor: color || activeColors.primary,
-          },
-          indicatorStyle,
-        ]}
+        style={[animatedStyle, { backgroundColor: progressColor }]}
+        className={`h-full ${indicatorClassName}`}
       />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    overflow: "hidden",
-    width: "100%",
-  },
-  indicator: {
-    height: "100%",
-  },
-});
