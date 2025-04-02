@@ -1,6 +1,6 @@
 import React from "react";
-import { Text as RNText, StyleSheet, TextStyle, TextProps, useColorScheme } from "react-native";
-import { colors, darkColors, typography } from "../../src/styles/globalStyles";
+import { Text as RNText, TextProps } from "react-native";
+import { useColorScheme } from "react-native";
 
 type TextVariant = "h1" | "h2" | "h3" | "h4" | "subtitle" | "body" | "caption" | "small";
 type TextColor = "primary" | "secondary" | "text" | "muted" | "success" | "warning" | "error" | "white";
@@ -10,7 +10,6 @@ interface CustomTextProps extends TextProps {
   color?: TextColor;
   bold?: boolean;
   italic?: boolean;
-  style?: TextStyle | TextStyle[];
   children?: React.ReactNode;
 }
 
@@ -19,93 +18,87 @@ export function Text({
   color = "text",
   bold = false,
   italic = false,
-  style,
+  className = "",
   children,
   ...props
-}: CustomTextProps) {
+}: CustomTextProps & { className?: string }) {
   const isDark = useColorScheme() === "dark";
-  const activeColors = isDark ? darkColors : colors;
 
-  // Build the base style
-  const baseStyle: TextStyle = {
-    fontFamily: typography.fontFamily,
-    color: activeColors.text, // Always default to theme text color
-  };
+  // Base styles using className
+  let textClassNames = "";
 
-  // Add variant styles
+  // Variant styles
   switch (variant) {
     case "h1":
-      baseStyle.fontSize = typography.fontSize["3xl"];
-      baseStyle.fontWeight = "700";
-      baseStyle.letterSpacing = -0.5;
+      textClassNames += "text-3xl font-bold tracking-tight ";
       break;
     case "h2":
-      baseStyle.fontSize = typography.fontSize["2xl"];
-      baseStyle.fontWeight = "700";
+      textClassNames += "text-2xl font-bold ";
       break;
     case "h3":
-      baseStyle.fontSize = typography.fontSize.xl;
-      baseStyle.fontWeight = "600";
+      textClassNames += "text-xl font-semibold ";
       break;
     case "h4":
-      baseStyle.fontSize = typography.fontSize.lg;
-      baseStyle.fontWeight = "600";
+      textClassNames += "text-lg font-semibold ";
       break;
     case "subtitle":
-      baseStyle.fontSize = typography.fontSize.base;
-      baseStyle.fontWeight = "500";
+      textClassNames += "text-base font-medium ";
       break;
     case "body":
-      baseStyle.fontSize = typography.fontSize.base;
+      textClassNames += "text-base ";
       break;
     case "caption":
-      baseStyle.fontSize = typography.fontSize.sm;
-      baseStyle.color = activeColors.textMuted;
+      textClassNames += "text-sm ";
+      if (color === "text") color = "muted"; // Default captions to muted color
       break;
     case "small":
-      baseStyle.fontSize = typography.fontSize.xs;
+      textClassNames += "text-xs ";
       break;
   }
 
-  // Add color styles - fixed to ensure proper dark mode coloring
+  // Color styles
   switch (color) {
     case "primary":
-      baseStyle.color = activeColors.primary;
+      textClassNames += isDark ? "text-[#2ac46e] " : "text-[#22c069] ";
       break;
     case "secondary":
-      baseStyle.color = activeColors.secondary;
+      textClassNames += isDark ? "text-[#1e231e] " : "text-[#edf4ee] ";
       break;
     case "text":
-      baseStyle.color = activeColors.text;
+      textClassNames += isDark ? "text-white " : "text-[#151915] ";
       break;
     case "muted":
-      baseStyle.color = activeColors.textMuted;
+      textClassNames += isDark ? "text-[#9ca29d] " : "text-[#6a706b] ";
       break;
     case "success":
-      baseStyle.color = activeColors.success;
+      textClassNames += isDark ? "text-[#16b465] " : "text-[#14a85e] ";
       break;
     case "warning":
-      baseStyle.color = activeColors.warning;
+      textClassNames += isDark ? "text-[#f0ad4e] " : "text-[#ffc107] ";
       break;
     case "error":
-      baseStyle.color = activeColors.error;
+      textClassNames += isDark ? "text-[#9b1f1f] " : "text-[#e92c2c] ";
       break;
     case "white":
-      baseStyle.color = "#ffffff"; // Always white
+      textClassNames += "text-white ";
       break;
   }
 
-  // Add weight and style
+  // Font weight
   if (bold) {
-    baseStyle.fontWeight = "700";
+    textClassNames += "font-bold ";
   }
 
+  // Font style
   if (italic) {
-    baseStyle.fontStyle = "italic";
+    textClassNames += "italic ";
   }
+
+  // Add user-provided className at the end to allow overriding
+  textClassNames += className;
 
   return (
-    <RNText style={[baseStyle, style]} {...props}>
+    <RNText className={textClassNames} {...props}>
       {children}
     </RNText>
   );

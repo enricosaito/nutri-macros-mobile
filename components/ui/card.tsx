@@ -1,74 +1,46 @@
-// components/ui/card.tsx (partial fix for the style type issues)
 import React from "react";
-import { View, StyleSheet, ViewStyle, TextStyle, useColorScheme } from "react-native";
+import { View, useColorScheme } from "react-native";
 import { Text } from "./text";
-import { colors, darkColors, spacing, radius } from "../../src/styles/globalStyles";
 
 // Card container
 interface CardProps {
   children: React.ReactNode;
-  style?: ViewStyle;
-  animate?: boolean;
+  className?: string;
 }
 
-export function Card({ children, style, animate = false }: CardProps) {
+export function Card({ children, className = "" }: CardProps) {
   const isDark = useColorScheme() === "dark";
-  const activeColors = isDark ? darkColors : colors;
 
-  const cardStyle: ViewStyle = {
-    ...styles.card,
-    backgroundColor: activeColors.card,
-    borderColor: activeColors.border,
-    borderRadius: radius.xl,
-    ...(style as ViewStyle),
-  };
-
-  return <View style={cardStyle}>{children}</View>;
-}
-
-// Card header
-interface CardHeaderProps {
-  children: React.ReactNode;
-  style?: ViewStyle;
-}
-
-export function CardHeader({ children, style }: CardHeaderProps) {
   return (
     <View
-      style={[
-        styles.cardHeader as ViewStyle,
-        {
-          paddingHorizontal: spacing[6],
-          paddingVertical: spacing[4],
-        },
-        style,
-      ]}
+      className={`rounded-xl border overflow-hidden mb-4 shadow-sm ${
+        isDark ? "bg-[#121212] border-[#333333]" : "bg-white border-[#dfe5df]"
+      } ${className}`}
     >
       {children}
     </View>
   );
 }
 
+// Card header
+interface CardHeaderProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+export function CardHeader({ children, className = "" }: CardHeaderProps) {
+  return <View className={`px-6 py-4 ${className}`}>{children}</View>;
+}
+
 // Card title
 interface CardTitleProps {
   children: React.ReactNode;
-  style?: TextStyle;
+  className?: string;
 }
 
-export function CardTitle({ children, style }: CardTitleProps) {
-  const isDark = useColorScheme() === "dark";
-  const activeColors = isDark ? darkColors : colors;
-
+export function CardTitle({ children, className = "" }: CardTitleProps) {
   return (
-    <Text
-      variant="h3"
-      style={[
-        {
-          color: activeColors.text,
-        } as TextStyle,
-        style,
-      ]}
-    >
+    <Text variant="h3" className={className}>
       {children}
     </Text>
   );
@@ -77,24 +49,12 @@ export function CardTitle({ children, style }: CardTitleProps) {
 // Card description
 interface CardDescriptionProps {
   children: React.ReactNode;
-  style?: TextStyle;
+  className?: string;
 }
 
-export function CardDescription({ children, style }: CardDescriptionProps) {
-  const isDark = useColorScheme() === "dark";
-  const activeColors = isDark ? darkColors : colors;
-
+export function CardDescription({ children, className = "" }: CardDescriptionProps) {
   return (
-    <Text
-      variant="caption"
-      style={[
-        {
-          color: activeColors.textMuted,
-          marginTop: spacing[1],
-        } as TextStyle,
-        style,
-      ]}
-    >
+    <Text variant="caption" className={`mt-1 ${className}`}>
       {children}
     </Text>
   );
@@ -103,76 +63,29 @@ export function CardDescription({ children, style }: CardDescriptionProps) {
 // Card content
 interface CardContentProps {
   children: React.ReactNode;
-  style?: ViewStyle;
+  className?: string;
 }
 
-export function CardContent({ children, style }: CardContentProps) {
-  return (
-    <View
-      style={[
-        styles.cardContent as ViewStyle,
-        {
-          paddingHorizontal: spacing[6],
-          paddingBottom: spacing[6],
-        },
-        style,
-      ]}
-    >
-      {children}
-    </View>
-  );
+export function CardContent({ children, className = "" }: CardContentProps) {
+  return <View className={`px-6 pb-6 ${className}`}>{children}</View>;
 }
 
 // Card footer
 interface CardFooterProps {
   children: React.ReactNode;
-  style?: ViewStyle;
+  className?: string;
 }
 
-export function CardFooter({ children, style }: CardFooterProps) {
+export function CardFooter({ children, className = "" }: CardFooterProps) {
   const isDark = useColorScheme() === "dark";
-  const activeColors = isDark ? darkColors : colors;
 
   return (
     <View
-      style={[
-        styles.cardFooter as ViewStyle,
-        {
-          borderTopColor: activeColors.border,
-          paddingHorizontal: spacing[6],
-          paddingVertical: spacing[4],
-        },
-        style,
-      ]}
+      className={`px-6 py-4 flex-row items-center border-t ${
+        isDark ? "border-[#333333]" : "border-[#dfe5df]"
+      } ${className}`}
     >
       {children}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    borderWidth: 1,
-    overflow: "hidden",
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
-  } as ViewStyle,
-  cardHeader: {
-    borderBottomWidth: 0,
-  } as ViewStyle,
-  cardContent: {
-    paddingTop: 0,
-  } as ViewStyle,
-  cardFooter: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderTopWidth: 1,
-  } as ViewStyle,
-});
